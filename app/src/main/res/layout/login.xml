@@ -5,8 +5,8 @@
     android:id="@+id/activity_login"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/inriego-background"
-    tools:context="com.example.olave.laboratorioandroid.Login">
+    android:background="@drawable/inriego-background">
+   
 
 
     <ImageView
