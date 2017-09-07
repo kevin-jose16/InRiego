@@ -5,20 +5,20 @@
     android:id="@+id/activity_login"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dim_foreground_material_dark"
+    android:background="@drawable/inriego-background"
     tools:context="com.example.olave.laboratorioandroid.Login">
 
 
     <ImageView
         android:id="@+id/icono"
-        android:layout_width="199dp"
-        android:layout_height="179dp"
-        android:src="@drawable/gymicon"
+        android:layout_width="386dp"
+        android:layout_height="61dp"
+        android:src="@drawable/logo_pgw"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.054" />
+        app:layout_constraintVertical_bias="0.064" />
 
     <TextView
         android:id="@+id/textView2"
