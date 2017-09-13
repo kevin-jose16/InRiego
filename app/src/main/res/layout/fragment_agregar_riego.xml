@@ -1,0 +1,99 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/inriegobackground"
+    tools:context="layout.Fm_AgregarRiego"
+    android:id="@+id/fm_agregar_r">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="74dp"
+        android:background="#A60A005E"
+        android:text="Agregar Riego"
+        android:textColor="#ffffffff"
+        android:textStyle="bold"
+        android:textSize="26dp"
+        android:typeface="sans"/>
+
+    <EditText
+        android:id="@+id/cantidad_riego"
+        android:layout_width="200dp"
+        android:layout_height="35dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="154dp"
+        android:background="@drawable/campostexto"
+        android:drawableBottom="@color/colorPrimary"
+        android:ems="10"
+        android:textSize="15dp"
+        android:gravity="center"
+        android:hint="Cantidad (mm)"
+        android:inputType="number"
+        android:textColor="#636262"
+        android:textColorHint="#636262"
+        android:typeface="sans" />
+
+    <EditText
+        android:id="@+id/fecha_riego"
+        android:layout_width="200dp"
+        android:layout_height="35dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="210dp"
+        android:background="@drawable/campostexto"
+        android:drawableBottom="@color/colorPrimary"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="Fecha (dd/mm/aaaa)"
+        android:inputType="number"
+        android:textColor="#636262"
+        android:textColorHint="#636262"
+        android:typeface="sans" />
+
+    <ListView
+        android:layout_width="250dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="265dp"
+        android:layout_gravity="center_horizontal"
+        android:background="?attr/colorControlHighlight" />
+
+    <Button
+        android:id="@+id/btn_agregar_r"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="435dp"
+        android:layout_marginLeft="30dp"
+        android:background="@drawable/borde_redondeado"
+        android:backgroundTint="#0E417B"
+        android:elevation="5dp"
+        android:text="Agregar"
+        android:textAlignment="center"
+        android:textColor="#ffff"
+        android:textStyle="bold"
+        android:typeface="sans"
+        android:textSize="25dp"
+         />
+    <Button
+        android:id="@+id/btn_cancelar_r"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="435dp"
+        android:layout_marginLeft="200dp"
+        android:background="@drawable/borde_redondeado"
+        android:backgroundTint="#0E417B"
+        android:elevation="5dp"
+        android:text="Cancelar"
+        android:textAlignment="center"
+        android:textColor="#ffff"
+        android:textStyle="bold"
+        android:typeface="sans"
+        android:textSize="25dp"
+        />
+
+
+
+
+</FrameLayout>
