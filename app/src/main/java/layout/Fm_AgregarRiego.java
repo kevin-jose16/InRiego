@@ -1,14 +1,24 @@
 package layout;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.TextView;
 
+import com.example.olave.inriego.AdapterPivots;
 import com.example.olave.inriego.R;
+
+import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -27,6 +37,11 @@ public class Fm_AgregarRiego extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    static final int DATE_DIALOG_ID = 0;
+    TextView tvdate;
+    ListView lv;
+    ArrayList<String> pivots = new ArrayList<>();
 
     private OnFragmentInteractionListener mListener;
 
@@ -59,13 +74,38 @@ public class Fm_AgregarRiego extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
     }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View rootview = inflater.inflate(R.layout.fragment_agregar_riego, container, false);
+        lv = (ListView) rootview.findViewById(R.id.lst_riego);
+        pivots.add("P1");
+        pivots.add("P2");
+        pivots.add("P3");
+        AdapterPivots adapter = new AdapterPivots(getActivity(),pivots);
+
+        lv.setAdapter(adapter);
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_agregar_riego, container, false);
+        return  rootview;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -75,16 +115,7 @@ public class Fm_AgregarRiego extends Fragment {
         }
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
+
 
     @Override
     public void onDetach() {
