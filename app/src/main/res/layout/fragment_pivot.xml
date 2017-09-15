@@ -1,0 +1,648 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/inriegobackground"
+    tools:context=".FragmentPivot">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <TextView
+        android:id="@+id/textView14"
+        android:layout_width="97dp"
+        android:layout_height="26dp"
+        android:background="@color/background_material_light"
+        android:paddingTop="2dp"
+        android:text="PIVOT"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.278"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.065" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="97dp"
+        android:layout_height="26dp"
+        android:background="@color/background_material_light"
+        android:paddingTop="2dp"
+        android:text="CULTIVO"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.278"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.144" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="115dp"
+        android:layout_height="26dp"
+        android:background="@color/background_material_light"
+        android:paddingTop="2dp"
+        android:text="FENOLOGIA"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.23"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.224" />
+
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="140dp"
+        android:layout_height="26dp"
+        android:background="@color/background_material_light"
+        android:paddingTop="2dp"
+        android:text="FECHA CULTIVO"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.151"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.305" />
+
+    <TextView
+        android:id="@+id/tabla_cultivo"
+        android:layout_width="125dp"
+        android:layout_height="26dp"
+        android:background="@color/background_material_light"
+        android:paddingTop="2dp"
+        android:text="TextView"
+        android:textAlignment="textStart"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.822"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.224" />
+
+    <TextView
+        android:id="@+id/tabla_fenologia"
+        android:layout_width="125dp"
+        android:layout_height="26dp"
+        android:background="@color/background_material_light"
+        android:paddingTop="2dp"
+        android:text="TextView"
+        android:textAlignment="textStart"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.822"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.144" />
+
+    <TextView
+        android:id="@+id/tabla_fecha_cult"
+        android:layout_width="125dp"
+        android:layout_height="26dp"
+        android:background="@color/background_material_light"
+        android:inputType="date"
+        android:paddingTop="2dp"
+        android:text="TextView"
+        android:textAlignment="textStart"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.822"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.305" />
+
+    <Spinner
+        android:id="@+id/spinner_pivot"
+        android:layout_width="125dp"
+        android:layout_height="26dp"
+        android:background="@color/background_material_light"
+        android:spinnerMode="dropdown"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/tabla_fenologia"
+        app:layout_constraintHorizontal_bias="0.439"
+        app:layout_constraintLeft_toRightOf="@+id/textView14"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.727" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="114dp"
+        android:layout_height="33dp"
+        android:layout_weight="1"
+        android:background="@color/dim_foreground_material_light"
+        android:text="FECHA"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        tools:layout_editor_absoluteY="198dp"
+        tools:layout_editor_absoluteX="21dp" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="114dp"
+        android:layout_height="33dp"
+        android:layout_weight="1"
+        android:background="@color/dim_foreground_material_light"
+        android:text="MM"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        tools:layout_editor_absoluteX="138dp"
+        tools:layout_editor_absoluteY="198dp" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="109dp"
+        android:layout_height="33dp"
+        android:layout_weight="1"
+        android:background="@color/dim_foreground_material_light"
+        android:text="EST"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        tools:layout_editor_absoluteX="254dp"
+        tools:layout_editor_absoluteY="198dp" />
+
+    <TableLayout
+        android:id="@+id/tableLayout"
+        android:layout_width="342dp"
+        android:layout_height="273dp"
+        tools:layout_editor_absoluteX="21dp"
+        tools:layout_editor_absoluteY="231dp">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@drawable/linea_horizontal" />
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/background_material_light"
+            android:divider="@color/background_material_light"
+            android:orientation="vertical"
+            android:showDividers="beginning|middle|end"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/tabla_fecha_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/bright_foreground_disabled_material_light"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/view"
+                android:layout_width="5dp"
+                android:layout_height="1dp"
+                android:background="#FF909090" />
+
+            <TextView
+                android:id="@+id/tabla_mm_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/bright_foreground_disabled_material_light"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/view10"
+                android:layout_width="5dp"
+                android:layout_height="1dp"
+                android:background="#FF909090" />
+
+            <ImageView
+                android:id="@+id/tabla_estado_1"
+                android:layout_width="108dp"
+                android:layout_height="36dp"
+                android:layout_marginTop="2dp"
+                android:background="@color/bright_foreground_disabled_material_light"
+                android:scaleType="fitCenter"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toRightOf="@+id/tableLayout"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView15"
+                app:layout_constraintVertical_bias="0.0"
+                android:src="@drawable/proxriego" />
+
+        </TableRow>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@drawable/linea_horizontal" />
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/background_material_light"
+            android:divider="@color/background_material_light"
+            android:orientation="horizontal"
+            android:showDividers="beginning|middle|end"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/tabla_fecha_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/bright_foreground_disabled_material_light"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/view"
+                android:layout_width="5dp"
+                android:layout_height="1dip"
+                android:background="#FF909090" />
+
+            <TextView
+                android:id="@+id/tabla_mm_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/bright_foreground_disabled_material_light"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/view9"
+                android:layout_width="5dp"
+                android:layout_height="1dip"
+                android:background="#FF909090" />
+
+            <ImageView
+                android:id="@+id/tabla_estado_2"
+                android:layout_width="108dp"
+                android:layout_height="36dp"
+                android:background="@color/bright_foreground_disabled_material_light"
+                android:scaleType="fitCenter"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toRightOf="@+id/tableLayout"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView15"
+                app:layout_constraintVertical_bias="0.144"
+                android:src="@drawable/proxriego" />
+
+        </TableRow>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@drawable/linea_horizontal" />
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/background_material_light"
+            android:divider="@color/background_material_light"
+            android:orientation="horizontal"
+            android:showDividers="beginning|middle|end"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/tabla_fecha_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/bright_foreground_disabled_material_light"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/view"
+                android:layout_width="5dp"
+                android:layout_height="1dip"
+                android:background="#FF909090" />
+
+            <TextView
+                android:id="@+id/tabla_mm_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/bright_foreground_disabled_material_light"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/view8"
+                android:layout_width="5dp"
+                android:layout_height="1dip"
+                android:background="#FF909090" />
+
+            <ImageView
+                android:id="@+id/tabla_estado_3"
+                android:layout_width="108dp"
+                android:layout_height="36dp"
+                android:background="@color/bright_foreground_disabled_material_light"
+                android:scaleType="fitCenter"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toRightOf="@+id/tableLayout"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView15"
+                app:layout_constraintVertical_bias="0.3"
+                android:src="@drawable/proxriego" />
+
+        </TableRow>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@drawable/linea_horizontal" />
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/background_material_light"
+            android:divider="@color/background_material_light"
+            android:orientation="horizontal"
+            android:showDividers="beginning|middle|end"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/tabla_fecha_4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/bright_foreground_disabled_material_light"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/view"
+                android:layout_width="5dp"
+                android:layout_height="1dip"
+                android:background="#FF909090" />
+
+            <TextView
+                android:id="@+id/tabla_mm_4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/bright_foreground_disabled_material_light"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/view7"
+                android:layout_width="5dp"
+                android:layout_height="1dip"
+                android:background="#FF909090" />
+
+            <ImageView
+                android:id="@+id/tabla_estado_4"
+                android:layout_width="108dp"
+                android:layout_height="36dp"
+                android:background="@color/bright_foreground_disabled_material_light"
+                android:scaleType="fitCenter"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toRightOf="@+id/tableLayout"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView15"
+                app:layout_constraintVertical_bias="0.444"
+                android:src="@drawable/proxriego" />
+
+        </TableRow>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@drawable/linea_horizontal" />
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/background_material_light"
+            android:divider="@color/background_material_light"
+            android:orientation="horizontal"
+            android:showDividers="beginning|middle|end"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/tabla_fecha_5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/bright_foreground_disabled_material_light"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/view"
+                android:layout_width="5dp"
+                android:layout_height="1dip"
+                android:background="#FF909090" />
+
+            <TextView
+                android:id="@+id/tabla_mm_5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/bright_foreground_disabled_material_light"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/view6"
+                android:layout_width="5dp"
+                android:layout_height="1dip"
+                android:background="#FF909090" />
+
+            <ImageView
+                android:id="@+id/tabla_estado_5"
+                android:layout_width="108dp"
+                android:layout_height="36dp"
+                android:background="@color/bright_foreground_disabled_material_light"
+                android:scaleType="fitCenter"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toRightOf="@+id/tableLayout"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView15"
+                app:layout_constraintVertical_bias="0.592"
+                android:src="@drawable/proxriego" />
+
+        </TableRow>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@drawable/linea_horizontal" />
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/background_material_light"
+            android:divider="@color/background_material_light"
+            android:orientation="horizontal"
+            android:showDividers="beginning|middle|end"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/tabla_fecha_6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/bright_foreground_disabled_material_light"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/view"
+                android:layout_width="5dp"
+                android:layout_height="1dip"
+                android:background="#FF909090" />
+
+            <TextView
+                android:id="@+id/tabla_mm_6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/bright_foreground_disabled_material_light"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/view5"
+                android:layout_width="5dp"
+                android:layout_height="1dip"
+                android:background="#FF909090" />
+
+            <ImageView
+                android:id="@+id/tabla_estado_6"
+                android:layout_width="108dp"
+                android:layout_height="36dp"
+                android:background="@color/bright_foreground_disabled_material_light"
+                android:scaleType="fitCenter"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toRightOf="@+id/tableLayout"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView15"
+                app:layout_constraintVertical_bias="0.736"
+                android:src="@drawable/proxriego" />
+
+        </TableRow>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@drawable/linea_horizontal" />
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/background_material_light"
+            android:divider="@color/background_material_light"
+            android:orientation="horizontal"
+            android:showDividers="beginning|middle|end"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/tabla_fecha_7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/bright_foreground_disabled_material_light"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/view"
+                android:layout_width="5dp"
+                android:layout_height="1dip"
+                android:background="#FF909090" />
+
+            <TextView
+                android:id="@+id/tabla_mm_7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/bright_foreground_disabled_material_light"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/view2"
+                android:layout_width="5dp"
+                android:layout_height="1dip"
+                android:background="#FF909090" />
+
+            <ImageView
+                android:id="@+id/tabla_estado_7"
+                android:layout_width="108dp"
+                android:layout_height="36dp"
+                android:background="@color/bright_foreground_disabled_material_light"
+                android:scaleType="fitCenter"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toRightOf="@+id/tableLayout"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView15"
+                app:layout_constraintVertical_bias="0.88"
+                android:src="@drawable/proxriego" />
+
+        </TableRow>
+    </TableLayout>
+
+</android.support.constraint.ConstraintLayout>
