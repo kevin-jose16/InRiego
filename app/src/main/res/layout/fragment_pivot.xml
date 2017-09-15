@@ -250,7 +250,7 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView15"
                 app:layout_constraintVertical_bias="0.0"
-                app:srcCompat="@drawable/proxriego" />
+                android:src="@drawable/proxriego" />
 
         </TableRow>
 
@@ -315,7 +315,7 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView15"
                 app:layout_constraintVertical_bias="0.144"
-                app:srcCompat="@drawable/proxriego" />
+                android:src="@drawable/proxriego" />
 
         </TableRow>
 
@@ -380,7 +380,7 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView15"
                 app:layout_constraintVertical_bias="0.3"
-                app:srcCompat="@drawable/proxriego" />
+                android:src="@drawable/proxriego" />
 
         </TableRow>
 
@@ -445,7 +445,7 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView15"
                 app:layout_constraintVertical_bias="0.444"
-                app:srcCompat="@drawable/proxriego" />
+                android:src="@drawable/proxriego" />
 
         </TableRow>
 
@@ -510,7 +510,7 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView15"
                 app:layout_constraintVertical_bias="0.592"
-                app:srcCompat="@drawable/proxriego" />
+                android:src="@drawable/proxriego" />
 
         </TableRow>
 
@@ -575,7 +575,7 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView15"
                 app:layout_constraintVertical_bias="0.736"
-                app:srcCompat="@drawable/proxriego" />
+                android:src="@drawable/proxriego" />
 
         </TableRow>
 
@@ -640,7 +640,7 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView15"
                 app:layout_constraintVertical_bias="0.88"
-                app:srcCompat="@drawable/proxriego" />
+                android:src="@drawable/proxriego" />
 
         </TableRow>
     </TableLayout>
