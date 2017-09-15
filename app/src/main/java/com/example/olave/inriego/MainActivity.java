@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.nav_home) {
             fragment = new Fm_Inicio();
         } else if (id == R.id.nav_riego) {
-            fragment = new Fm_Inicio();
+            fragment = new Fm_AgregarRiego();
         } else if (id == R.id.nav_lluvia) {
             fragment = new Fm_Inicio();
         } else if (id == R.id.nav_verinfo) {
