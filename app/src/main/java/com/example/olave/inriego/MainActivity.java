@@ -1,5 +1,8 @@
 package com.example.olave.inriego;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.design.widget.NavigationView;
@@ -96,7 +99,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_verinfo) {
             fragment = new FragmentPivot();
         } else if (id == R.id.nav_logout) {
-            fragment = new Fm_Inicio();
+            SharedPreferences sharedPref = getSharedPreferences(
+                    "sesion", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.clear();
+            editor.commit();
+            finish();
+            Intent i = new Intent(MainActivity.this,Login.class);
+            startActivity(i);
         }
 
         if (fragment != null) {
