@@ -3,12 +3,20 @@ package layout;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.TextView;
 
+import com.example.olave.inriego.AdapterPivots;
+import com.example.olave.inriego.DatePickerFragment_Lluvia;
 import com.example.olave.inriego.R;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -27,6 +35,11 @@ public class Fm_agregarLluvia extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    static final int DATE_DIALOG_ID = 0;
+    TextView tvdate;
+    ListView lv;
+    ArrayList<String> pivots = new ArrayList<>();
 
     private OnFragmentInteractionListener mListener;
 
@@ -65,7 +78,27 @@ public class Fm_agregarLluvia extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_agregar_lluvia, container, false);
+        View rootview = inflater.inflate(R.layout.fragment_agregar_lluvia, container, false);
+        lv = (ListView) rootview.findViewById(R.id.lst_lluvia);
+        pivots.add("P1");
+        pivots.add("P2");
+        pivots.add("P3");
+        final AdapterPivots adapter = new AdapterPivots(getActivity(),pivots);
+        lv.setAdapter(adapter);
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position,long arg3) {
+
+
+                Object obj = adapter.getItem(view.getId());
+                view.setSelected(true);
+
+            }
+
+        });
+
+        // Inflate the layout for this fragment
+        return  rootview;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -89,5 +122,12 @@ public class Fm_agregarLluvia extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public void showDatePickerDialog_Lluvia(View v) {
+        DatePickerFragment_Lluvia newFrag = new DatePickerFragment_Lluvia();
+        this.getActivity().getBaseContext();
+        newFrag.show(getActivity().getSupportFragmentManager(), "datePicker");
+        newFrag.SetearFechas("2017-09-24");
     }
 }

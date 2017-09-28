@@ -6,18 +6,28 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.olave.inriego.AdapterPivots;
+import com.example.olave.inriego.DatePickerFragment_Riego;
+import com.example.olave.inriego.DatePickerFragment_Riego;
+import com.example.olave.inriego.MainActivity;
 import com.example.olave.inriego.R;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -97,12 +107,26 @@ public class Fm_AgregarRiego extends Fragment {
                              Bundle savedInstanceState) {
         View rootview = inflater.inflate(R.layout.fragment_agregar_riego, container, false);
         lv = (ListView) rootview.findViewById(R.id.lst_riego);
+        String[] items = {"P1","P2","P3","P4"};
+        //ArrayAdapter<String> adp = new ArrayAdapter<String>(this,R.layout.fila_pivot,R.id.check_text,items);
+
+
         pivots.add("P1");
         pivots.add("P2");
         pivots.add("P3");
-        AdapterPivots adapter = new AdapterPivots(getActivity(),pivots);
-
+        final AdapterPivots adapter = new AdapterPivots(getActivity(),pivots);
         lv.setAdapter(adapter);
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                      @Override
+                                            public void onItemClick(AdapterView<?> parent, View view, int position,long arg3) {
+
+
+                                          Object obj = adapter.getItem(view.getId());
+                                          view.setSelected(true);
+
+                                            }
+
+                                      });
 
         // Inflate the layout for this fragment
         return  rootview;
@@ -123,6 +147,8 @@ public class Fm_AgregarRiego extends Fragment {
         mListener = null;
     }
 
+
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -137,4 +163,11 @@ public class Fm_AgregarRiego extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+    public void showDatePickerDialog_Riego(View v) {
+        DatePickerFragment_Riego newFrag = new DatePickerFragment_Riego();
+        this.getActivity().getBaseContext();
+        newFrag.show(getActivity().getSupportFragmentManager(), "datePicker");
+        newFrag.SetearFechas("2017-09-24");
+    }
+
 }
