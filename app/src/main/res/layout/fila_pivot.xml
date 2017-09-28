@@ -6,4 +6,5 @@
         android:gravity="center_vertical"
         android:checkMark="?android:attr/listChoiceIndicatorMultiple"
         android:checkMarkTint="#4384F7"
-        android:padding="5dp"/>
+        android:padding="5dp"
+       />

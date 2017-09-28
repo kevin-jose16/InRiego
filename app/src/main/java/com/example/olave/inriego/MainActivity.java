@@ -13,13 +13,16 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
+
+import java.util.ArrayList;
 
 import layout.Fm_AgregarRiego;
 import layout.Fm_agregarLluvia;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-
+    public ArrayList<String> pivots = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,12 +113,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void showDatePickerDialog_Riego(View v) {
         DatePickerFragment_Riego newFrag = new DatePickerFragment_Riego();
-        newFrag.show(getSupportFragmentManager(), "datePicker");
+        newFrag.show(this.getSupportFragmentManager(), "datePicker");
         newFrag.SetearFechas("2017-09-24");
     }
     public void showDatePickerDialog_Lluvia(View v) {
         DatePickerFragment_Lluvia newFrag = new DatePickerFragment_Lluvia();
         newFrag.show(getSupportFragmentManager(), "datePicker");
         newFrag.SetearFechas("2017-09-24");
+    }
+    public void showSelectedItems(View view){
+        String items = "";
+        for(String item: pivots){
+            items+="-"+item+"\n";
+        }
+        Toast.makeText(this,"Seleccionados \n"+items,Toast.LENGTH_LONG).show();
     }
 }
