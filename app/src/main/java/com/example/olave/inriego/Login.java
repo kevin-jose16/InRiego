@@ -6,12 +6,17 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,8 +29,14 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
 
 import Clases.Establecimiento;
+import layout.Fm_Establecimiento;
+import layout.Fm_agregarLluvia;
 
 public class Login extends AppCompatActivity {
 
@@ -69,7 +80,6 @@ public class Login extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
 
-           // String token = "Juan";//KeyGenerator.getSecurePassword(params[0],params[1]);
             try {
                 username = params[0];
                 password = params[1];
@@ -98,7 +108,6 @@ public class Login extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            //String token="";
             if (result!=null){
                 try {
                     JSONObject json = new JSONObject(result);
@@ -106,48 +115,30 @@ public class Login extends AppCompatActivity {
                     SharedPreferences.Editor editor = sp.edit();
                     editor.putString("username",username);
                     editor.putString("password",password);
-                    //token= json.get("Token").toString();
-                    editor.putString("data", json.get("Data").toString());
-                    editor.commit();
 
                     JSONObject jsonData = json.optJSONObject("Data");
-
+                    editor.putString("token",jsonData.get("Token").toString());
                     JSONArray estab = jsonData.getJSONArray("Farms");
-                    for(int i=0;i<estab.length()-1;i++){
+                    for(int i=0;i<=estab.length()-1;i++){
                         JSONObject es = estab.getJSONObject(i);
                         Establecimiento e = new Establecimiento(Integer.parseInt(es.get("FarmId").toString()),es.get("Description").toString());
                         farms.add(e);
-
                     }
-
+                    String jsonObjetos = new Gson().toJson(farms);
+                    editor.putString("farmslist", jsonObjetos);
+                    editor.commit();
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-
-
-
-               /* String[] st= result.split("Description");
-
-                String a,b,c,d;
-                a=st[0];
-                b=st[1];
-                c=st[2];
-                d=st[3];*/
-               //Toast.makeText(Login.this, farms.get(1).getDescripcion(),
-                 //      Toast.LENGTH_LONG).show();
-                //Toast.makeText(Login.this, a + "\n" + b + "\n" + c + "\n" + d,
-                        //Toast.LENGTH_LONG).show();
                 //iniciar 2da activity despues del login
                 Intent i = new Intent(Login.this,MainActivity.class);
                 startActivity(i);
+
             }
             else{
                 Toast.makeText(Login.this, "Tu nombre de usuario o la contraseña son incorrectos",
                         Toast.LENGTH_LONG).show();
-
-
             }
 
         }

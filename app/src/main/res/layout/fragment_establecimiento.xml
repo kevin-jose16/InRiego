@@ -1,13 +1,32 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fm_select_est"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="layout.Fm_Establecimiento">
+    android:background="@drawable/inriegobackground"
+    tools:context="layout.Fm_AgregarRiego">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
+        android:id="@+id/textView2"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="74dp"
+        android:background="#A60A005E"
+        android:text="Seleccione Establecimiento"
+        android:textColor="#ffffffff"
+        android:textStyle="bold"
+        android:textSize="27dp"
+        android:typeface="sans"/>
+
+    <ListView
+        android:id="@+id/lst_establecimientos"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="180dp"
+        android:layout_gravity="center_horizontal"
+        android:background="#B3ffffff"
+        />
 
 </FrameLayout>

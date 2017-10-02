@@ -100,6 +100,7 @@ public class Fm_agregarLluvia extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String selItem = ((TextView)view).getText().toString();
+                view.setSelected(true);
                 if(ma.pivots.contains(selItem))
                     ma.pivots.remove(selItem);
                 else

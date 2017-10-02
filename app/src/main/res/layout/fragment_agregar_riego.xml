@@ -36,25 +36,22 @@
         android:textColorHint="#636262"
         android:typeface="sans"
         android:textStyle="bold"/>
-
-    <EditText
-        android:id="@+id/fecha_riego"
-        android:visibility="invisible"
-        android:layout_width="200dp"
+    <Button
+        android:id="@+id/btn_fecha_riego"
+        android:onClick="showDatePickerDialog_Riego"
+        android:layout_width="180dp"
         android:layout_height="35dp"
-        android:focusable="false"
-        android:layout_marginLeft="50dp"
-        android:layout_marginTop="210dp"
         android:background="@drawable/campostexto"
-        android:drawableBottom="@color/colorPrimary"
-        android:ems="10"
-        android:clickable="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="210dp"
         android:gravity="center"
-        android:hint="Fecha (dd/mm/aaaa)"
-        android:inputType="number"
         android:textColor="#636262"
+        android:hint="Fecha"
+        android:textSize="20dp"
         android:textColorHint="#636262"
-        android:typeface="sans" />
+        android:textStyle="bold"
+        android:typeface="sans"
+        android:ems="10"/>
 
     <ListView
         android:id="@+id/lst_riego"
@@ -99,22 +96,7 @@
         android:textSize="25dp"
         />
 
-    <Button
-        android:id="@+id/btn_fecha_riego"
-        android:onClick="showDatePickerDialog_Riego"
-        android:layout_width="180dp"
-        android:layout_height="35dp"
-        android:background="@drawable/campostexto"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="210dp"
-        android:gravity="center"
-        android:textColor="#636262"
-        android:hint="Fecha"
-        android:textSize="20dp"
-        android:textColorHint="#636262"
-        android:textStyle="bold"
-        android:typeface="sans"
-        android:ems="10"/>
+
 
 
 </FrameLayout>

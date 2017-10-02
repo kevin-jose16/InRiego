@@ -6,6 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
+
+import com.example.olave.inriego.R;
 
 import java.util.ArrayList;
 
@@ -30,17 +33,17 @@ public class AdapterEstablecimientos extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return 0;
+        return establecimientos.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return null;
+        return establecimientos.get(i);
     }
 
     @Override
     public long getItemId(int i) {
-        return 0;
+        return establecimientos.get(i).getEst_id();
     }
 
     @Override
@@ -49,9 +52,11 @@ public class AdapterEstablecimientos extends BaseAdapter {
         View v = view;
         if (view == null) {
             LayoutInflater inf = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            //v = inf.inflate(R.layout.fila_pivot, null);
+            v = inf.inflate(R.layout.fila_establecimiento, null);
         }
-
+        Establecimiento est = establecimientos.get(i);
+        TextView text = (TextView) v.findViewById(R.id.item_est);
+        text.setText(est.getDescripcion());
         return v;
     }
 
