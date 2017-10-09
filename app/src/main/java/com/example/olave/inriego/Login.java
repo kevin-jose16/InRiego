@@ -115,6 +115,7 @@ public class Login extends AppCompatActivity {
                     SharedPreferences.Editor editor = sp.edit();
                     editor.putString("username",username);
                     editor.putString("password",password);
+                    editor.putBoolean("hay_farm", false);
 
                     JSONObject jsonData = json.optJSONObject("Data");
                     editor.putString("token",jsonData.get("Token").toString());

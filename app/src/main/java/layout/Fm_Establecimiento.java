@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.constraint.solver.SolverVariable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
@@ -105,6 +106,15 @@ public class Fm_Establecimiento extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootview = inflater.inflate(R.layout.fragment_establecimiento, container, false);
+
+        MainActivity ma = (MainActivity) getActivity();
+        ma.setItemVisible(1,false);
+        ma.setItemVisible(2,false);
+        ma.setItemVisible(3,false);
+        ma.setItemVisible(4,false);
+        TextView tv = (TextView) getActivity().findViewById(R.id.nav_farm);
+        tv.setText("InRiego");
+        getActivity().setTitle("InRiego");
         sp = getActivity().getSharedPreferences("sesion",Context.MODE_PRIVATE);
         Gson gson = new Gson(); //Instancia Gson.
         String objetos = sp.getString("farmslist", null); //Obtiene datos (json)
@@ -239,6 +249,7 @@ public class Fm_Establecimiento extends Fragment {
                     es.add(est);
                     String jsonObjetos = new Gson().toJson(es);
                     editor.putString("actual_farm", jsonObjetos);
+                    editor.putBoolean("hay_farm",true);
                     editor.commit();
 
                 } catch (JSONException e) {
@@ -254,8 +265,6 @@ public class Fm_Establecimiento extends Fragment {
             else{
                 Toast.makeText(getActivity(), "Pivots para el establecimiento no traidos correctamente",
                         Toast.LENGTH_LONG).show();
-
-
             }
 
         }

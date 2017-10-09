@@ -48,6 +48,11 @@ public class FragmentPivot extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        MainActivity ma = (MainActivity) getActivity();
+        ma.setItemVisible(1,true);
+        ma.setItemVisible(2,true);
+        ma.setItemVisible(3,true);
+        ma.setItemVisible(4,true);
         return inflater.inflate(R.layout.fragment_pivot, container, false);
     }
 

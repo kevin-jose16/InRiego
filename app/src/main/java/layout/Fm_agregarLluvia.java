@@ -1,26 +1,48 @@
 package layout;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.CheckedTextView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import Adapters.AdapterPivots;
 import com.example.olave.inriego.DatePickerFragment_Lluvia;
+import com.example.olave.inriego.FragmentPivot;
 import com.example.olave.inriego.MainActivity;
 import com.example.olave.inriego.R;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 
+import Clases.Establecimiento;
 import Clases.Pivot;
+import Clases.Riego;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,9 +62,11 @@ public class Fm_agregarLluvia extends Fragment {
     private String mParam1;
     private String mParam2;
     MainActivity ma = null;
+    SharedPreferences sp;
     static final int DATE_DIALOG_ID = 0;
     TextView tvdate;
     ListView lv;
+    String token;
 
 
     private OnFragmentInteractionListener mListener;
@@ -84,22 +108,36 @@ public class Fm_agregarLluvia extends Fragment {
         ma = (MainActivity) getActivity();
         ma.pivots.clear();
         View rootview = inflater.inflate(R.layout.fragment_agregar_lluvia, container, false);
+
+        sp = getActivity().getSharedPreferences("sesion", Context.MODE_PRIVATE);
+        Gson gson = new Gson(); //Instancia Gson.
+        //Obtiene datos (json)
+        String objetos = sp.getString("actual_farm", null);
+        //Convierte json  a JsonArray.
+        //String json = new Gson().toJson(objetos);
+        JSONArray jsonArray = null;
+        try {
+            jsonArray = new JSONArray(objetos);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        //Convierte JSONArray a Lista de Objetos!
+        Type listType = new TypeToken<ArrayList<Establecimiento>>(){}.getType();
+        ArrayList <Establecimiento> farmslist = new Gson().fromJson(jsonArray.toString(), listType);
+
+        Button bt_fecha = (Button) getActivity().findViewById(R.id.btn_fecha_lluvia);
+        EditText cant_ed = (EditText) getActivity().findViewById(R.id.cantidad_lluvia);
         lv = (ListView) rootview.findViewById(R.id.lst_lluvia);
         lv.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
 
-        ArrayList<Pivot> arrpv = new ArrayList<>();
-        Pivot pv1 = new Pivot(); pv1.setNombre("P1");
-        Pivot pv2 = new Pivot(); pv2.setNombre("P2");
-        Pivot pv3 = new Pivot(); pv3.setNombre("P3");
-        Pivot pv4 = new Pivot(); pv4.setNombre("P4");
-        Pivot pv5 = new Pivot(); pv5.setNombre("P5");
-        arrpv.add(pv1); arrpv.add(pv2); arrpv.add(pv3); arrpv.add(pv4); arrpv.add(pv5);
+        ArrayList<Pivot> arrpv = farmslist.get(0).getPivots();
+
         AdapterPivots adppivots = new AdapterPivots(getActivity(), arrpv);
         lv.setAdapter(adppivots);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String selItem = ((TextView)view).getText().toString();
+                String selItem = ((CheckedTextView)view).getText().toString();
                 view.setSelected(true);
                 if(ma.pivots.contains(selItem))
                     ma.pivots.remove(selItem);
@@ -107,6 +145,11 @@ public class Fm_agregarLluvia extends Fragment {
                     ma.pivots.add(selItem);
             }
         });
+        token = sp.getString("token",null);
+        for(int i = 0; i<ma.pivots.size(); i++){
+            String pivotid = ma.pivots.get(i).substring(6);
+            new ClaseAsincrona().execute(token,pivotid, cant_ed.getText().toString(),bt_fecha.getText().toString());
+        }
 
         // Inflate the layout for this fragment
         return  rootview;
@@ -148,23 +191,60 @@ public class Fm_agregarLluvia extends Fragment {
         }
         Toast.makeText(getActivity(),"Seleccionados\n"+items,Toast.LENGTH_SHORT).show();
     }
-    public class ClaseAsincrona extends AsyncTask<String, Void, Integer> {
+    public class ClaseAsincrona extends AsyncTask<String, Void, String> {
+
+        String res;
+
 
         @Override
-        protected Integer doInBackground(String... strings) {
-            return null;
+        protected String doInBackground(String... params) {
+
+            try {
+
+                URL url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/IrrigationData/AddIrrigation");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                int responseCode = conn.getResponseCode();
+
+                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+                String inputLine;
+                StringBuffer response = new StringBuffer();
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+                res=response.toString();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return res;
         }
 
         @Override
-        protected void onPostExecute(Integer result) {
-            if (result == 200) {
-                getFragmentManager().popBackStack();
-                Toast.makeText(Fm_agregarLluvia.this.getActivity(), "Agregado",
-                        Toast.LENGTH_LONG).show();
+        protected void onPostExecute(String result) {
+            if (result!=null){
+                try {
+                    JSONObject json = new JSONObject(result);
+                    JSONObject jsonData = json.optJSONObject("Data");
 
-            } else
-                Toast.makeText(Fm_agregarLluvia.this.getActivity(), "Error",
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                Fragment fragment= new FragmentPivot();
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.frameprincipal, fragment).commit();
+
+            }
+            else{
+                Toast.makeText(getActivity(), "Pivots para el establecimiento no traidos correctamente",
                         Toast.LENGTH_LONG).show();
+            }
         }
     }
 }

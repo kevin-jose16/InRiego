@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle("Hola Mundo");
+        setTitle("InRiego");
 
         setContentView(R.layout.main_activity);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -69,40 +69,70 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        //navigationView.getMenu().getItem(3).setVisible(false);
 
         sp = getSharedPreferences("sesion",Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
-        Gson gson = new Gson(); //Instancia Gson.
-        //Obtiene datos (json)
-        String objetos = sp.getString("farmslist", null);
-        //Convierte json  a JsonArray.
-        //String json = new Gson().toJson(objetos);
-        JSONArray jsonArray = null;
-        try {
-            jsonArray = new JSONArray(objetos);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        if(jsonArray.length()>1){
-            Fragment fragment= new Fm_Establecimiento();
-            FragmentManager fragmentManager = getSupportFragmentManager();
+        if(sp.getBoolean("hay_farm",false)){
+            Gson gson = new Gson(); //Instancia Gson.
+            //Obtiene datos (json)
+            String objetos = sp.getString("actual_farm", null);
+            //Convierte json  a JsonArray.
+            //String json = new Gson().toJson(objetos);
+            JSONArray jsonArray = null;
+            try {
+                jsonArray = new JSONArray(objetos);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Type listType = new TypeToken<ArrayList<Establecimiento>>(){}.getType();
+            ArrayList<Establecimiento> hay_farm = new Gson().fromJson(jsonArray.toString(), listType);
+            TextView tv_est = (TextView) findViewById(R.id.nav_farm);
+            tv_est.setText(hay_farm.get(0).getDescripcion());
+            setTitle(hay_farm.get(0).getDescripcion());
+            Fragment fragment= new FragmentPivot();
+            FragmentManager fragmentManager =MainActivity.this.getSupportFragmentManager();
             fragmentManager.beginTransaction()
                     .replace(R.id.frameprincipal, fragment).commit();
         }
         else{
-            //Convierte JSONArray a Lista de Objetos!
-            Type listType = new TypeToken<ArrayList<Establecimiento>>(){}.getType();
-            farmslist = new Gson().fromJson(jsonArray.toString(), listType);
-            TextView tv_est = (TextView) findViewById(R.id.nav_farm);
-            tv_est.setText(farmslist.get(0).getDescripcion());
-            setTitle(farmslist.get(0).getDescripcion());
-            String token = sp.getString("token",null);
-            new ClaseAsincrona().execute(token,String.valueOf(farmslist.get(0).getEst_id()));
+            Gson gson = new Gson(); //Instancia Gson.
+            //Obtiene datos (json)
+            String objetos = sp.getString("farmslist", null);
+            //Convierte json  a JsonArray.
+            //String json = new Gson().toJson(objetos);
+            JSONArray jsonArray = null;
+            try {
+                jsonArray = new JSONArray(objetos);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            if(jsonArray.length()>1){
+                Fragment fragment= new Fm_Establecimiento();
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.frameprincipal, fragment).commit();
+            }
+            else{
+                //Convierte JSONArray a Lista de Objetos!
+                Type listType = new TypeToken<ArrayList<Establecimiento>>(){}.getType();
+                farmslist = new Gson().fromJson(jsonArray.toString(), listType);
+                TextView tv_est = (TextView) findViewById(R.id.nav_farm);
+                tv_est.setText(farmslist.get(0).getDescripcion());
+                setTitle(farmslist.get(0).getDescripcion());
+                String token = sp.getString("token",null);
+                new ClaseAsincrona().execute(token,String.valueOf(farmslist.get(0).getEst_id()));
+            }
         }
 
+    }
 
 
+    public void setItemVisible(int index, boolean inv){
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.getMenu().getItem(index).setVisible(inv);
     }
 
     @Override
@@ -252,6 +282,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     farmslist.add(est);
                     String jsonObjetos = new Gson().toJson(farmslist);
                     editor.putString("actual_farm", jsonObjetos);
+                    editor.putBoolean("hay_farm", true);
                     editor.commit();
 
                 } catch (JSONException e) {
