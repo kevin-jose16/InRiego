@@ -53,7 +53,7 @@ public class FragmentPivot extends Fragment {
         ma.setItemVisible(2,true);
         ma.setItemVisible(3,true);
         ma.setItemVisible(4,true);
-        return inflater.inflate(R.layout.fragment_pivot, container, false);
+        return inflater.inflate(R.layout.fragment_fragment_pivot1, container, false);
     }
 
 
