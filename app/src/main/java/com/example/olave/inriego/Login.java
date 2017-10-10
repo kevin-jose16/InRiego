@@ -117,6 +117,8 @@ public class Login extends AppCompatActivity {
                     editor.putString("password",password);
                     editor.putBoolean("hay_farm", false);
 
+                    farms.clear();
+
                     JSONObject jsonData = json.optJSONObject("Data");
                     editor.putString("token",jsonData.get("Token").toString());
                     JSONArray estab = jsonData.getJSONArray("Farms");
