@@ -2,6 +2,8 @@ package layout;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -34,15 +36,19 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 import Clases.Establecimiento;
 import Clases.Pivot;
 import Clases.Riego;
+import Persistencia.Json_SQLiteHelper;
+import Persistencia.SQLiteHelper;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -66,6 +72,9 @@ public class Fm_agregarLluvia extends Fragment {
     static final int DATE_DIALOG_ID = 0;
     TextView tvdate;
     ListView lv;
+    EditText cant_ed;
+    Button bt_fecha;
+    Button bt_aceptar;
     String token;
 
 
@@ -125,8 +134,9 @@ public class Fm_agregarLluvia extends Fragment {
         Type listType = new TypeToken<ArrayList<Establecimiento>>(){}.getType();
         ArrayList <Establecimiento> farmslist = new Gson().fromJson(jsonArray.toString(), listType);
 
-        Button bt_fecha = (Button) getActivity().findViewById(R.id.btn_fecha_lluvia);
-        EditText cant_ed = (EditText) getActivity().findViewById(R.id.cantidad_lluvia);
+        bt_aceptar = (Button) rootview.findViewById(R.id.btn_agregar_l);
+        bt_fecha = (Button) rootview.findViewById(R.id.btn_fecha_lluvia);
+        cant_ed = (EditText) rootview.findViewById(R.id.cantidad_lluvia);
         lv = (ListView) rootview.findViewById(R.id.lst_lluvia);
         lv.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
 
@@ -146,10 +156,59 @@ public class Fm_agregarLluvia extends Fragment {
             }
         });
         token = sp.getString("token",null);
-        for(int i = 0; i<ma.pivots.size(); i++){
-            String pivotid = ma.pivots.get(i).substring(6);
-            new ClaseAsincrona().execute(token,pivotid, cant_ed.getText().toString(),bt_fecha.getText().toString());
-        }
+
+        bt_aceptar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String fecha = bt_fecha.getText().toString();
+                String[] fechas = bt_fecha.getText().toString().split("/");
+                int year=Integer.parseInt(fechas[2]);//Integer.parseInt(""+fecha.charAt(6)+fecha.charAt(7)+fecha.charAt(8)+fecha.charAt(9));
+                int month=Integer.parseInt(fechas[1]);
+                int day=Integer.parseInt(fechas[0]);
+                /*if("0".equals(fecha.charAt(3)))
+                    month=Integer.parseInt(""+ fecha.charAt(4));
+                else
+                    month=Integer.parseInt(""+fecha.charAt(3)+fecha.charAt(4));
+
+                if("0".equals(fecha.charAt(0)))
+                    day = Integer.parseInt(""+fecha.charAt(1));
+                else
+                    day = Integer.parseInt(""+fecha.charAt(0)+fecha.charAt(1));*/
+                Calendar cl = Calendar.getInstance();
+                cl.set(Calendar.DAY_OF_MONTH,day);
+                cl.set(Calendar.MONTH, month);
+                cl.set(Calendar.YEAR,year);
+                Date date = new Date();
+                date = cl.getTime();
+                Json_SQLiteHelper json_sq= new Json_SQLiteHelper(getActivity(), "DBJsons", null, 1);
+                SQLiteDatabase db = json_sq.getReadableDatabase();
+                SQLiteHelper abd;
+                //for(int i = 0; i<ma.pivots.size(); i++){
+                    int pivotid = Integer.parseInt(ma.pivots.get(0).substring(6));
+                    JSONObject irrigation = new JSONObject();
+                    try {
+                        irrigation.put("Token", token);
+                        irrigation.put("IrrigationUnitId",pivotid);
+                        irrigation.put("Milimeters",Float.parseFloat(cant_ed.getText().toString()));
+                        irrigation.put("Date",date);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    abd= new SQLiteHelper(db, json_sq,irrigation.toString());
+                Cursor result= abd.obtener();
+                result.moveToFirst();
+                result.moveToNext();
+
+                String la = result.getString(0);
+
+                    //new ClaseAsincrona().execute(token,pivotid, cant_ed.getText().toString(),bt_fecha.getText().toString());
+                //}
+                Toast.makeText(getActivity(), la,
+                        Toast.LENGTH_LONG).show();
+                db.close();
+            }
+        });
+
 
         // Inflate the layout for this fragment
         return  rootview;
@@ -199,15 +258,28 @@ public class Fm_agregarLluvia extends Fragment {
         @Override
         protected String doInBackground(String... params) {
 
+            JSONObject irrigation = new JSONObject();
+            try {
+                irrigation.put("Token", token);
+                irrigation.put("IrrigationUnitId",params[1]);
+                irrigation.put("Milimeters",params[2]);
+                irrigation.put("Date",params[3]);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
             try {
 
                 URL url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/IrrigationData/AddIrrigation");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
-                int responseCode = conn.getResponseCode();
+                conn.setRequestProperty("Content-Type", "application/json;");
+                OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+                out.write(String.valueOf(irrigation));
+                out.close();
+
 
                 BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
                 String inputLine;
                 StringBuffer response = new StringBuffer();
 
