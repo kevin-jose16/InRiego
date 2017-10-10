@@ -1,8 +1,9 @@
 package com.example.olave.inriego;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -11,11 +12,19 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.Toast;
+
+
+import java.util.ArrayList;
 
 import layout.Fm_AgregarRiego;
+import layout.Fm_agregarLluvia;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-
+    public ArrayList<String> pivots = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,17 +92,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.nav_home) {
             fragment = new Fm_Inicio();
         } else if (id == R.id.nav_riego) {
-            fragment = new Fm_Inicio();
+            fragment = new Fm_AgregarRiego();
         } else if (id == R.id.nav_lluvia) {
-            fragment = new Fm_Inicio();
+            fragment = new Fm_agregarLluvia();
         } else if (id == R.id.nav_verinfo) {
-            fragment = new Fm_Inicio();
+
+            fragment = new FragmentPivot();
         } else if (id == R.id.nav_logout) {
             fragment = new Fm_Inicio();
         }
 
         if (fragment != null) {
-            FragmentManager fragmentManager = getFragmentManager();
+            FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction()
                     .replace(R.id.frameprincipal, fragment).commit();
         }
@@ -102,5 +112,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void showDatePickerDialog_Riego(View v) {
+        DatePickerFragment_Riego newFrag = new DatePickerFragment_Riego();
+        newFrag.show(this.getSupportFragmentManager(), "datePicker");
+        newFrag.SetearFechas("2017-09-24");
+    }
+    public void showDatePickerDialog_Lluvia(View v) {
+        DatePickerFragment_Lluvia newFrag = new DatePickerFragment_Lluvia();
+        newFrag.show(getSupportFragmentManager(), "datePicker");
+        newFrag.SetearFechas("2017-09-24");
+    }
+    public void showSelectedItems(View view){
+        String items = "";
+        for(String item: pivots){
+            items+="-"+item+"\n";
+        }
+        Toast.makeText(this,"Seleccionados \n"+items,Toast.LENGTH_LONG).show();
     }
 }

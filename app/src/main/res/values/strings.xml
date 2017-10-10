@@ -1,9 +1,20 @@
 <resources>
     <string name="app_name">InRiego</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_main">Establecimiento</string>
+    <string name="title_activity_main">InRiego</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="hello_blank_fragment">hola</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="datos">
+        <item>Pivot1</item>
+        <item>Pivot2</item>
+        <item>Pivot3</item>
+        <item>Pivot4</item>
+        <item>Pivot5</item>
+    </string-array>
+
 </resources>

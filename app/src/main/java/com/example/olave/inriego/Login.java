@@ -24,9 +24,6 @@ import java.net.URL;
 
 public class Login extends AppCompatActivity {
 
-    ImageView imagen;
-    Bitmap bmpImage;
-    String usuario;
     EditText pass;
     EditText user;
     Button boton;
@@ -35,7 +32,6 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
-        imagen = (ImageView) findViewById(R.id.icono);
         boton = (Button) findViewById(R.id.button);
         pass = (EditText) findViewById(R.id.password);
         user = (EditText) findViewById(R.id.usuario);
@@ -49,22 +45,25 @@ public class Login extends AppCompatActivity {
         boton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new Clase1().execute(user.getText().toString(),pass.getText().toString());
+                new ClaseAsincrona().execute(user.getText().toString(),pass.getText().toString());
             }
         });
     }
 
 
 
-    public class Clase1 extends AsyncTask<String,Void,String> {
+    public class ClaseAsincrona extends AsyncTask<String,Void,String> {
         String res;
+        String username;
+        String password;
         @Override
         protected String doInBackground(String... params) {
 
             String token = "Juan";//KeyGenerator.getSecurePassword(params[0],params[1]);
             try {
-                String KEY = token;
-                URL url = new URL("http://fitnet.com.uy/api/usuarios/obtener/"+KEY);
+                username = params[0];
+                password = params[1];
+                URL url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/Auth/userName/"+username +"/password/" + password);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 int responseCode = conn.getResponseCode();
@@ -97,10 +96,8 @@ public class Login extends AppCompatActivity {
 
                     SharedPreferences sp = Login.this.getSharedPreferences("sesion", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sp.edit();
-                    editor.putString("nombre",json.get("nombre").toString());
-                    editor.putString("imagen",json.get("imagen").toString());
-                    editor.putString("password",json.get("password").toString());
-                    editor.putString("username",json.get("username").toString());
+                    editor.putString("username",username);
+                    editor.putString("password",password);
                     editor.commit();
 
                 } catch (JSONException e) {

@@ -1,16 +1,16 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fm_agregar_r"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/inriegobackground"
-    tools:context="layout.Fm_AgregarRiego"
-    android:id="@+id/fm_agregar_r">
+    tools:context="layout.Fm_AgregarRiego">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
+        android:id="@+id/textView2"
         android:layout_marginTop="20dp"
         android:gravity="center"
-        android:id="@+id/textView2"
         android:layout_width="match_parent"
         android:layout_height="74dp"
         android:background="#A60A005E"
@@ -22,30 +22,33 @@
 
     <EditText
         android:id="@+id/cantidad_riego"
-        android:layout_width="200dp"
+        android:layout_width="180dp"
         android:layout_height="35dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="154dp"
         android:background="@drawable/campostexto"
-        android:drawableBottom="@color/colorPrimary"
         android:ems="10"
-        android:textSize="15dp"
         android:gravity="center"
         android:hint="Cantidad (mm)"
+        android:textSize="20dp"
         android:inputType="number"
         android:textColor="#636262"
         android:textColorHint="#636262"
-        android:typeface="sans" />
+        android:typeface="sans"
+        android:textStyle="bold"/>
 
     <EditText
         android:id="@+id/fecha_riego"
+        android:visibility="invisible"
         android:layout_width="200dp"
         android:layout_height="35dp"
-        android:layout_gravity="center_horizontal"
+        android:focusable="false"
+        android:layout_marginLeft="50dp"
         android:layout_marginTop="210dp"
         android:background="@drawable/campostexto"
         android:drawableBottom="@color/colorPrimary"
         android:ems="10"
+        android:clickable="true"
         android:gravity="center"
         android:hint="Fecha (dd/mm/aaaa)"
         android:inputType="number"
@@ -54,11 +57,13 @@
         android:typeface="sans" />
 
     <ListView
-        android:layout_width="250dp"
+        android:id="@+id/lst_riego"
+        android:layout_width="180dp"
         android:layout_height="150dp"
         android:layout_marginTop="265dp"
         android:layout_gravity="center_horizontal"
-        android:background="?attr/colorControlHighlight" />
+        android:background="#B3ffffff"
+         />
 
     <Button
         android:id="@+id/btn_agregar_r"
@@ -78,6 +83,7 @@
          />
     <Button
         android:id="@+id/btn_cancelar_r"
+        android:onClick="showSelectedItems"
         android:layout_width="150dp"
         android:layout_height="40dp"
         android:layout_marginTop="435dp"
@@ -93,7 +99,22 @@
         android:textSize="25dp"
         />
 
-
+    <Button
+        android:id="@+id/btn_fecha_riego"
+        android:onClick="showDatePickerDialog_Riego"
+        android:layout_width="180dp"
+        android:layout_height="35dp"
+        android:background="@drawable/campostexto"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="210dp"
+        android:gravity="center"
+        android:textColor="#636262"
+        android:hint="Fecha"
+        android:textSize="20dp"
+        android:textColorHint="#636262"
+        android:textStyle="bold"
+        android:typeface="sans"
+        android:ems="10"/>
 
 
 </FrameLayout>
