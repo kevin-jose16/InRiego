@@ -46,7 +46,7 @@ public class AdapterPivots extends BaseAdapter {
 
     @Override
     public long getItemId(int i) {
-        return pivots.get(i).getId();
+        return 0;
     }
 
     @Override

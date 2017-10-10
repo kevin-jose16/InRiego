@@ -6,6 +6,9 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -13,20 +16,36 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
+
+import Clases.Establecimiento;
+import layout.Fm_Establecimiento;
+import layout.Fm_agregarLluvia;
 
 public class Login extends AppCompatActivity {
 
     EditText pass;
     EditText user;
     Button boton;
+
+    ArrayList<Establecimiento> farms = new ArrayList<Establecimiento>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,11 +55,13 @@ public class Login extends AppCompatActivity {
         pass = (EditText) findViewById(R.id.password);
         user = (EditText) findViewById(R.id.usuario);
         SharedPreferences sharedPref = this.getSharedPreferences("sesion", Context.MODE_PRIVATE);
-        String us = sharedPref.getString("username",null);
-        String passw = sharedPref.getString("password",null);
+        String us = sharedPref.getString("username", null );
+        String passw = sharedPref.getString("password", null);
         if(us!=null && passw!=null){
-            user.setText(us);
-            pass.setText(passw);
+            Intent i = new Intent(Login.this,MainActivity.class);
+            startActivity(i);
+            //user.setText(us);
+            //pass.setText(passw);
         }
         boton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,7 +80,6 @@ public class Login extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
 
-            String token = "Juan";//KeyGenerator.getSecurePassword(params[0],params[1]);
             try {
                 username = params[0];
                 password = params[1];
@@ -83,8 +103,6 @@ public class Login extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-
-
             return res;
         }
 
@@ -93,27 +111,37 @@ public class Login extends AppCompatActivity {
             if (result!=null){
                 try {
                     JSONObject json = new JSONObject(result);
-
                     SharedPreferences sp = Login.this.getSharedPreferences("sesion", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sp.edit();
                     editor.putString("username",username);
                     editor.putString("password",password);
+                    editor.putBoolean("hay_farm", false);
+
+                    farms.clear();
+
+                    JSONObject jsonData = json.optJSONObject("Data");
+                    editor.putString("token",jsonData.get("Token").toString());
+                    JSONArray estab = jsonData.getJSONArray("Farms");
+                    for(int i=0;i<=estab.length()-1;i++){
+                        JSONObject es = estab.getJSONObject(i);
+                        Establecimiento e = new Establecimiento(Integer.parseInt(es.get("FarmId").toString()),es.get("Description").toString());
+                        farms.add(e);
+                    }
+                    String jsonObjetos = new Gson().toJson(farms);
+                    editor.putString("farmslist", jsonObjetos);
                     editor.commit();
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-
                 //iniciar 2da activity despues del login
                 Intent i = new Intent(Login.this,MainActivity.class);
                 startActivity(i);
+
             }
             else{
                 Toast.makeText(Login.this, "Tu nombre de usuario o la contraseña son incorrectos",
                         Toast.LENGTH_LONG).show();
-
-
             }
 
         }

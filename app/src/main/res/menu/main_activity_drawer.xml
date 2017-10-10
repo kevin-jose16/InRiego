@@ -21,6 +21,10 @@
             android:icon="@drawable/ic_info"
             android:title="Ver Info Pivots" />
         <item
+            android:id="@+id/nav_sincronice"
+            android:icon="@drawable/ic_sincronice"
+            android:title="Sincronizar Datos" />
+        <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_logout"
             android:title="Cerrar Sesión" />

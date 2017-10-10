@@ -44,7 +44,7 @@ public class DatePickerFragment_Lluvia extends DialogFragment
                 new DatePickerDialog(getActivity(), R.style.DialogTheme, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int day) {
-                        Button tv1= (Button) getActivity().findViewById(R.id.btn_fecha_riego);
+                        Button tv1= (Button) getActivity().findViewById(R.id.btn_fecha_lluvia);
                         tv1.setText(view.getDayOfMonth()+"/"+view.getMonth()+"/"+view.getYear());
                     }
                 }, year,month,day);

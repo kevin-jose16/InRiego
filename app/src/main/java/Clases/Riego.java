@@ -9,7 +9,7 @@ import java.util.Date;
 public class Riego {
     String tipo;
     Date fecha;
-    int milimetros;
+    float milimetros;
 
     public String getTipo() {
         return tipo;
@@ -27,7 +27,7 @@ public class Riego {
         this.fecha = fecha;
     }
 
-    public int getMilimetros() {
+    public float getMilimetros() {
         return milimetros;
     }
 
@@ -36,7 +36,7 @@ public class Riego {
     }
     public Riego(){}
 
-    public Riego(String tipo, Date fecha, int milimetros) {
+    public Riego(String tipo, Date fecha, float milimetros) {
         this.tipo = tipo;
         this.fecha = fecha;
         this.milimetros = milimetros;

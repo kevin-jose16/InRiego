@@ -1,6 +1,6 @@
 package Clases;
 
-import java.security.Timestamp;
+
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -10,20 +10,13 @@ import java.util.Date;
 
 public class Pivot {
 
-    int pv_id;
+
     String nombre;
     String cultivo;
-    Timestamp siembra;
+    String siembra;
     String fenologia;
     ArrayList<Riego> riegos;
 
-    public int getId() {
-        return pv_id;
-    }
-
-    public void setId(int pv_id) {
-        this.pv_id = pv_id;
-    }
 
     public String getNombre() {
         return nombre;
@@ -41,11 +34,11 @@ public class Pivot {
         this.cultivo = cultivo;
     }
 
-    public Timestamp getSiembra() {
+    public String getSiembra() {
         return siembra;
     }
 
-    public void setSiembra(Timestamp siembra) {
+    public void setSiembra(String siembra) {
         this.siembra = siembra;
     }
 
@@ -67,8 +60,7 @@ public class Pivot {
 
     public Pivot(){}
 
-    public Pivot(int pv_id, String nombre, String cultivo, Timestamp siembra, String fenologia) {
-        this.pv_id = pv_id;
+    public Pivot(String nombre, String cultivo, String siembra, String fenologia) {
         this.nombre = nombre;
         this.cultivo = cultivo;
         this.siembra = siembra;

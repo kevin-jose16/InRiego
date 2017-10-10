@@ -1,5 +1,7 @@
 package layout;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,9 +20,17 @@ import Adapters.AdapterPivots;
 import com.example.olave.inriego.DatePickerFragment_Riego;
 import com.example.olave.inriego.MainActivity;
 import com.example.olave.inriego.R;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+import Clases.Establecimiento;
 import Clases.Pivot;
 
 /**
@@ -41,6 +51,7 @@ public class Fm_AgregarRiego extends Fragment {
     private String mParam1;
     private String mParam2;
     MainActivity ma = null;
+    SharedPreferences sp;
     static final int DATE_DIALOG_ID = 0;
     ListView lv;
 
@@ -101,22 +112,41 @@ public class Fm_AgregarRiego extends Fragment {
         ma = (MainActivity) getActivity();
         ma.pivots.clear();
         View rootview = inflater.inflate(R.layout.fragment_agregar_riego, container, false);
+
+        sp = getActivity().getSharedPreferences("sesion", Context.MODE_PRIVATE);
+        Gson gson = new Gson(); //Instancia Gson.
+        //Obtiene datos (json)
+        String objetos = sp.getString("actual_farm", null);
+        //Convierte json  a JsonArray.
+        //String json = new Gson().toJson(objetos);
+        JSONArray jsonArray = null;
+        try {
+            jsonArray = new JSONArray(objetos);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        //Convierte JSONArray a Lista de Objetos!
+        Type listType = new TypeToken<ArrayList<Establecimiento>>(){}.getType();
+        ArrayList <Establecimiento> farmslist = new Gson().fromJson(jsonArray.toString(), listType);
+
         lv = (ListView) rootview.findViewById(R.id.lst_riego);
         lv.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
 
-        ArrayList<Pivot> arrpv = new ArrayList<>();
-        Pivot pv1 = new Pivot(); pv1.setNombre("P1");
+        ArrayList<Pivot> arrpv = farmslist.get(0).getPivots();
+
+        /*Pivot pv1 = new Pivot(); pv1.setNombre("P1");
         Pivot pv2 = new Pivot(); pv2.setNombre("P2");
         Pivot pv3 = new Pivot(); pv3.setNombre("P3");
         Pivot pv4 = new Pivot(); pv4.setNombre("P4");
         Pivot pv5 = new Pivot(); pv5.setNombre("P5");
-        arrpv.add(pv1); arrpv.add(pv2); arrpv.add(pv3); arrpv.add(pv4); arrpv.add(pv5);
+        arrpv.add(pv1); arrpv.add(pv2); arrpv.add(pv3); arrpv.add(pv4); arrpv.add(pv5);*/
         AdapterPivots adppivots = new AdapterPivots(getActivity(), arrpv);
         lv.setAdapter(adppivots);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String selItem = ((CheckedTextView)view).getText().toString();
+                view.setSelected(true);
                 if(ma.pivots.contains(selItem))
                     ma.pivots.remove(selItem);
                 else
@@ -178,6 +208,8 @@ public class Fm_AgregarRiego extends Fragment {
 
         @Override
         protected Integer doInBackground(String... strings) {
+
+
             return null;
         }
 
