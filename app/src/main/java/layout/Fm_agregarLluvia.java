@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -156,6 +157,10 @@ public class Fm_agregarLluvia extends Fragment {
             }
         });
         token = sp.getString("token",null);
+        rootview.clearFocus();
+        InputMethodManager imm =
+                (InputMethodManager) getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(cant_ed.getWindowToken(), 0);
 
         bt_aceptar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -165,15 +170,6 @@ public class Fm_agregarLluvia extends Fragment {
                 int year=Integer.parseInt(fechas[2]);//Integer.parseInt(""+fecha.charAt(6)+fecha.charAt(7)+fecha.charAt(8)+fecha.charAt(9));
                 int month=Integer.parseInt(fechas[1]);
                 int day=Integer.parseInt(fechas[0]);
-                /*if("0".equals(fecha.charAt(3)))
-                    month=Integer.parseInt(""+ fecha.charAt(4));
-                else
-                    month=Integer.parseInt(""+fecha.charAt(3)+fecha.charAt(4));
-
-                if("0".equals(fecha.charAt(0)))
-                    day = Integer.parseInt(""+fecha.charAt(1));
-                else
-                    day = Integer.parseInt(""+fecha.charAt(0)+fecha.charAt(1));*/
                 Calendar cl = Calendar.getInstance();
                 cl.set(Calendar.DAY_OF_MONTH,day);
                 cl.set(Calendar.MONTH, month);

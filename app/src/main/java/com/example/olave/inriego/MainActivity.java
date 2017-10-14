@@ -346,6 +346,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //manager.setTime(74340000);
         Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
     }
+    
     public void startAt20() {
         manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         /* Set the alarm to start at 20:00 hs */
