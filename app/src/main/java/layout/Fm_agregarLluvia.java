@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -70,7 +71,6 @@ public class Fm_agregarLluvia extends Fragment {
     MainActivity ma = null;
     SharedPreferences sp;
     static final int DATE_DIALOG_ID = 0;
-    TextView tvdate;
     ListView lv;
     EditText cant_ed;
     Button bt_fecha;
@@ -157,23 +157,19 @@ public class Fm_agregarLluvia extends Fragment {
         });
         token = sp.getString("token",null);
 
+        /*rootview.clearFocus();
+        InputMethodManager imm =
+                (InputMethodManager) getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(cant_ed.getWindowToken(), 0);*/
+
         bt_aceptar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String fecha = bt_fecha.getText().toString();
                 String[] fechas = bt_fecha.getText().toString().split("/");
-                int year=Integer.parseInt(fechas[2]);//Integer.parseInt(""+fecha.charAt(6)+fecha.charAt(7)+fecha.charAt(8)+fecha.charAt(9));
-                int month=Integer.parseInt(fechas[1]);
+                int year=Integer.parseInt(fechas[2]);
+                int month=Integer.parseInt(fechas[1])-1;
                 int day=Integer.parseInt(fechas[0]);
-                /*if("0".equals(fecha.charAt(3)))
-                    month=Integer.parseInt(""+ fecha.charAt(4));
-                else
-                    month=Integer.parseInt(""+fecha.charAt(3)+fecha.charAt(4));
-
-                if("0".equals(fecha.charAt(0)))
-                    day = Integer.parseInt(""+fecha.charAt(1));
-                else
-                    day = Integer.parseInt(""+fecha.charAt(0)+fecha.charAt(1));*/
                 Calendar cl = Calendar.getInstance();
                 cl.set(Calendar.DAY_OF_MONTH,day);
                 cl.set(Calendar.MONTH, month);
@@ -181,10 +177,11 @@ public class Fm_agregarLluvia extends Fragment {
                 Date date = new Date();
                 date = cl.getTime();
                 Json_SQLiteHelper json_sq= new Json_SQLiteHelper(getActivity(), "DBJsons", null, 1);
-                SQLiteDatabase db = json_sq.getReadableDatabase();
-                SQLiteHelper abd;
-                //for(int i = 0; i<ma.pivots.size(); i++){
-                    int pivotid = Integer.parseInt(ma.pivots.get(0).substring(6));
+                SQLiteDatabase dta_base = json_sq.getReadableDatabase();
+                SQLiteHelper abd = new SQLiteHelper(dta_base, json_sq);
+                dta_base.close();
+                for(int i = 0; i<ma.pivots.size(); i++){
+                    int pivotid = Integer.parseInt(ma.pivots.get(i).substring(6));
                     JSONObject irrigation = new JSONObject();
                     try {
                         irrigation.put("Token", token);
@@ -194,18 +191,18 @@ public class Fm_agregarLluvia extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                    SQLiteDatabase db = json_sq.getReadableDatabase();
                     abd= new SQLiteHelper(db, json_sq,irrigation.toString());
+                    db.close();
+                    //new ClaseAsincrona().execute(token,pivotid, cant_ed.getText().toString(),bt_fecha.getText().toString());
+                }
                 Cursor result= abd.obtener();
                 result.moveToFirst();
-                result.moveToNext();
 
                 String la = result.getString(0);
-
-                    //new ClaseAsincrona().execute(token,pivotid, cant_ed.getText().toString(),bt_fecha.getText().toString());
-                //}
                 Toast.makeText(getActivity(), la,
                         Toast.LENGTH_LONG).show();
-                db.close();
+
             }
         });
 
@@ -270,7 +267,7 @@ public class Fm_agregarLluvia extends Fragment {
 
             try {
 
-                URL url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/IrrigationData/AddIrrigation");
+                URL url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/IrrigationData/AddRain");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
                 conn.setRequestProperty("Content-Type", "application/json;");
@@ -314,7 +311,7 @@ public class Fm_agregarLluvia extends Fragment {
 
             }
             else{
-                Toast.makeText(getActivity(), "Pivots para el establecimiento no traidos correctamente",
+                Toast.makeText(getActivity(), "Lluvia no agregada correctamente",
                         Toast.LENGTH_LONG).show();
             }
         }

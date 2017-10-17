@@ -39,6 +39,20 @@ public class SQLiteHelper extends Activity {
         }
 
     }
+    public SQLiteHelper(SQLiteDatabase db, Json_SQLiteHelper usu){
+        if(db != null)
+        {
+            //Insertamos 5 usuarios de ejemplo
+
+            Calendar cal = Calendar.getInstance();
+
+            //Insertamos los datos en la tabla Usuarios
+            db.execSQL("DELETE FROM Jsons");
+            //Cerramos la base de datos
+            db.close();
+        }
+
+    }
 
     public Cursor obtener(){
 

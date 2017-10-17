@@ -6,7 +6,7 @@
     <color name="pressed_color">#B3b4b4b4</color>
     <color name="pressed_color_dark">#b4a3a0a0</color>
     <color name="default_color">#B3ffffff</color>
-
+    <color name="colornotif">#b0ccff</color>
 
 </resources>
 

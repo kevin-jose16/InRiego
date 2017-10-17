@@ -45,7 +45,8 @@ public class DatePickerFragment_Lluvia extends DialogFragment
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int day) {
                         Button tv1= (Button) getActivity().findViewById(R.id.btn_fecha_lluvia);
-                        tv1.setText(view.getDayOfMonth()+"/"+view.getMonth()+"/"+view.getYear());
+                        int mes = view.getMonth()+1;
+                        tv1.setText(view.getDayOfMonth()+"/"+mes+"/"+view.getYear());
                     }
                 }, year,month,day);
         dpdialog.getDatePicker().setMaxDate(dtmax.getTime());
