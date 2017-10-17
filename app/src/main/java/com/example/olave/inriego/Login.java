@@ -3,6 +3,8 @@ package com.example.olave.inriego;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -69,6 +71,7 @@ public class Login extends AppCompatActivity {
                 new ClaseAsincrona().execute(user.getText().toString(),pass.getText().toString());
             }
         });
+
     }
 
 

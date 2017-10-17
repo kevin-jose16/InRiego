@@ -19,8 +19,6 @@ public class Json_SQLiteHelper extends SQLiteOpenHelper {
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
-
-        int numero=50;
         db.execSQL(sqlCreate);
     }
 

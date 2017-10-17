@@ -9,7 +9,6 @@ import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -40,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import BackGround.AlarmReceiver;
 import Clases.Establecimiento;
 import Clases.Pivot;
 import Clases.Riego;
@@ -346,7 +346,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //manager.setTime(74340000);
         Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
     }
-    
+
     public void startAt20() {
         manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         /* Set the alarm to start at 20:00 hs */
@@ -359,5 +359,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         /* Repeating on every one day interval */
         manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
                 AlarmManager.INTERVAL_DAY, pendingIntent);
+    }
+
+    public void cancel() {
+        manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        manager.cancel(pendingIntent);
+        //pendingIntent.cancel();
+        Toast.makeText(this, "Alarm Canceled", Toast.LENGTH_SHORT).show();
     }
 }

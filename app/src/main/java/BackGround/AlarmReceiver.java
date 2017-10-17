@@ -1,4 +1,4 @@
-package com.example.olave.inriego;
+package BackGround;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -11,6 +11,9 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
+
+import com.example.olave.inriego.MainActivity;
+import com.example.olave.inriego.R;
 
 import java.util.Random;
 
