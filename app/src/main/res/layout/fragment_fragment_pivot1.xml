@@ -160,7 +160,7 @@
     <TableRow
         android:layout_height="wrap_content"
         android:id="@+id/tableRow2"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:background="@color/pressed_color_dark"
         android:showDividers="beginning|middle|end"
         android:layout_marginLeft="2dp"
@@ -172,7 +172,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_column="0"
-
             android:paddingTop="2dp"
             android:text="Fecha"
             android:textAlignment="center"
@@ -184,7 +183,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_column="0"
-
             android:paddingTop="2dp"
             android:text="Estado"
             android:textAlignment="center"
@@ -208,7 +206,7 @@
     <TableRow
         android:id="@+id/tableRow1"
         android:layout_height="wrap_content"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:gravity="center"
         android:layout_marginLeft="2dp"
         android:layout_marginRight="2dp">
@@ -216,20 +214,18 @@
             android:id="@+id/tabla_fecha_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="Fecha1"
             android:textAlignment="center"
             android:background="@color/bright_foreground_disabled_material_light"
-
             android:textColor="@android:color/white"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
 
         <ImageView
             android:id="@+id/tabla_estado_1"
-            android:layout_width="80dp"
-            android:layout_height="34dp"
+            android:layout_width="76dp"
+            android:layout_height="30dp"
 
             android:layout_marginLeft="2dp"
             android:layout_marginRight="2dp"
@@ -242,18 +238,15 @@
             android:id="@+id/tabla_mm_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="mm1"
             android:background="@color/bright_foreground_disabled_material_light"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
-
-
-
     </TableRow>
+    
     <TableRow
         android:id="@+id/tableRow2"
         android:layout_height="wrap_content"
@@ -272,14 +265,14 @@
             android:background="@color/bright_foreground_disabled_material_light"
 
             android:textColor="@android:color/white"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
 
         <ImageView
             android:id="@+id/tabla_estado_2"
-            android:layout_width="80dp"
-            android:layout_height="34dp"
+            android:layout_width="76dp"
+            android:layout_height="30dp"
             android:layout_marginTop="0.5dp"
 
             android:layout_marginLeft="2dp"
@@ -298,7 +291,7 @@
             android:background="@color/bright_foreground_disabled_material_light"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
     </TableRow>
@@ -320,14 +313,14 @@
             android:background="@color/bright_foreground_disabled_material_light"
 
             android:textColor="@android:color/white"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
 
         <ImageView
             android:id="@+id/tabla_estado_3"
-            android:layout_width="80dp"
-            android:layout_height="34dp"
+            android:layout_width="76dp"
+            android:layout_height="30dp"
             android:layout_marginTop="0.5dp"
 
             android:layout_marginLeft="2dp"
@@ -346,7 +339,7 @@
             android:background="@color/bright_foreground_disabled_material_light"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
     </TableRow>
     <TableRow
@@ -367,14 +360,14 @@
             android:background="@color/bright_foreground_disabled_material_light"
 
             android:textColor="@android:color/white"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
 
         <ImageView
             android:id="@+id/tabla_estado_4"
-            android:layout_width="80dp"
-            android:layout_height="34dp"
+            android:layout_width="76dp"
+            android:layout_height="30dp"
             android:layout_marginTop="0.5dp"
 
             android:layout_marginLeft="2dp"
@@ -393,7 +386,7 @@
             android:background="@color/bright_foreground_disabled_material_light"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
     </TableRow>
@@ -415,14 +408,14 @@
             android:background="@color/bright_foreground_disabled_material_light"
 
             android:textColor="@android:color/white"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
 
         <ImageView
             android:id="@+id/tabla_estado_5"
-            android:layout_width="80dp"
-            android:layout_height="34dp"
+            android:layout_width="76dp"
+            android:layout_height="30dp"
             android:layout_marginTop="0.5dp"
 
             android:layout_marginLeft="2dp"
@@ -441,7 +434,7 @@
             android:background="@color/bright_foreground_disabled_material_light"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
     </TableRow>
     <TableRow
@@ -462,14 +455,14 @@
             android:background="@color/bright_foreground_disabled_material_light"
 
             android:textColor="@android:color/white"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
 
         <ImageView
             android:id="@+id/tabla_estado_6"
-            android:layout_width="80dp"
-            android:layout_height="34dp"
+            android:layout_width="76dp"
+            android:layout_height="30dp"
             android:layout_marginTop="0.5dp"
 
             android:layout_marginLeft="2dp"
@@ -488,7 +481,7 @@
             android:background="@color/bright_foreground_disabled_material_light"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
     </TableRow>
     <TableRow
@@ -509,14 +502,14 @@
             android:background="@color/bright_foreground_disabled_material_light"
 
             android:textColor="@android:color/white"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
 
         <ImageView
             android:id="@+id/tabla_estado_7"
-            android:layout_width="80dp"
-            android:layout_height="34dp"
+            android:layout_width="76dp"
+            android:layout_height="30dp"
             android:layout_marginTop="0.5dp"
 
             android:layout_marginLeft="2dp"
@@ -535,7 +528,7 @@
             android:background="@color/bright_foreground_disabled_material_light"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
     </TableRow>
