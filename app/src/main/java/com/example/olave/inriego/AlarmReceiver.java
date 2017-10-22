@@ -1,4 +1,4 @@
-package com.example.olave.inriego.BackGround;
+package com.example.olave.inriego;
 
 import android.app.Notification;
 import android.app.NotificationManager;
