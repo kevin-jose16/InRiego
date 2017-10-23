@@ -1,4 +1,4 @@
-package BackGround;
+package com.example.olave.inriego;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -7,9 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
-import java.util.Calendar;
+import com.example.olave.inriego.AlarmReceiver;
 
-import BackGround.AlarmReceiver;
+import java.util.Calendar;
 
 
 /**

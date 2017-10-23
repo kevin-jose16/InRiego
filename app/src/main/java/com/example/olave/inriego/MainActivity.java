@@ -5,6 +5,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -32,6 +34,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -39,10 +42,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-import BackGround.AlarmReceiver;
 import Clases.Establecimiento;
 import Clases.Pivot;
 import Clases.Riego;
+import Persistencia.Json_SQLiteHelper;
+import Persistencia.SQLiteHelper;
 import layout.Fm_AgregarRiego;
 import layout.Fm_Establecimiento;
 import layout.Fm_agregarLluvia;
@@ -137,9 +141,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
 
-
+        /*
         Intent alarmIntent = new Intent(MainActivity.this, AlarmReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
+        start();*/
 
     }
 
@@ -198,7 +203,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_verinfo) {
             fragment = new FragmentPivot();
         } else if (id == R.id.nav_sincronice){
-           start();
+            SQLiteHelper abd = new SQLiteHelper();
+            Cursor result= abd.obtener();
+            if(result.getCount()>=1){
+                result.moveToFirst();
+                if(result.getCount()==1) {
+                    new SincronizarDatos().execute(result.getString(0),result.getString(4));
+                }
+                else{
+                    while(result.moveToNext()){
+                        try {
+                            JSONObject obj = new JSONObject(result.getString(0));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        result.moveToNext();
+                    }
+                    try {
+                        JSONObject obj = new JSONObject(result.getString(0));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+
+
+
+            String s;
+            while(result.moveToNext()){
+                s =result.getString(0);
+            }
+
         } else if (id == R.id.nav_logout) {
             SharedPreferences sharedPref = getSharedPreferences(
                     "sesion", Context.MODE_PRIVATE);
@@ -366,5 +402,83 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         manager.cancel(pendingIntent);
         //pendingIntent.cancel();
         Toast.makeText(this, "Alarm Canceled", Toast.LENGTH_SHORT).show();
+    }
+
+    public class SincronizarDatos extends AsyncTask<String, Void, String> {
+
+        String res;
+
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            JSONObject irrigation = null;
+            try {
+                irrigation = new JSONObject(params[0].toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            /*try {
+                irrigation.put("Token", token);
+                irrigation.put("IrrigationUnitId",params[1]);
+                irrigation.put("Milimeters",params[2]);
+                irrigation.put("Date",params[3]);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }*/
+
+            try {
+                URL url = new URL("");
+                if(params[1].equals("Irrigation"))
+                    url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/IrrigationData/AddIrrigation");
+                else if(params[1].equals("Rain"))
+                    url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/IrrigationData/AddRain");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json;");
+                OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+                out.write(String.valueOf(irrigation));
+                out.close();
+
+
+                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                String inputLine;
+                StringBuffer response = new StringBuffer();
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+                res=response.toString();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return res;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            if (result!=null){
+                try {
+                    JSONObject json = new JSONObject(result);
+                    JSONObject jsonData = json.optJSONObject("Data");
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                Fragment fragment= new FragmentPivot();
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.frameprincipal, fragment).commit();
+
+            }
+            else{
+                Toast.makeText(MainActivity.this, "Riego no agregado correctamente",
+                        Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }
