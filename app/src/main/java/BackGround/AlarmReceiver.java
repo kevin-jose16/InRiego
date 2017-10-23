@@ -28,7 +28,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 new NotificationCompat.Builder(context)
                         .setSound(uri)
                         .setPriority(Notification.PRIORITY_MAX)
-                        .setSmallIcon(R.drawable.logoinriego)
+                        .setSmallIcon(R.drawable.logo_inriego)
                         .setContentTitle("Informacion sin Sincronizar")
                         .setColor(color)
                         .setContentText("Tienes N datos sin sincronizar");
