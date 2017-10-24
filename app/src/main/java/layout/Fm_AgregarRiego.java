@@ -190,7 +190,7 @@ public class Fm_AgregarRiego extends Fragment {
                 date = cl.getTime();
                 Json_SQLiteHelper json_sq= new Json_SQLiteHelper(getActivity(), "DBJsons", null, 1);
                 SQLiteDatabase dta_base = json_sq.getReadableDatabase();
-                SQLiteHelper abd = new SQLiteHelper();
+                SQLiteHelper abd = new SQLiteHelper(dta_base, json_sq);
                 abd.borrar(dta_base, json_sq);
                 dta_base.close();
                 for(int i = 0; i<ma.pivots.size(); i++){
@@ -205,7 +205,9 @@ public class Fm_AgregarRiego extends Fragment {
                         e.printStackTrace();
                     }
                     SQLiteDatabase db = json_sq.getReadableDatabase();
-                    abd= new SQLiteHelper(db, json_sq,irrigation.toString());
+                    String us = sp.getString("username", null );
+                    TextView text_farm = (TextView) getActivity().findViewById(R.id.nav_farm);
+                    abd= new SQLiteHelper(db, json_sq,irrigation.toString(),us, text_farm.getText().toString(),"Irrigation");
                     db.close();
                     //new ClaseAsincrona().execute(token,pivotid, cant_ed.getText().toString(),bt_fecha.getText().toString());
                 }
@@ -217,6 +219,7 @@ public class Fm_AgregarRiego extends Fragment {
                 if(result.moveToFirst()){
                     result.moveToFirst();
                     la = result.getString(0);
+                    //la = String.valueOf(result.getInt(0));
                 }
                 else
                     la="No hay datos guardados";

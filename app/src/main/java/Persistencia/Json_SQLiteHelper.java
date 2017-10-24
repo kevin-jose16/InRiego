@@ -11,7 +11,9 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 public class Json_SQLiteHelper extends SQLiteOpenHelper {
 
     //Sentencia SQL para crear la tabla de Usuarios
-    String sqlCreate = "CREATE TABLE Jsons ( sv_json TEXT, fecha_ins TEXT)";
+    String sqlCreate = "CREATE TABLE Jsons (codigo INTEGER PRIMERY KEY, sv_json TEXT, fecha_ins TEXT, usuario TEXT, establecimiento TEXT, tipo_riego TEXT )";
+
+    //String sql = "DROP TABLE IF EXISTS Jsons";
 
     public Json_SQLiteHelper(Context contexto, String nombre,
                                  CursorFactory factory, int version) {
@@ -19,6 +21,8 @@ public class Json_SQLiteHelper extends SQLiteOpenHelper {
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
+
+        //db.execSQL(sql);
         db.execSQL(sqlCreate);
     }
 
