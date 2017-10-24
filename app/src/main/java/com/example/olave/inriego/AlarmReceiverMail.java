@@ -1,5 +1,9 @@
 package com.example.olave.inriego;
 
+/**
+ * Created by olave on 23/10/2017.
+ */
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -16,7 +20,7 @@ import com.example.olave.inriego.R;
 
 import java.util.Random;
 
-public class AlarmReceiver extends BroadcastReceiver {
+public class AlarmReceiverMail extends BroadcastReceiver {
     MediaPlayer mMediaPlayer;
     public boolean procedencia;
     @Override
@@ -29,9 +33,9 @@ public class AlarmReceiver extends BroadcastReceiver {
                         .setSound(uri)
                         .setPriority(Notification.PRIORITY_MAX)
                         .setSmallIcon(R.drawable.logoinriego)
-                        .setContentTitle("Informacion sin Sincronizar")
+                        .setContentTitle("MAIL SIN ENVIAR")
                         .setColor(color)
-                        .setContentText("Tienes N datos sin sincronizar");
+                        .setContentText("Tienes MAILS");
 
         Intent resultIntent = new Intent(context, MainActivity.class);
 
@@ -53,6 +57,26 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         int  n = rand.nextInt(999) + 1;
         //When you issue multiple notifications about the same type of event, it’s best practice for your app to try to update an existing notification with this new information, rather than immediately creating a new notification. If you want to update this notification at a later date, you need to assign it an ID. You can then use this ID whenever you issue a subsequent notification. If the previous notification is still visible, the system will update this existing notification, rather than create a new one. In this example, the notification’s ID is 001//
+
+
+        String email = "josekevin15@gmail.com";
+        String subject = "Prueba proyecto";
+        String message = "<html>\n" +
+                "<title>HTML Tutorial</title>\n" +
+                "<body>\n" +
+                "\n" +
+                "<h1>This is a heading</h1>\n" +
+                "<p>This is a paragraph.</p>\n" +
+                "\n" +
+                "</body>\n" +
+                "</html>";
+
+        //Creating SendMail object
+
+        SendMail sm = new SendMail(context, email, subject, message);
+
+        //Executing sendmail to send email
+        sm.execute();
         mNotificationManager.notify(n, mBuilder.build());
         // For our recurring task, we'll just display a message
         //Toast.makeText(context, "I'm running", Toast.LENGTH_SHORT).show();

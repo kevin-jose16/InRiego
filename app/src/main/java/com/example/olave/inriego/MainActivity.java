@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ArrayList<Establecimiento> farmslist;
 
     private PendingIntent pendingIntent;
+    private PendingIntent pending;
     private AlarmManager manager;
 
     @Override
@@ -141,10 +142,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
 
-        /*
+
         Intent alarmIntent = new Intent(MainActivity.this, AlarmReceiver.class);
+        Intent alarmIntent_mail = new Intent(MainActivity.this, AlarmReceiverMail.class);
+        pending = PendingIntent.getBroadcast(this, 0, alarmIntent_mail, 0);
         pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
-        start();*/
+        /*Toast.makeText(MainActivity.this, String.valueOf(pendingIntent.getCreatorUid()),
+                Toast.LENGTH_LONG).show();*/
+        //start();
+        //start2();
 
     }
 
@@ -203,37 +209,46 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_verinfo) {
             fragment = new FragmentPivot();
         } else if (id == R.id.nav_sincronice){
-            SQLiteHelper abd = new SQLiteHelper();
+            Json_SQLiteHelper json_sq= new Json_SQLiteHelper(this, "DBJsons", null, 1);
+            SQLiteDatabase dta_base = json_sq.getReadableDatabase();
+            SQLiteHelper abd = new SQLiteHelper(dta_base,json_sq);
             Cursor result= abd.obtener();
+
             if(result.getCount()>=1){
                 result.moveToFirst();
-                if(result.getCount()==1) {
-                    new SincronizarDatos().execute(result.getString(0),result.getString(4));
-                }
-                else{
-                    while(result.moveToNext()){
-                        try {
-                            JSONObject obj = new JSONObject(result.getString(0));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                if(result.getCount()>0) {
+                    int cant_registrosbd = result.getCount()-1;
+                    for(int i= 0; i<= cant_registrosbd; i++){
+                        Toast.makeText(MainActivity.this, result.getString(0) + "\n" + result.getString(1),
+                                Toast.LENGTH_LONG).show();
+                        new SincronizarDatos().execute(result.getString(0),result.getString(1));
                         result.moveToNext();
                     }
-                    try {
-                        JSONObject obj = new JSONObject(result.getString(0));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                }
+                else{
+
                 }
 
             }
+            /*
+            String email = "josekevin15@gmail.com";
+            String subject = "Prueba proyecto";
+            String message = "<html>\n" +
+                    "<title>HTML Tutorial</title>\n" +
+                    "<body>\n" +
+                    "\n" +
+                    "<h1>This is a heading</h1>\n" +
+                    "<p>This is a paragraph.</p>\n" +
+                    "\n" +
+                    "</body>\n" +
+                    "</html>";
 
+            //Creating SendMail object
 
+            SendMail sm = new SendMail(getBaseContext(), email, subject, message);
 
-            String s;
-            while(result.moveToNext()){
-                s =result.getString(0);
-            }
+            //Executing sendmail to send email
+            sm.execute();*/
 
         } else if (id == R.id.nav_logout) {
             SharedPreferences sharedPref = getSharedPreferences(
@@ -382,6 +397,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //manager.setTime(74340000);
         Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
     }
+    public void start2() {
+        manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        manager.setRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis(), 120000, pending);
+        //manager.setTime(74340000);
+        Toast.makeText(this, "Alarm MAIL Set", Toast.LENGTH_SHORT).show();
+    }
+
 
     public void startAt20() {
         manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -468,7 +490,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
+                Toast.makeText(MainActivity.this, result,
+                        Toast.LENGTH_LONG).show();
                 Fragment fragment= new FragmentPivot();
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction()
