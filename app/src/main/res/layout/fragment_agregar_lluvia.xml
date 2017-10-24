@@ -31,10 +31,12 @@
         android:gravity="center"
         android:hint="Cantidad (mm)"
         android:textSize="20dp"
-        android:inputType="number"
+        android:inputType="numberDecimal"
         android:textColor="#636262"
         android:textColorHint="#636262"
         android:typeface="sans"
+        android:textColorHighlight="#cececf"
+        android:textCursorDrawable="@color/abc_search_url_text_pressed"
         android:textStyle="bold"/>
 
     <ListView
@@ -43,7 +45,8 @@
         android:layout_height="150dp"
         android:layout_marginTop="265dp"
         android:layout_gravity="center_horizontal"
-        android:background="#B3ffffff" />
+        android:background="#B3ffffff"
+        android:focusable="false"/>
 
     <Button
         android:id="@+id/btn_agregar_l"
@@ -55,6 +58,8 @@
         android:backgroundTint="#0E417B"
         android:elevation="5dp"
         android:text="Agregar"
+        android:focusable="false"
+        android:textCursorDrawable="@color/abc_search_url_text_pressed"
         android:textAlignment="center"
         android:textColor="#ffff"
         android:textStyle="bold"
@@ -74,6 +79,7 @@
         android:text="Cancelar"
         android:textAlignment="center"
         android:textColor="#ffff"
+        android:focusable="false"
         android:textStyle="bold"
         android:typeface="sans"
         android:textSize="25dp"
@@ -88,6 +94,7 @@
         android:layout_marginTop="210dp"
         android:gravity="center"
         android:textColor="#636262"
+        android:focusable="false"
         android:hint="Fecha"
         android:textSize="20dp"
         android:textColorHint="#636262"

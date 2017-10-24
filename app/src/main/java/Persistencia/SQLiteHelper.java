@@ -40,6 +40,8 @@ public class SQLiteHelper extends Activity {
 
     }
 
+    public SQLiteHelper(){}
+
     public Cursor obtener(){
 
         SQLiteDatabase db = jsonsdb.getReadableDatabase();
@@ -49,5 +51,12 @@ public class SQLiteHelper extends Activity {
         /*if (cursor != null)
             cursor.moveToFirst();*/
         return cursor;
+    }
+
+    public void borrar(SQLiteDatabase db, Json_SQLiteHelper usu){
+        if(db != null) {
+            db.execSQL("DELETE FROM Jsons");
+            db.close();
+        }
     }
 }
