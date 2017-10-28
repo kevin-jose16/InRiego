@@ -55,7 +55,7 @@ public class SendMail extends AsyncTask<Void,Void,Void> {
         super.onPostExecute(aVoid);
 
         //Showing a success message
-        Toast.makeText(context,"Message Sent", Toast.LENGTH_LONG).show();
+        Toast.makeText(context,"Se envio mail a la empresa con los datos pendientes a sincronizar", Toast.LENGTH_LONG).show();
     }
 
 
@@ -79,7 +79,7 @@ public class SendMail extends AsyncTask<Void,Void,Void> {
                 new javax.mail.Authenticator() {
                     //Authenticating the password
                     protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication("nadiacabrerayahn@gmail.com", "nadiabelen");
+                        return new PasswordAuthentication("inriegoapplication@gmail.com", "inriego2017");
                     }
                 });
 
@@ -88,14 +88,14 @@ public class SendMail extends AsyncTask<Void,Void,Void> {
             MimeMessage mm = new MimeMessage(session);
 
             //Setting sender address
-            mm.setFrom(new InternetAddress("nadiacabrerayahn@gmail.com"));
+            mm.setFrom(new InternetAddress("inriegoapplication@gmail.com"));
             //Adding receiver
             mm.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
             //Adding subject
             mm.setSubject(subject);
             //Adding message
             //mm.setText(message,"text/html; charset=utf-8");
-mm.setContent(message,"text/html; charset=utf-8");
+            mm.setContent(message,"text/html; charset=utf-8");
             //Sending email
             Transport.send(mm);
 

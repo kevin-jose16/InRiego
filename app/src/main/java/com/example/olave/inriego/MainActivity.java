@@ -149,9 +149,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
         /*Toast.makeText(MainActivity.this, String.valueOf(pendingIntent.getCreatorUid()),
                 Toast.LENGTH_LONG).show();*/
-        //start();
-        //start2();
-
+        //startAt20();
+        //start22();
+        start();
     }
 
 
@@ -219,9 +219,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if(result.getCount()>0) {
                     int cant_registrosbd = result.getCount()-1;
                     for(int i= 0; i<= cant_registrosbd; i++){
-                        Toast.makeText(MainActivity.this, result.getString(0) + "\n" + result.getString(1),
+                        Toast.makeText(MainActivity.this, result.getString(0) + "\n" + result.getString(1)+result.getString(4),
                                 Toast.LENGTH_LONG).show();
-                        new SincronizarDatos().execute(result.getString(0),result.getString(1));
+                        //new SincronizarDatos().execute(result.getString(0),result.getString(1));
                         result.moveToNext();
                     }
                 }
@@ -393,15 +393,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void start() {
         manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        manager.setRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis(), 60000, pendingIntent);
+        manager.setRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis(), 25000, pending);
         //manager.setTime(74340000);
         Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
     }
-    public void start2() {
+    public void start22() {
         manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        manager.setRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis(), 120000, pending);
+        /*manager.setRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis(), 120000, pending);
         //manager.setTime(74340000);
-        Toast.makeText(this, "Alarm MAIL Set", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Alarm MAIL Set", Toast.LENGTH_SHORT).show();*/
+        Calendar calendar = Calendar.getInstance();
+        //calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, 21);
+        calendar.set(Calendar.MINUTE, 30);
+        calendar.set(Calendar.SECOND, 0);
+
+        /* Repeating on every one day interval */
+        manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                AlarmManager.INTERVAL_DAY, pendingIntent);
+
     }
 
 

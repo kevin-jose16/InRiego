@@ -179,8 +179,8 @@ public class Fm_agregarLluvia extends Fragment {
                 Json_SQLiteHelper json_sq= new Json_SQLiteHelper(getActivity(), "DBJsons", null, 1);
                 SQLiteDatabase dta_base = json_sq.getReadableDatabase();
                 SQLiteHelper abd = new SQLiteHelper(dta_base,json_sq);
-                abd.borrar(dta_base, json_sq);
-                dta_base.close();
+                //abd.borrar(dta_base, json_sq);
+                //dta_base.close();
                 for(int i = 0; i<ma.pivots.size(); i++){
                     int pivotid = Integer.parseInt(ma.pivots.get(i).substring(6));
                     JSONObject irrigation = new JSONObject();
@@ -199,15 +199,8 @@ public class Fm_agregarLluvia extends Fragment {
                     db.close();
                     //new ClaseAsincrona().execute(token,pivotid, cant_ed.getText().toString(),bt_fecha.getText().toString());
                 }
-                Cursor result= abd.obtener();
-                String la;
-                if(result.moveToFirst()){
-                    result.moveToFirst();
-                    la = result.getString(0);
-                }
-                else
-                    la="No hay datos guardados";
-                Toast.makeText(getActivity(), la,
+
+                Toast.makeText(getActivity(), "Se ha ingresado la lluvia",
                         Toast.LENGTH_LONG).show();
 
             }

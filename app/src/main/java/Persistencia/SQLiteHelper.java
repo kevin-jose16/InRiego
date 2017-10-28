@@ -33,7 +33,7 @@ public class SQLiteHelper extends Activity {
             //cal.getTime().toString()
                 //Insertamos los datos en la tabla Usuarios
                 db.execSQL("INSERT INTO Jsons (codigo, sv_json, fecha_ins,usuario,establecimiento, tipo_riego) " +
-                        "VALUES (1,'" + json + "', '" + tipo_riego +"', '"+ usuario +"', '"+ establecimiento +"', '"+ tipo_riego +"')");
+                        "VALUES (null,'" + json + "', '" + cal.getTime().toString() +"', '"+ usuario +"', '"+ establecimiento +"', '"+ tipo_riego +"')");
             //Cerramos la base de datos
             db.close();
         }
@@ -48,7 +48,7 @@ public class SQLiteHelper extends Activity {
     public Cursor obtener(){
 
         SQLiteDatabase db = jsonsdb.getReadableDatabase();
-        String query = "SELECT sv_json, fecha_ins FROM Jsons";
+        String query = "SELECT * FROM Jsons";
         Cursor cursor = db.rawQuery(query, null);
 
         /*if (cursor != null)
