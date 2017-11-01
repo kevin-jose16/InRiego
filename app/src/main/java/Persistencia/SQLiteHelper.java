@@ -15,7 +15,10 @@ public class SQLiteHelper extends Activity {
 
     public static Json_SQLiteHelper jsonsdb;
 
-    public SQLiteHelper(SQLiteDatabase db, Json_SQLiteHelper usu, String json,String usuario,String establecimiento,String tipo_riego)
+    public SQLiteHelper() {
+    }
+
+    public SQLiteHelper(SQLiteDatabase db, Json_SQLiteHelper usu, String json, String usuario, String establecimiento, String tipo_riego)
     {
 
 
@@ -59,6 +62,30 @@ public class SQLiteHelper extends Activity {
     public void borrar(SQLiteDatabase db, Json_SQLiteHelper usu){
         if(db != null) {
             db.execSQL("DELETE FROM Jsons");
+            db.close();
+        }
+    }
+
+    public void insertLog(String log, Json_SQLiteHelper usu){
+        SQLiteDatabase db = usu.getReadableDatabase();
+        db.execSQL("INSERT INTO log (cod, salida) VALUES (null,'" + log + "' )");
+        db.close();
+    }
+
+    public Cursor obtenerLog(){
+
+        SQLiteDatabase db = jsonsdb.getReadableDatabase();
+        String query = "SELECT * FROM log";
+        Cursor cursor = db.rawQuery(query, null);
+
+        /*if (cursor != null)
+            cursor.moveToFirst();*/
+        return cursor;
+    }
+
+    public void borrarLog(SQLiteDatabase db, Json_SQLiteHelper usu){
+        if(db != null) {
+            db.execSQL("DELETE FROM log");
             db.close();
         }
     }

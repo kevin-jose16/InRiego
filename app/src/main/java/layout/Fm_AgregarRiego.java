@@ -208,6 +208,9 @@ public class Fm_AgregarRiego extends Fragment {
                     String us = sp.getString("username", null );
                     TextView text_farm = (TextView) getActivity().findViewById(R.id.nav_farm);
                     abd= new SQLiteHelper(db, json_sq,irrigation.toString(),us, text_farm.getText().toString(),"Irrigation");
+
+                    Calendar cal = Calendar.getInstance();
+                    abd.insertLog(cal.getTime().toString()+" -- El usuario "+us+" ha ingresado un riego en el establecimiento "+text_farm.getText()+" en los pivots: "+irrigation.toString(), json_sq);
                     db.close();
                     //new ClaseAsincrona().execute(token,pivotid, cant_ed.getText().toString(),bt_fecha.getText().toString());
                 }

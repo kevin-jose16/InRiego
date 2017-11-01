@@ -19,6 +19,7 @@ public class Json_SQLiteHelper extends SQLiteOpenHelper {
             " tipo_riego TEXT )";
 
     //String sql = "DROP TABLE IF EXISTS Jsons";
+    String sqlLog = "CREATE TABLE log (cod INTEGER PRIMARY KEY, salida TEXT)";
 
     public Json_SQLiteHelper(Context contexto, String nombre,
                                  CursorFactory factory, int version) {
@@ -27,7 +28,7 @@ public class Json_SQLiteHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        //db.execSQL(sql);
+        db.execSQL(sqlLog);
         db.execSQL(sqlCreate);
     }
 
@@ -38,5 +39,6 @@ public class Json_SQLiteHelper extends SQLiteOpenHelper {
 
         //Se crea la nueva versión de la tabla
         db.execSQL(sqlCreate);
+        db.execSQL(sqlLog);
     }
 }

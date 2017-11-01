@@ -85,8 +85,16 @@ public class AlarmReceiverMail extends BroadcastReceiver {
             possibleEmail = accounts[0].name;
         }
 
-        mNotificationManager.notify(n, mBuilder.build());
-        this.mailSincronizar();
+        //mNotificationManager.notify(n, mBuilder.build());
+        Json_SQLiteHelper json_sq= new Json_SQLiteHelper(contexto, "DBJsons", null, 1);
+        SQLiteDatabase dta_base = json_sq.getReadableDatabase();
+        SQLiteHelper abd = new SQLiteHelper(dta_base, json_sq);
+        Cursor result= abd.obtener();
+
+        //if(result.getCount()>=1)
+            //this.mailSincronizar();
+
+        this.mailLog();
 
         // For our recurring task, we'll just display a message
         //Toast.makeText(context, "I'm running", Toast.LENGTH_SHORT).show();
@@ -145,8 +153,44 @@ public class AlarmReceiverMail extends BroadcastReceiver {
         sm.execute();
         mNotificationManager.notify(n, mBuilder.build());
 
+
     }
 
+    public void mailLog(){
+        Json_SQLiteHelper json_sq= new Json_SQLiteHelper(contexto, "DBJsons", null, 1);
+        SQLiteDatabase dta_base = json_sq.getReadableDatabase();
+        SQLiteHelper abd = new SQLiteHelper(dta_base, json_sq);
+        Cursor result= abd.obtenerLog();
 
+        String message = "<html>\n" +
+                "<body>\n";
+
+        String subject = "LOG total de la jornada";
+
+        if(result.getCount()>=1){
+            result.moveToFirst();
+            if ( result.getCount()>0) {
+                int cant_registrosbd = result.getCount()-1;
+
+                for(int i=0; i<=cant_registrosbd; i++) {
+                    message = message + "<p>" + result.getString(1) + "</p></br>";
+
+                    result.moveToNext();
+                }
+                message = message + "<body><html>";
+            }
+        }
+        else
+            message = "Hoy no se han ingresado o sincrinizado datos";
+        dta_base.close();
+
+        String email = "nadiacabrerayahn@gmail.com"; //destinatario (va mail de PGG)
+        //Creating SendMail object
+
+        SendMail sm = new SendMail(contexto, email, subject, message);
+
+        //Executing sendmail to send email
+        sm.execute();
+    }
 
 }

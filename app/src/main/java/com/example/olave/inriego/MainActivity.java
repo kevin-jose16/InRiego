@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Toast.LENGTH_LONG).show();*/
         //startAt20();
         //start22();
-        start();
+       start();
     }
 
 
@@ -393,7 +393,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void start() {
         manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        manager.setRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis(), 25000, pending);
+        manager.setRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis(), 60000, pending);
         //manager.setTime(74340000);
         Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
     }
@@ -410,7 +410,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         /* Repeating on every one day interval */
         manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                AlarmManager.INTERVAL_DAY, pendingIntent);
+                AlarmManager.INTERVAL_DAY, pending);
 
     }
 
@@ -495,7 +495,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (result!=null){
                 try {
                     JSONObject json = new JSONObject(result);
-                    JSONObject jsonData = json.optJSONObject("Data");
+                    Boolean isok = json.getBoolean("IsOk");
+                    //preguntar isOk
+                    Json_SQLiteHelper json_sq= new Json_SQLiteHelper(getParent(), "DBJsons", null, 1);
+                    SQLiteDatabase db = json_sq.getReadableDatabase();
+                    SQLiteHelper abd = new SQLiteHelper(db,json_sq);
+                    abd = new SQLiteHelper();
+
+                    Calendar cal = Calendar.getInstance();
+                    abd.insertLog(" -- Sincronización exitosa. ", json_sq);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -507,10 +515,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 fragmentManager.beginTransaction()
                         .replace(R.id.frameprincipal, fragment).commit();
 
+
+
             }
             else{
                 Toast.makeText(MainActivity.this, "Riego no agregado correctamente",
                         Toast.LENGTH_LONG).show();
+                Json_SQLiteHelper json_sq= new Json_SQLiteHelper(getParent(), "DBJsons", null, 1);
+                SQLiteDatabase db = json_sq.getReadableDatabase();
+                SQLiteHelper abd = new SQLiteHelper(db,json_sq);
+                abd = new SQLiteHelper();
+                abd.insertLog("ERROR. No se sincronizaron los datos", json_sq);
             }
         }
     }
