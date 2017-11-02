@@ -58,6 +58,7 @@ public class AdapterPivots extends BaseAdapter {
         }
         Pivot pv = pivots.get(i);
         CheckedTextView chtv = (CheckedTextView) v.findViewById(R.id.check_text);
+        //pv.getId() + " - " +
         chtv.setText(pv.getNombre());
         return v;
     }

@@ -233,6 +233,7 @@ public class Fm_Establecimiento extends Fragment {
                     JSONArray farm_pivots = jsonData.getJSONArray("IrrigationRows");
                     for(int i=0;i<=farm_pivots.length()-1;i++){
                         JSONObject pv = farm_pivots.getJSONObject(i);
+                        //Integer.parseInt(pv.get("IrrigationId").toString()),
                         Pivot p = new Pivot(pv.get("Name").toString(), pv.get("Crop").toString(), pv.get("HarvestDate").toString(), pv.get("Phenology").toString());
                         JSONArray pv_riegos = pv.getJSONArray("Advices");
                         for(int r=0;r<=pv_riegos.length()-1;r++){
