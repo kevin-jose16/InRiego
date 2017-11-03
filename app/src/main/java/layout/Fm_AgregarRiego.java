@@ -75,6 +75,7 @@ public class Fm_AgregarRiego extends Fragment {
     Button bt_fecha;
     Button bt_aceptar;
     String token;
+    String reference_date;
 
 
     private OnFragmentInteractionListener mListener;
@@ -157,7 +158,7 @@ public class Fm_AgregarRiego extends Fragment {
         lv.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
 
         ArrayList<Pivot> arrpv = farmslist.get(0).getPivots();
-
+        reference_date = farmslist.get(0).getRef_date();
         AdapterPivots adppivots = new AdapterPivots(getActivity(), arrpv);
         lv.setAdapter(adppivots);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -191,42 +192,47 @@ public class Fm_AgregarRiego extends Fragment {
                 Json_SQLiteHelper json_sq= new Json_SQLiteHelper(getActivity(), "DBJsons", null, 1);
                 SQLiteDatabase dta_base = json_sq.getReadableDatabase();
                 SQLiteHelper abd = new SQLiteHelper(dta_base, json_sq);
-                //abd.borrar(dta_base, json_sq);
-                //dta_base.close();
+                abd.borrar(dta_base);
+                dta_base.close();
+                ArrayList<Integer> pivotsIds = new ArrayList();
                 for(int i = 0; i<ma.pivots.size(); i++){
-                    int pivotid = Integer.parseInt(ma.pivots.get(i).substring(6));
-                    JSONObject irrigation = new JSONObject();
-                    try {
-                        irrigation.put("Token", token);
-                        irrigation.put("IrrigationUnitId",pivotid);
-                        irrigation.put("Milimeters",Float.parseFloat(cant_ed.getText().toString()));
-                        irrigation.put("Date",date);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    SQLiteDatabase db = json_sq.getReadableDatabase();
-                    String us = sp.getString("username", null );
-                    TextView text_farm = (TextView) getActivity().findViewById(R.id.nav_farm);
-                    abd= new SQLiteHelper(db, json_sq,irrigation.toString(),us, text_farm.getText().toString(),"Irrigation");
-
-                    Calendar cal = Calendar.getInstance();
-                    abd.insertLog(cal.getTime().toString()+" -- El usuario "+us+" ha ingresado un riego en el establecimiento "+text_farm.getText()+" en los pivots: "+irrigation.toString(), json_sq);
-                    db.close();
-                    //new ClaseAsincrona().execute(token,pivotid, cant_ed.getText().toString(),bt_fecha.getText().toString());
+                    String[] ids = ma.pivots.get(i).split(" ");
+                    int pivotid = Integer.parseInt(ids[0]);
+                    pivotsIds.add(pivotid);
                 }
+
+                JSONObject irrigation = new JSONObject();
+                try {
+                    irrigation.put("Token", token);
+                    irrigation.put("IrrigationUnitId",pivotsIds);
+                    irrigation.put("Milimeters",Float.parseFloat(cant_ed.getText().toString()));
+                    irrigation.put("Date",date);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                SQLiteDatabase db = json_sq.getReadableDatabase();
+                String us = sp.getString("username", null );
+                TextView text_farm = (TextView) getActivity().findViewById(R.id.nav_farm);
+                abd= new SQLiteHelper(db, json_sq,irrigation.toString(),us, text_farm.getText().toString(),"Irrigation");
+
+                Calendar cal = Calendar.getInstance();
+                abd.insertLog(cal.getTime().toString()+" -- El usuario "+us+" ha ingresado un riego en el establecimiento "+text_farm.getText()+" en los pivots: "+irrigation.toString(), json_sq);
+                db.close();
+                //new ClaseAsincrona().execute(token,pivotid, cant_ed.getText().toString(),bt_fecha.getText().toString());
+                //}
                 /*SQLiteDatabase dba = json_sq.getReadableDatabase();
                 abd.borrar(dba, json_sq);
                 dba.close();*/
-               /* Cursor result= abd.obtener();
-                String la;
+                Cursor result= abd.obtener();
+                /*String la;
                 if(result.moveToFirst()){
                     result.moveToFirst();
-                    la = result.getString(3);
+                    la = result.getString(1);
                     //la = String.valueOf(result.getInt(0));
                 }
                 else
                     la="No hay datos guardados";*/
-                Toast.makeText(getActivity(), "Se ha agregado un riego",
+                Toast.makeText(getActivity(), "Se ha ingresado un riego",
                         Toast.LENGTH_LONG).show();
 
             }
@@ -272,7 +278,7 @@ public class Fm_AgregarRiego extends Fragment {
         DatePickerFragment_Riego newFrag = new DatePickerFragment_Riego();
         getActivity().getBaseContext();
         newFrag.show(getActivity().getSupportFragmentManager(), "datePicker");
-        newFrag.SetearFechas("2017-09-24");
+        newFrag.SetearFechas(reference_date);
     }
     public void showSelectedItems(View view){
         String items = "";

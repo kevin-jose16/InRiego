@@ -58,10 +58,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     SharedPreferences sp;
     String farmId, farmdesc;
     ArrayList<Establecimiento> farmslist;
-
+    int advice_cod;
     private PendingIntent pendingIntent;
     private PendingIntent pending;
     private AlarmManager manager;
+    Json_SQLiteHelper json_sq;
+    SQLiteDatabase dta_base;
+    String reference_date;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Toast.LENGTH_LONG).show();*/
         //startAt20();
         //start22();
-       start();
+       //start();
     }
 
 
@@ -209,8 +212,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_verinfo) {
             fragment = new FragmentPivot();
         } else if (id == R.id.nav_sincronice){
-            Json_SQLiteHelper json_sq= new Json_SQLiteHelper(this, "DBJsons", null, 1);
-            SQLiteDatabase dta_base = json_sq.getReadableDatabase();
+            json_sq= new Json_SQLiteHelper(this, "DBJsons", null, 1);
+            dta_base = json_sq.getReadableDatabase();
             SQLiteHelper abd = new SQLiteHelper(dta_base,json_sq);
             Cursor result= abd.obtener();
 
@@ -218,11 +221,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 result.moveToFirst();
                 if(result.getCount()>0) {
                     int cant_registrosbd = result.getCount()-1;
+
+                    //Toast.makeText(MainActivity.this, result.getString(0) + "\n" + result.getString(1),
+                    //Toast.LENGTH_LONG).show();
+                    String a = result.getString(1);
                     for(int i= 0; i<= cant_registrosbd; i++){
-                        Toast.makeText(MainActivity.this, result.getString(0) + "\n" + result.getString(1)+result.getString(4),
-                                Toast.LENGTH_LONG).show();
-                        //new SincronizarDatos().execute(result.getString(0),result.getString(1));
-                        result.moveToNext();
+                        //Toast.makeText(MainActivity.this, result.getString(0) + "\n" + result.getString(1)+result.getString(4),
+                                //Toast.LENGTH_LONG).show();
+                        //Codigo del registro de riego o lluvia en la bd
+                        advice_cod = result.getInt(0);
+                        String r = result.getString(5);
+                        new SincronizarDatos().execute(result.getString(1),result.getString(5));
+
+                        if(!result.isLast())
+                            result.moveToNext();
+                        else{
+                            break;
+                        }
                     }
                 }
                 else{
@@ -230,25 +245,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
 
             }
-            /*
-            String email = "josekevin15@gmail.com";
-            String subject = "Prueba proyecto";
-            String message = "<html>\n" +
-                    "<title>HTML Tutorial</title>\n" +
-                    "<body>\n" +
-                    "\n" +
-                    "<h1>This is a heading</h1>\n" +
-                    "<p>This is a paragraph.</p>\n" +
-                    "\n" +
-                    "</body>\n" +
-                    "</html>";
 
-            //Creating SendMail object
-
-            SendMail sm = new SendMail(getBaseContext(), email, subject, message);
-
-            //Executing sendmail to send email
-            sm.execute();*/
 
         } else if (id == R.id.nav_logout) {
             SharedPreferences sharedPref = getSharedPreferences(
@@ -276,12 +273,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void showDatePickerDialog_Riego(View v) {
         DatePickerFragment_Riego newFrag = new DatePickerFragment_Riego();
         newFrag.show(this.getSupportFragmentManager(), "datePicker");
-        newFrag.SetearFechas("2017-09-24");
+        newFrag.SetearFechas(reference_date);
     }
     public void showDatePickerDialog_Lluvia(View v) {
         DatePickerFragment_Lluvia newFrag = new DatePickerFragment_Lluvia();
         newFrag.show(getSupportFragmentManager(), "datePicker");
-        newFrag.SetearFechas("2017-09-24");
+        newFrag.SetearFechas(reference_date);
     }
     public void showSelectedItems(View view){
         String items = "";
@@ -331,10 +328,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     sp = getSharedPreferences("sesion",Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sp.edit();
                     JSONObject jsonData = json.optJSONObject("Data");
+                    reference_date = jsonData.getString("ReferenceDate");
+                    //String ref_date = jsonData.getString("ReferenceDate");
                     JSONArray farm_pivots = jsonData.getJSONArray("IrrigationRows");
                     for(int i=0;i<=farm_pivots.length()-1;i++){
                         JSONObject pv = farm_pivots.getJSONObject(i);
-                        Pivot p = new Pivot(pv.get("Name").toString(), pv.get("Crop").toString(), pv.get("HarvestDate").toString(), pv.get("Phenology").toString());
+                        //Integer.parseInt(pv.get("IrrigationId").toString()),
+                        Pivot p = new Pivot(Integer.parseInt(pv.get("IrrigationUnitId").toString()),pv.get("Name").toString(), pv.get("Crop").toString(), pv.get("HarvestDate").toString(), pv.get("Phenology").toString());
                         JSONArray pv_riegos = pv.getJSONArray("Advices");
                         for(int r=0;r<=pv_riegos.length()-1;r++){
                             JSONObject riego = pv_riegos.getJSONObject(r);
@@ -344,7 +344,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         }
                         estab_pivots.add(p);
                     }
-                    Establecimiento est = new Establecimiento(Integer.parseInt(farmId),farmdesc);
+                    Establecimiento est = new Establecimiento(Integer.parseInt(farmId),farmdesc,reference_date);
                     est.setPivots(estab_pivots);
                     farmslist.clear();
                     farmslist.add(est);
@@ -446,7 +446,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             JSONObject irrigation = null;
             try {
-                irrigation = new JSONObject(params[0].toString());
+                irrigation = new JSONObject(params[0]);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -481,6 +481,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     response.append(inputLine);
                 }
                 in.close();
+
                 res=response.toString();
 
             } catch (IOException e) {
@@ -497,13 +498,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     JSONObject json = new JSONObject(result);
                     Boolean isok = json.getBoolean("IsOk");
                     //preguntar isOk
+
                     Json_SQLiteHelper json_sq= new Json_SQLiteHelper(getParent(), "DBJsons", null, 1);
                     SQLiteDatabase db = json_sq.getReadableDatabase();
                     SQLiteHelper abd = new SQLiteHelper(db,json_sq);
                     abd = new SQLiteHelper();
-
+                    if(isok){
+                        abd.borrar_regRiego(db,advice_cod);
+                        abd.insertLog(" -- Sincronización exitosa. ", json_sq);
+                        Toast.makeText(MainActivity.this," -- Sincronización exitosa. ",
+                                Toast.LENGTH_LONG).show();
+                    }
+                    else
+                        abd.insertLog(" -- Sincronización no exitosa, ERROR: " + json.getString("ErrorMessage"), json_sq);
+                    db.close();
                     Calendar cal = Calendar.getInstance();
-                    abd.insertLog(" -- Sincronización exitosa. ", json_sq);
+
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -515,17 +525,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 fragmentManager.beginTransaction()
                         .replace(R.id.frameprincipal, fragment).commit();
 
-
-
             }
             else{
+                SQLiteHelper abd = new SQLiteHelper();
+                abd.insertLog("ERROR. No se sincronizaron los datos", json_sq);
                 Toast.makeText(MainActivity.this, "Riego no agregado correctamente",
                         Toast.LENGTH_LONG).show();
-                Json_SQLiteHelper json_sq= new Json_SQLiteHelper(getParent(), "DBJsons", null, 1);
-                SQLiteDatabase db = json_sq.getReadableDatabase();
-                SQLiteHelper abd = new SQLiteHelper(db,json_sq);
-                abd = new SQLiteHelper();
-                abd.insertLog("ERROR. No se sincronizaron los datos", json_sq);
             }
         }
     }

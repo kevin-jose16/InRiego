@@ -10,6 +10,7 @@ public class Establecimiento {
 
     int est_id;
     String descripcion;
+    String ref_date;
     ArrayList<Pivot> pivots;
 
     public int getEst_id() {
@@ -28,6 +29,14 @@ public class Establecimiento {
         this.descripcion = descripcion;
     }
 
+    public String getRef_date() {
+        return ref_date;
+    }
+
+    public void setRef_date(String ref_date) {
+        this.ref_date = ref_date;
+    }
+
     public ArrayList<Pivot> getPivots() {
         return pivots;
     }
@@ -38,9 +47,10 @@ public class Establecimiento {
 
     public Establecimiento(){}
 
-    public Establecimiento(int est_id, String descripcion) {
+    public Establecimiento(int est_id, String descripcion, String ref_date) {
         this.est_id = est_id;
         this.descripcion = descripcion;
+        this.ref_date = ref_date;
         this.pivots = new ArrayList<>();
     }
 }

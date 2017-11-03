@@ -86,6 +86,7 @@ public class Login extends AppCompatActivity {
             try {
                 username = params[0];
                 password = params[1];
+
                 URL url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/Auth/userName/"+username +"/password/" + password);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
@@ -127,7 +128,7 @@ public class Login extends AppCompatActivity {
                     JSONArray estab = jsonData.getJSONArray("Farms");
                     for(int i=0;i<=estab.length()-1;i++){
                         JSONObject es = estab.getJSONObject(i);
-                        Establecimiento e = new Establecimiento(Integer.parseInt(es.get("FarmId").toString()),es.get("Description").toString());
+                        Establecimiento e = new Establecimiento(Integer.parseInt(es.get("FarmId").toString()),es.get("Description").toString(),"");
                         farms.add(e);
                     }
                     String jsonObjetos = new Gson().toJson(farms);

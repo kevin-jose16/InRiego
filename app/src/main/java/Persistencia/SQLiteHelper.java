@@ -59,9 +59,16 @@ public class SQLiteHelper extends Activity {
         return cursor;
     }
 
-    public void borrar(SQLiteDatabase db, Json_SQLiteHelper usu){
+
+    public void borrar(SQLiteDatabase db){
         if(db != null) {
             db.execSQL("DELETE FROM Jsons");
+            db.close();
+        }
+    }
+    public void borrar_regRiego(SQLiteDatabase db, int reg){
+        if(db != null) {
+            db.execSQL("DELETE FROM Jsons where codigo=" + reg);
             db.close();
         }
     }
@@ -83,7 +90,7 @@ public class SQLiteHelper extends Activity {
         return cursor;
     }
 
-    public void borrarLog(SQLiteDatabase db, Json_SQLiteHelper usu){
+    public void borrarLog(SQLiteDatabase db){
         if(db != null) {
             db.execSQL("DELETE FROM log");
             db.close();

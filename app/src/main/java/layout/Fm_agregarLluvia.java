@@ -76,6 +76,7 @@ public class Fm_agregarLluvia extends Fragment {
     Button bt_fecha;
     Button bt_aceptar;
     String token;
+    String reference_date;
 
 
     private OnFragmentInteractionListener mListener;
@@ -141,6 +142,7 @@ public class Fm_agregarLluvia extends Fragment {
         lv.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
 
         ArrayList<Pivot> arrpv = farmslist.get(0).getPivots();
+        reference_date = farmslist.get(0).getRef_date();
 
         AdapterPivots adppivots = new AdapterPivots(getActivity(), arrpv);
         lv.setAdapter(adppivots);
@@ -181,27 +183,31 @@ public class Fm_agregarLluvia extends Fragment {
                 SQLiteHelper abd = new SQLiteHelper(dta_base,json_sq);
                 //abd.borrar(dta_base, json_sq);
                 //dta_base.close();
+                ArrayList<Integer> pivotsIds = new ArrayList();
                 for(int i = 0; i<ma.pivots.size(); i++){
-                    int pivotid = 1;//Integer.parseInt(ma.pivots.get(i).substring(6));
-                    JSONObject irrigation = new JSONObject();
-                    try {
-                        irrigation.put("Token", token);
-                        irrigation.put("IrrigationUnitId",pivotid);
-                        irrigation.put("Milimeters",Float.parseFloat(cant_ed.getText().toString()));
-                        irrigation.put("Date",date);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    SQLiteDatabase db = json_sq.getReadableDatabase();
-                    String us = sp.getString("username", null );
-                    TextView text_farm = (TextView) getActivity().findViewById(R.id.nav_farm);
-                    abd= new SQLiteHelper(db, json_sq,irrigation.toString(),us, text_farm.getText().toString(),"Rain");
-
-
-                    abd.insertLog("El usuario "+us+" ha ingresado una lluvia en el establecimiento "+text_farm.getText()+irrigation.toString(), json_sq);
-                    db.close();
-                    //new ClaseAsincrona().execute(token,pivotid, cant_ed.getText().toString(),bt_fecha.getText().toString());
+                    String[] ids = ma.pivots.get(i).split(" ");
+                    int pivotid = Integer.parseInt(ids[0]);
+                    pivotsIds.add(pivotid);
                 }
+                JSONObject irrigation = new JSONObject();
+                try {
+                    irrigation.put("Token", token);
+                    irrigation.put("IrrigationUnitId",pivotsIds);
+                    irrigation.put("Milimeters",Float.parseFloat(cant_ed.getText().toString()));
+                    irrigation.put("Date",date);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                SQLiteDatabase db = json_sq.getReadableDatabase();
+                String us = sp.getString("username", null );
+                TextView text_farm = (TextView) getActivity().findViewById(R.id.nav_farm);
+                abd= new SQLiteHelper(db, json_sq,irrigation.toString(),us, text_farm.getText().toString(),"Rain");
+
+
+                abd.insertLog("El usuario "+us+" ha ingresado una lluvia en el establecimiento "+text_farm.getText()+irrigation.toString(), json_sq);
+                db.close();
+                //new ClaseAsincrona().execute(token,pivotid, cant_ed.getText().toString(),bt_fecha.getText().toString());
+
 
                 Toast.makeText(getActivity(), "Se ha ingresado la lluvia",
                         Toast.LENGTH_LONG).show();
@@ -241,7 +247,7 @@ public class Fm_agregarLluvia extends Fragment {
         DatePickerFragment_Lluvia newFrag = new DatePickerFragment_Lluvia();
         this.getActivity().getBaseContext();
         newFrag.show(getActivity().getSupportFragmentManager(), "datePicker");
-        newFrag.SetearFechas("2017-09-24");
+        newFrag.SetearFechas(reference_date);
     }
     public void showSelectedItems(View view){
         String items = "";

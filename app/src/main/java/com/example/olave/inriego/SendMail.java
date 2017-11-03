@@ -64,10 +64,10 @@ public class SendMail extends AsyncTask<Void,Void,Integer> {
             SQLiteDatabase dta_base = json_sq.getReadableDatabase();
             SQLiteHelper abd = new SQLiteHelper(dta_base, json_sq);
             if(subject.contains("jornada")){
-                abd.borrarLog(dta_base,json_sq);
+                abd.borrarLog(dta_base);
             }
             if(subject.contains("registros")){
-                abd.borrar(dta_base,json_sq);
+                abd.borrar(dta_base);
             }
         }
 
