@@ -10,10 +10,16 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 
 public class Json_SQLiteHelper extends SQLiteOpenHelper {
 
-    //Sentencia SQL para crear la tabla de Jsons
-    String sqlCreate = "CREATE TABLE Jsons (codigo INTEGER PRIMERY KEY, sv_json TEXT, fecha_ins TEXT, usuario TEXT, establecimiento TEXT, tipo_riego TEXT )";
+    //Sentencia SQL para crear la tabla de Usuarios
+    String sqlCreate = "CREATE TABLE Jsons (codigo INTEGER PRIMARY KEY," +
+            " sv_json TEXT," +
+            " fecha_ins TEXT," +
+            " usuario TEXT," +
+            " establecimiento TEXT," +
+            " tipo_riego TEXT )";
 
     //String sql = "DROP TABLE IF EXISTS Jsons";
+    String sqlLog = "CREATE TABLE log (cod INTEGER PRIMARY KEY, salida TEXT)";
 
     public Json_SQLiteHelper(Context contexto, String nombre,
                                  CursorFactory factory, int version) {
@@ -22,7 +28,7 @@ public class Json_SQLiteHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        //db.execSQL(sql);
+        db.execSQL(sqlLog);
         db.execSQL(sqlCreate);
     }
 
@@ -33,5 +39,6 @@ public class Json_SQLiteHelper extends SQLiteOpenHelper {
 
         //Se crea la nueva versión de la tabla
         db.execSQL(sqlCreate);
+        db.execSQL(sqlLog);
     }
 }

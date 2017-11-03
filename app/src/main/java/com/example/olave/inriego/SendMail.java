@@ -2,6 +2,7 @@ package com.example.olave.inriego;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
@@ -15,11 +16,14 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import Persistencia.Json_SQLiteHelper;
+import Persistencia.SQLiteHelper;
+
 /**
  * Created by prog on 07/10/2017.
  */
 
-public class SendMail extends AsyncTask<Void,Void,Void> {
+public class SendMail extends AsyncTask<Void,Void,Integer> {
 
     //Declaring Variables
     private Context context;
@@ -51,18 +55,35 @@ public class SendMail extends AsyncTask<Void,Void,Void> {
     }
 
     @Override
-    protected void onPostExecute(Void aVoid) {
-        super.onPostExecute(aVoid);
+    protected void onPostExecute(Integer res) {
+       super.onPostExecute(res);
+
+        //pregunto si se envio bien el mail
+        if(res==1){
+            Json_SQLiteHelper json_sq= new Json_SQLiteHelper(context, "DBJsons", null, 1);
+            SQLiteDatabase dta_base = json_sq.getReadableDatabase();
+            SQLiteHelper abd = new SQLiteHelper(dta_base, json_sq);
+            if(subject.contains("jornada")){
+                abd.borrarLog(dta_base,json_sq);
+            }
+            if(subject.contains("registros")){
+                abd.borrar(dta_base,json_sq);
+            }
+        }
+
+
+        //pregunto que tipo de mail se envio
+
 
         //Showing a success message
-        Toast.makeText(context,"Message Sent", Toast.LENGTH_LONG).show();
+        //Toast.makeText(context,"Se envio mail a la empresa con los datos pendientes a sincronizar", Toast.LENGTH_LONG).show();
     }
 
 
 
 
     @Override
-    protected Void doInBackground(Void... params) {
+    protected Integer doInBackground(Void... params) {
         //Creating properties
         Properties props = new Properties();
 
@@ -79,7 +100,7 @@ public class SendMail extends AsyncTask<Void,Void,Void> {
                 new javax.mail.Authenticator() {
                     //Authenticating the password
                     protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication("nadiacabrerayahn@gmail.com", "nadiabelen");
+                        return new PasswordAuthentication("inriegoapplication@gmail.com", "inriego2017");
                     }
                 });
 
@@ -88,21 +109,23 @@ public class SendMail extends AsyncTask<Void,Void,Void> {
             MimeMessage mm = new MimeMessage(session);
 
             //Setting sender address
-            mm.setFrom(new InternetAddress("nadiacabrerayahn@gmail.com"));
+            mm.setFrom(new InternetAddress("inriegoapplication@gmail.com"));
             //Adding receiver
             mm.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
             //Adding subject
             mm.setSubject(subject);
             //Adding message
             //mm.setText(message,"text/html; charset=utf-8");
-mm.setContent(message,"text/html; charset=utf-8");
+            mm.setContent(message,"text/html; charset=utf-8");
             //Sending email
             Transport.send(mm);
 
+            return 1;
         } catch (MessagingException e) {
             e.printStackTrace();
+            return 0;
         }
-        return null;
+
     }
 
 }

@@ -65,7 +65,7 @@ public class Fm_Establecimiento extends Fragment {
     private String mParam1;
     private String mParam2;
     ArrayList<Pivot> estab_pivots = new ArrayList<>();
-    ArrayList<Establecimiento> farmslist;
+    ArrayList<Establecimiento> farmslist= new ArrayList<>();
     SharedPreferences sp;
     String farmId, farmdesc;
 
