@@ -12,6 +12,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
@@ -91,11 +92,21 @@ public class AlarmReceiverMail extends BroadcastReceiver {
         SQLiteHelper abd = new SQLiteHelper(dta_base, json_sq);
         Cursor result= abd.obtener();
 
+        //Mail para datos no sincronizados
         //if(result.getCount()>=1)
             //this.mailSincronizar();
 
+        //Mail para los logs del dia
         this.mailLog();
-
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                "sesion", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.clear();
+        editor.commit();
+        MainActivity ma = (MainActivity) context;
+        ma.finish();
+        Intent i = new Intent(context, Login.class);
+        context.startActivity(i);
         // For our recurring task, we'll just display a message
         //Toast.makeText(context, "I'm running", Toast.LENGTH_SHORT).show();
     }
