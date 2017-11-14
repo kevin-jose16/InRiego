@@ -20,6 +20,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.olave.inriego.AdapterPivots;
 import com.example.olave.inriego.FragmentPivot;
 import com.example.olave.inriego.MainActivity;
 import com.example.olave.inriego.R;
@@ -60,6 +61,7 @@ public class Fm_Establecimiento extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    public static Adapters.AdapterPivots ap;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -230,6 +232,8 @@ public class Fm_Establecimiento extends Fragment {
                     sp = getActivity().getSharedPreferences("sesion",Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sp.edit();
                     JSONObject jsonData = json.optJSONObject("Data");
+                    String fechaRef = jsonData.getString("ReferenceDate");
+
                     JSONArray farm_pivots = jsonData.getJSONArray("IrrigationRows");
                     for(int i=0;i<=farm_pivots.length()-1;i++){
                         JSONObject pv = farm_pivots.getJSONObject(i);
@@ -237,7 +241,7 @@ public class Fm_Establecimiento extends Fragment {
                         JSONArray pv_riegos = pv.getJSONArray("Advices");
                         for(int r=0;r<=pv_riegos.length()-1;r++){
                             JSONObject riego = pv_riegos.getJSONObject(r);
-                            Date f_riego = CrearFecha(riego.get("Date").toString());
+                            String f_riego = riego.get("Date").toString();
                             Riego rg = new Riego(riego.get("IrrigationType").toString(), f_riego,Float.parseFloat(riego.get("Quantity").toString()));
                             p.getRiegos().add(rg);
                         }
@@ -245,10 +249,16 @@ public class Fm_Establecimiento extends Fragment {
                     }
                     Establecimiento est = new Establecimiento(Integer.parseInt(farmId),farmdesc);
                     est.setPivots(estab_pivots);
+
+
+
+
+
                     ArrayList<Establecimiento> es = new ArrayList<>();
                     es.add(est);
                     String jsonObjetos = new Gson().toJson(es);
                     editor.putString("actual_farm", jsonObjetos);
+                    editor.putString("Fecha_ref",fechaRef);
                     editor.putBoolean("hay_farm",true);
                     editor.commit();
 
