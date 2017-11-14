@@ -3,6 +3,7 @@ package com.example.olave.inriego;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -14,6 +15,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -33,8 +35,11 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -58,9 +63,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     SharedPreferences sp;
     String farmId, farmdesc;
     ArrayList<Establecimiento> farmslist;
-
+    int advice_cod;
+    boolean esriego; //Chequear si es riego o lluvia
+    String reg_riego; //Json de registro de riego/lluvia pasado a string
     private PendingIntent pendingIntent;
+    private PendingIntent pending;
     private AlarmManager manager;
+    Json_SQLiteHelper json_sq;
+    SQLiteDatabase dta_base;
+    public String reference_date;
+    SQLiteHelper abd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +100,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //Sesion
         sp = getSharedPreferences("sesion",Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
+        //Preguntar si hay establecimiento seleccionado
         if(sp.getBoolean("hay_farm",false)){
+
+            //Setear atributo de fecha de referencia
+            reference_date= sp.getString("ReferenceDate",null);
             Gson gson = new Gson(); //Instancia Gson.
             //Obtiene datos (json)
             String objetos = sp.getString("actual_farm", null);
@@ -122,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
+            //Preguntar si son mas de uno los establecimientos para darle a seleccionar o entrar directo a la app
             if(jsonArray.length()>1){
                 Fragment fragment= new Fm_Establecimiento();
                 FragmentManager fragmentManager = getSupportFragmentManager();
@@ -141,11 +157,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
 
-        /*
-        Intent alarmIntent = new Intent(MainActivity.this, AlarmReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
-        start();*/
 
+        Intent alarmIntent = new Intent(MainActivity.this, AlarmReceiver.class);
+        Intent alarmIntent_mail = new Intent(MainActivity.this, AlarmReceiverMail.class);
+        pending = PendingIntent.getBroadcast(this, 0, alarmIntent_mail, 0);
+        pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
+
+        //startAt20();
+        //startAt2130();
+       //start();
     }
 
 
@@ -203,47 +223,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_verinfo) {
             fragment = new FragmentPivot();
         } else if (id == R.id.nav_sincronice){
-            SQLiteHelper abd = new SQLiteHelper();
-            Cursor result= abd.obtener();
-            if(result.getCount()>=1){
-                result.moveToFirst();
-                if(result.getCount()==1) {
-                    new SincronizarDatos().execute(result.getString(0),result.getString(4));
-                }
-                else{
-                    while(result.moveToNext()){
-                        try {
-                            JSONObject obj = new JSONObject(result.getString(0));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        result.moveToNext();
-                    }
-                    try {
-                        JSONObject obj = new JSONObject(result.getString(0));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-            }
-
-
-
-            String s;
-            while(result.moveToNext()){
-                s =result.getString(0);
-            }
+            json_sq= new Json_SQLiteHelper(MainActivity.this, "DBJsons", null, 1);
+            dta_base = json_sq.getReadableDatabase();
+            abd = new SQLiteHelper(dta_base,json_sq);
+            new SincronizarDatos().execute();
 
         } else if (id == R.id.nav_logout) {
-            SharedPreferences sharedPref = getSharedPreferences(
-                    "sesion", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.clear();
-            editor.commit();
-            finish();
-            Intent i = new Intent(MainActivity.this,Login.class);
-            startActivity(i);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder//.setMessage("Cantidad o fecha no ingresada\no no hay pivots seleccionados")
+                    .setTitle("¿Desea Cerrar Sesión?");
+            builder.setPositiveButton("SI",
+            new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    SharedPreferences sharedPref = getSharedPreferences(
+                            "sesion", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.clear();
+                    editor.commit();
+                    finish();
+                    Intent i = new Intent(MainActivity.this,Login.class);
+                    startActivity(i);
+                }
+            });
+            builder.setNegativeButton("NO",null);
+            builder.create();
+            builder.show();
         }
 
         if (fragment != null) {
@@ -261,20 +267,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void showDatePickerDialog_Riego(View v) {
         DatePickerFragment_Riego newFrag = new DatePickerFragment_Riego();
         newFrag.show(this.getSupportFragmentManager(), "datePicker");
-        newFrag.SetearFechas("2017-09-24");
+        newFrag.SetearFechas(reference_date);
     }
     public void showDatePickerDialog_Lluvia(View v) {
         DatePickerFragment_Lluvia newFrag = new DatePickerFragment_Lluvia();
         newFrag.show(getSupportFragmentManager(), "datePicker");
-        newFrag.SetearFechas("2017-09-24");
+        newFrag.SetearFechas(reference_date);
     }
-    public void showSelectedItems(View view){
-        String items = "";
-        for(String item: pivots){
-            items+="-"+item+"\n";
-        }
-        Toast.makeText(this,"Seleccionados \n"+items,Toast.LENGTH_LONG).show();
-    }
+
     public class ClaseAsincrona extends AsyncTask<String,Void,String> {
         String res;
         String token;
@@ -310,33 +310,59 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         @Override
         protected void onPostExecute(String result) {
+            Json_SQLiteHelper json_sq = new Json_SQLiteHelper(MainActivity.this, "DBJsons", null, 1);
+            SQLiteDatabase dta_base = json_sq.getReadableDatabase();
+            SQLiteHelper abd = new SQLiteHelper(dta_base, json_sq);
             if (result!=null){
                 try {
                     JSONObject json = new JSONObject(result);
+
                     sp = getSharedPreferences("sesion",Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sp.edit();
-                    JSONObject jsonData = json.optJSONObject("Data");
-                    JSONArray farm_pivots = jsonData.getJSONArray("IrrigationRows");
-                    for(int i=0;i<=farm_pivots.length()-1;i++){
-                        JSONObject pv = farm_pivots.getJSONObject(i);
-                        Pivot p = new Pivot(pv.get("Name").toString(), pv.get("Crop").toString(), pv.get("HarvestDate").toString(), pv.get("Phenology").toString());
-                        JSONArray pv_riegos = pv.getJSONArray("Advices");
-                        for(int r=0;r<=pv_riegos.length()-1;r++){
-                            JSONObject riego = pv_riegos.getJSONObject(r);
-                            String f_riego= riego.get("Date").toString();
-                            Riego rg = new Riego(riego.get("IrrigationType").toString(), f_riego,Float.parseFloat(riego.get("Quantity").toString()));
-                            p.getRiegos().add(rg);
+                   
+                    if(json.getBoolean("IsOk")){
+                        sp = getSharedPreferences("sesion",Context.MODE_PRIVATE);
+                         editor = sp.edit();
+                        JSONObject jsonData = json.optJSONObject("Data");
+
+                        //Setear fecha de referencia en atributo y sesion
+                        reference_date = jsonData.get("ReferenceDate").toString();
+                        editor.putString("ReferenceDate",jsonData.get("ReferenceDate").toString());
+
+                        JSONArray farm_pivots = jsonData.getJSONArray("IrrigationRows");
+                        for(int i=0;i<=farm_pivots.length()-1;i++){
+                            JSONObject pv = farm_pivots.getJSONObject(i);
+                            //Integer.parseInt(pv.get("IrrigationId").toString()),
+                            Pivot p = new Pivot(Integer.parseInt(pv.get("IrrigationUnitId").toString()),pv.get("Name").toString(), pv.get("Crop").toString(), pv.get("HarvestDate").toString(), pv.get("Phenology").toString());
+                            JSONArray pv_riegos = pv.getJSONArray("Advices");
+                            for(int r=0;r<=pv_riegos.length()-1;r++){
+                                JSONObject riego = pv_riegos.getJSONObject(r);
+                                String f_riego = riego.get("Date").toString();
+                                Riego rg = new Riego(riego.get("IrrigationType").toString(), f_riego,Float.parseFloat(riego.get("Quantity").toString()));
+                                p.getRiegos().add(rg);
+                            }
+                            estab_pivots.add(p);
+
                         }
-                        estab_pivots.add(p);
+                        Establecimiento est = new Establecimiento(Integer.parseInt(farmId),farmdesc,reference_date);
+                        est.setPivots(estab_pivots);
+                        farmslist.clear();
+                        farmslist.add(est);
+                        String jsonObjetos = new Gson().toJson(farmslist);
+                        editor.putString("actual_farm", jsonObjetos);
+                        editor.putBoolean("hay_farm", true);
+                        editor.commit();
+                        Calendar cal = Calendar.getInstance();
+                        abd.insertLog(cal.getTime().toString() + "Se selecciona el establecimiento " + farmdesc + " con respuesta correcta del servidor", json_sq);
+                        dta_base.close();
                     }
-                    Establecimiento est = new Establecimiento(Integer.parseInt(farmId),farmdesc);
-                    est.setPivots(estab_pivots);
-                    farmslist.clear();
-                    farmslist.add(est);
-                    String jsonObjetos = new Gson().toJson(farmslist);
-                    editor.putString("actual_farm", jsonObjetos);
-                    editor.putBoolean("hay_farm", true);
-                    editor.commit();
+                    else{
+                        Calendar cal = Calendar.getInstance();
+                        abd.insertLog(cal.getTime().toString() + "Se intento seleccionar el establecimiento " + farmdesc + " con respuesta no exitosa del servidor", json_sq);
+                        dta_base.close();
+                        Toast.makeText(MainActivity.this, "No se pudo seleccionar establecimiento",
+                                Toast.LENGTH_LONG).show();
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -349,7 +375,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             }
             else{
-                Toast.makeText(MainActivity.this, "Pivots para el establecimiento no traidos correctamente",
+                Calendar cal = Calendar.getInstance();
+                abd.insertLog(cal.getTime().toString() + "No se pudo seleccionar un establecimiento por problemas en el servidor o la conexión a internet", json_sq);
+                dta_base.close();
+                Toast.makeText(MainActivity.this, "No tiene conexión a internet\no hay problemas con el servidor",
                         Toast.LENGTH_LONG).show();
             }
 
@@ -378,16 +407,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void start() {
         manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        manager.setRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis(), 60000, pendingIntent);
+        manager.setRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis(), 60000, pending);
         //manager.setTime(74340000);
         Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
     }
+    public void startAt2130() {
+        manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Toast.makeText(this, "Alarm MAIL Set", Toast.LENGTH_SHORT).show();
+        /* Set the alarm to start at 21:30 hs */
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 21);
+        calendar.set(Calendar.MINUTE, 30);
+        calendar.set(Calendar.SECOND, 0);
+
+        /* Repeating on every one day interval */
+        manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                AlarmManager.INTERVAL_DAY, pending);
+
+    }
+
 
     public void startAt20() {
         manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         /* Set the alarm to start at 20:00 hs */
         Calendar calendar = Calendar.getInstance();
-        //calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, 20);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
@@ -404,81 +447,141 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toast.makeText(this, "Alarm Canceled", Toast.LENGTH_SHORT).show();
     }
 
-    public class SincronizarDatos extends AsyncTask<String, Void, String> {
+    public class SincronizarDatos extends AsyncTask<Void, Void, String> {
 
         String res;
 
 
         @Override
-        protected String doInBackground(String... params) {
+        protected String doInBackground(Void... voids) {
 
-            JSONObject irrigation = null;
-            try {
-                irrigation = new JSONObject(params[0].toString());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            /*try {
-                irrigation.put("Token", token);
-                irrigation.put("IrrigationUnitId",params[1]);
-                irrigation.put("Milimeters",params[2]);
-                irrigation.put("Date",params[3]);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }*/
+            Cursor result= abd.obtener();
+            if(result.getCount()>=1){
+                result.moveToFirst();
+                if(result.getCount()>0) {
+                    int cant_registrosbd = result.getCount()-1;
 
-            try {
-                URL url = new URL("");
-                if(params[1].equals("Irrigation"))
-                    url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/IrrigationData/AddIrrigation");
-                else if(params[1].equals("Rain"))
-                    url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/IrrigationData/AddRain");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Content-Type", "application/json;");
-                OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
-                out.write(String.valueOf(irrigation));
-                out.close();
+                    for(int i= 0; i<= cant_registrosbd; i++){
+                        advice_cod = result.getInt(0);
 
+                        try {
+                            URL url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/IrrigationData/AddIrrigation");
+                            if(result.getString(5).equals("Irrigation")) {
+                                url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/IrrigationData/AddIrrigation");
+                                esriego=true;
+                            }
+                            else {
+                                if (result.getString(5)=="Rain") {
+                                    url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/IrrigationData/AddRain");
+                                    esriego=false;
+                                }
+                            }
+                            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                String inputLine;
-                StringBuffer response = new StringBuffer();
+                            BufferedReader br;
+                            InputStreamReader input;
 
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
+                            StringBuffer response;
+                            try {
+                                conn.setRequestMethod("POST");
+                                conn.setRequestProperty("Content-Type", "application/json;charset=utf-8");
+                                OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+                                JSONObject obj = new JSONObject(result.getString(1));
+                                reg_riego = result.getString(1);
+                                out.write(String.valueOf(obj));
+                                out.close();
+                                //String msg = conn.getResponseMessage();
+                                //int rsp =conn.getResponseCode();
+                                input = new InputStreamReader(conn.getInputStream());
+                                br =new BufferedReader(input);
+
+                                String inputLine;
+                                response = new StringBuffer();
+
+                                while ((inputLine = br.readLine()) != null) {
+                                        response.append(inputLine);
+                                }
+                                br.close();
+                            }
+                            finally {
+                                conn.disconnect();
+                            }
+                            res=response.toString();
+                            return res;
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        if(!result.isLast())
+                            result.moveToNext();
+                        else{
+                            break;
+                        }
+                    }
                 }
-                in.close();
-                res=response.toString();
+                else{
 
-            } catch (IOException e) {
-                e.printStackTrace();
+                }
+                return res;
             }
-
-            return res;
+            else
+                return "no_hay_datos";
         }
 
         @Override
         protected void onPostExecute(String result) {
+            Json_SQLiteHelper json_sq= new Json_SQLiteHelper(MainActivity.this, "DBJsons", null, 1);
+            SQLiteDatabase db = json_sq.getReadableDatabase();
+            SQLiteHelper abd = new SQLiteHelper(db,json_sq);
+
             if (result!=null){
-                try {
-                    JSONObject json = new JSONObject(result);
-                    JSONObject jsonData = json.optJSONObject("Data");
+                if(result == "no_hay_datos")
+                    Toast.makeText(MainActivity.this, "No hay datos que sincronizar", Toast.LENGTH_LONG).show();
+                else {
+                    try {
+                        JSONObject json = new JSONObject(result);
+                        Boolean isok = json.getBoolean("IsOk");
+                        Calendar cal = Calendar.getInstance();
+                        //preguntar isOk
+                        if (isok) {
+                            abd.borrar_regRiego(db, advice_cod);
+                            if (esriego) {
+                                abd.insertLog(cal.getTime() + " -- Sincronización exitosa del suiguiente registro de riego:\n" + reg_riego, json_sq);
+                            } else {
+                                abd.insertLog(cal.getTime() + " -- Sincronización exitosa del suiguiente registro de lluvia:\n" + reg_riego, json_sq);
+                            }
+                            Toast.makeText(MainActivity.this, " -- Sincronización exitosa -- ",
+                                    Toast.LENGTH_LONG).show();
+                        } else {
+                            abd.insertLog(cal.getTime() + " -- Sincronización no exitosa, ERROR: " + json.getString("ErrorMessage"), json_sq);
+                            Toast.makeText(MainActivity.this, " -- Sincronización no exitosa, ERROR:\n" + json.getString("ErrorMessage"),
+                                    Toast.LENGTH_LONG).show();
+                        }
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                        db.close();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    Fragment fragment = new FragmentPivot();
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.frameprincipal, fragment).commit();
                 }
-
-                Fragment fragment= new FragmentPivot();
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction()
-                        .replace(R.id.frameprincipal, fragment).commit();
-
             }
             else{
-                Toast.makeText(MainActivity.this, "Riego no agregado correctamente",
+                Calendar cal = Calendar.getInstance();
+                abd.insertLog(cal.getTime() +  "ERROR. No se sincronizaron los datos:\n"+reg_riego + "\nproblemas con la conexión a internet", json_sq);
+                Toast.makeText(MainActivity.this, "No tiene conexión a internet\no hay problemas con el servidor",
                         Toast.LENGTH_LONG).show();
+                db.close();
             }
         }
     }
+
 }
+
+

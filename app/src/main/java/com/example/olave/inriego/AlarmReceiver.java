@@ -18,6 +18,7 @@ import java.util.Random;
 
 public class AlarmReceiver extends BroadcastReceiver {
     MediaPlayer mMediaPlayer;
+    public boolean procedencia;
     @Override
     public void onReceive(Context context, Intent intent) {
 
@@ -33,6 +34,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                         .setContentText("Tienes N datos sin sincronizar");
 
         Intent resultIntent = new Intent(context, MainActivity.class);
+
         // Because clicking the notification opens a new ("special") activity, there's
         // no need to create an artificial back stack.
         PendingIntent resultPendingIntent =

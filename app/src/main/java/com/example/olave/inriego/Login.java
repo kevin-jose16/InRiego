@@ -32,11 +32,14 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
 import Clases.Establecimiento;
+import Persistencia.Json_SQLiteHelper;
+import Persistencia.SQLiteHelper;
 import layout.Fm_Establecimiento;
 import layout.Fm_agregarLluvia;
 
@@ -86,6 +89,7 @@ public class Login extends AppCompatActivity {
             try {
                 username = params[0];
                 password = params[1];
+
                 URL url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/Auth/userName/"+username +"/password/" + password);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
@@ -111,40 +115,59 @@ public class Login extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
+            Json_SQLiteHelper json_sq = new Json_SQLiteHelper(Login.this, "DBJsons", null, 1);
+            SQLiteDatabase dta_base = json_sq.getReadableDatabase();
+            SQLiteHelper abd = new SQLiteHelper(dta_base, json_sq);
             if (result!=null){
                 try {
                     JSONObject json = new JSONObject(result);
-                    SharedPreferences sp = Login.this.getSharedPreferences("sesion", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sp.edit();
-                    editor.putString("username",username);
-                    editor.putString("password",password);
-                    editor.putBoolean("hay_farm", false);
 
-                    farms.clear();
+                    if(json.getBoolean("IsOk")){
+                        SharedPreferences sp = Login.this.getSharedPreferences("sesion", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.putString("username",username);
+                        editor.putString("password",password);
+                        editor.putBoolean("hay_farm", false);
+                        farms.clear();
+                        JSONObject jsonData = json.optJSONObject("Data");
+                        editor.putString("token",jsonData.get("Token").toString());
+                        JSONArray estab = jsonData.getJSONArray("Farms");
+                        for(int i=0;i<=estab.length()-1;i++){
+                            JSONObject es = estab.getJSONObject(i);
+                            Establecimiento e = new Establecimiento(Integer.parseInt(es.get("FarmId").toString()),es.get("Description").toString(),"");
+                            farms.add(e);
+                        }
+                        String jsonObjetos = new Gson().toJson(farms);
+                        editor.putString("farmslist", jsonObjetos);
+                        editor.commit();
 
-                    JSONObject jsonData = json.optJSONObject("Data");
-                    editor.putString("token",jsonData.get("Token").toString());
-                    JSONArray estab = jsonData.getJSONArray("Farms");
-                    for(int i=0;i<=estab.length()-1;i++){
-                        JSONObject es = estab.getJSONObject(i);
-                        Establecimiento e = new Establecimiento(Integer.parseInt(es.get("FarmId").toString()),es.get("Description").toString());
-                        farms.add(e);
+                        Calendar cal = Calendar.getInstance();
+                        abd.insertLog(cal.getTime().toString() + " -- El usuario " + username + " ha ingresado en el sistema", json_sq);
+                        dta_base.close();
+                        //iniciar 2da activity despues del login
+                        Intent i = new Intent(Login.this,MainActivity.class);
+                        startActivity(i);
                     }
-                    String jsonObjetos = new Gson().toJson(farms);
-                    editor.putString("farmslist", jsonObjetos);
-                    editor.commit();
+                    else{
+                        Calendar cal = Calendar.getInstance();
+                        abd.insertLog(cal.getTime().toString() + " -- El usuario " + username + " no existente, intento ingresar al sistema", json_sq);
+                        dta_base.close();
+                        Toast.makeText(Login.this, "El nombre de usuario o la contraseña son incorrectos",
+                                Toast.LENGTH_LONG).show();
+                    }
+
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                //iniciar 2da activity despues del login
-                Intent i = new Intent(Login.this,MainActivity.class);
-                startActivity(i);
+
 
             }
             else{
-                Toast.makeText(Login.this, "Tu nombre de usuario o la contraseña son incorrectos",
-                        Toast.LENGTH_LONG).show();
+                Calendar cal = Calendar.getInstance();
+                abd.insertLog(cal.getTime().toString() + " -- El usuario " + username + " no pudo ingresar al sistema por problemas en el servidor o la conexión a internet", json_sq);
+                dta_base.close();
+                Toast.makeText(Login.this, "Problema con servidor o conexión a internet", Toast.LENGTH_LONG).show();
             }
 
         }

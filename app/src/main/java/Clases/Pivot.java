@@ -10,13 +10,20 @@ import java.util.Date;
 
 public class Pivot {
 
-
+    int id;
     String nombre;
     String cultivo;
     String siembra;
     String fenologia;
     ArrayList<Riego> riegos;
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getNombre() {
         return nombre;
@@ -59,8 +66,9 @@ public class Pivot {
     }
 
     public Pivot(){}
-
-    public Pivot(String nombre, String cultivo, String siembra, String fenologia) {
+    //int id,
+    public Pivot(int id,String nombre, String cultivo, String siembra, String fenologia) {
+        this.id = id;
         this.nombre = nombre;
         this.cultivo = cultivo;
         this.siembra = siembra;

@@ -5,9 +5,11 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CheckedTextView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.olave.inriego.R;
@@ -55,11 +57,12 @@ public class AdapterPivots extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
         View v = view;
 
-       /* if (view == null) {
+        if (view == null) {
             LayoutInflater inf = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = inf.inflate(R.layout.fila_pivot, null);
         }
         Pivot pv = pivots.get(i);
+
         Spinner spi = (Spinner) v.findViewById(R.id.spinner_pivot);
         ArrayList <String> listita = new ArrayList<>();
         listita.add("hola");
@@ -67,7 +70,11 @@ public class AdapterPivots extends BaseAdapter {
          aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         //Setting the ArrayAdapter data on the Spinner
 
-        spi.setAdapter(aa);*/
+        spi.setAdapter(aa);
+
+        CheckedTextView chtv = (CheckedTextView) v.findViewById(R.id.check_text);
+        //pv.getId() + " - " +
+        chtv.setText( pv.getId() + " - " + pv.getNombre());
 
         return v;
     }
