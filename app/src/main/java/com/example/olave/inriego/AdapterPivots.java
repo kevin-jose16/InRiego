@@ -19,7 +19,7 @@ public class AdapterPivots extends BaseAdapter {
     protected Activity activity;
 
     //protected ArrayList<Pivot> Pivots;
-    protected ArrayList<String> Pivots;
+    public static ArrayList<String> Pivots;
 
     public Activity getActivity() {
         return activity;
@@ -69,8 +69,8 @@ public class AdapterPivots extends BaseAdapter {
         return v;
     }
 
-    public AdapterPivots(Activity activity, ArrayList<String> pivots) {
+    public AdapterPivots() {
         this.activity = activity;
-        Pivots = pivots;
+
     }
 }

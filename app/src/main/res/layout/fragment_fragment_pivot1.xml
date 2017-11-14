@@ -1,4 +1,10 @@
+<RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/relLayout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/tableLayout"
     android:layout_width="wrap_content"
@@ -14,43 +20,52 @@
         android:id="@+id/table1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="20dp"
-        android:showDividers="beginning|middle|end"
+        android:paddingTop="20sp"
+
         android:textSize="18sp"
         android:textStyle="bold">
 
         <TextView
             android:id="@+id/textViewPiv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_column="0"
+            android:layout_column="1"
 
-            android:layout_marginLeft="15dp"
-            android:paddingTop="20dp"
+
+           android:textAlignment="center"
+            android:paddingTop="20sp"
 
             android:text="Seleccione pivot"
             android:textSize="22sp"
             android:textStyle="bold" />
-        <!--app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--app:layout_constraintHorizontal_bias="0.278"-->
-        <!--app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--app:layout_constraintRight_toRightOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent"-->
-        <!--app:layout_constraintVertical_bias="0.065"-->
 
+
+</TableRow>
+    <TableRow
+
+        android:id="@+id/tableSpi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="5sp"
+
+
+        android:textStyle="bold">
 
         <Spinner
             android:id="@+id/spinner_pivot"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+
             android:layout_column="1"
-            android:layout_marginRight="8dp"
-            android:background="@color/background_material_light"
-            android:entries="@array/datos"
+
+
+            android:background="#b77c7c7c"
+
             android:spinnerMode="dropdown"
+            android:layout_marginRight="8sp"
+
             android:textAlignment="center"
+
             android:textSize="18sp"
             android:visibility="visible" />
+
+
 
 
     </TableRow>
@@ -65,8 +80,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_column="0"
-            android:layout_marginLeft="15dp"
-            android:paddingTop="2dp"
+            android:layout_marginLeft="15sp"
+            android:paddingTop="5sp"
             android:text="Cultivo"
             android:textSize="22sp"
 
@@ -74,14 +89,14 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/piv_cultivo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_column="1"
-            android:layout_marginRight="8dp"
+            android:layout_marginRight="8sp"
             android:background="@color/background_material_light"
             android:paddingTop="0dp"
-            android:text="CULTIVO"
+
             android:textAlignment="center"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -101,21 +116,21 @@
             android:layout_height="wrap_content"
             android:layout_column="0"
 
-            android:layout_marginLeft="15dp"
-            android:paddingTop="2dp"
+            android:layout_marginLeft="15sp"
+            android:paddingTop="2sp"
             android:text="Siembra"
             android:textSize="22sp"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/textView11"
+            android:id="@+id/fecha_cultivo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_column="1"
-            android:layout_marginRight="8dp"
+            android:layout_marginRight="8sp"
             android:background="@color/background_material_light"
-            android:paddingTop="0dp"
-            android:text="FECHA CULTIVO"
+            android:paddingTop="0sp"
+
             android:textAlignment="center"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -126,7 +141,7 @@
         android:id="@+id/table4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
+        android:layout_marginBottom="40sp"
 
 
         android:textStyle="bold">
@@ -137,21 +152,21 @@
             android:layout_height="wrap_content"
             android:layout_column="0"
 
-            android:layout_marginLeft="15dp"
-            android:paddingTop="2dp"
+            android:layout_marginLeft="15sp"
+            android:paddingTop="2sp"
             android:text="Fenología"
             android:textSize="22sp"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/textView9"
+            android:id="@+id/fenologia"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_column="1"
-            android:layout_marginRight="8dp"
+            android:layout_marginRight="8sp"
             android:background="@color/background_material_light"
-            android:paddingTop="0dp"
-            android:text="FENOLOGIA"
+            android:paddingTop="0sp"
+
             android:textAlignment="center"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -160,21 +175,19 @@
 
     <TableRow
         android:id="@+id/table5"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="2dp"
-        android:layout_marginRight="2dp"
+
+        android:layout_marginLeft="2sp"
+        android:layout_marginRight="2sp"
         android:background="@color/pressed_color_dark"
-        android:showDividers="beginning|middle|end"
+
         android:textStyle="bold">
 
         <TextView
             android:id="@+id/textViewPiv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_column="0"
 
-            android:paddingTop="2dp"
+
+
+            android:paddingTop="2sp"
             android:text="Fecha"
             android:textAlignment="center"
             android:textSize="19sp"
@@ -182,26 +195,23 @@
 
         <TextView
             android:id="@+id/textViewPiv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_column="1"
 
-            android:paddingTop="2dp"
-            android:text="Estado"
             android:textAlignment="center"
 
+            android:paddingTop="2sp"
+            android:text="Estado"
+            android:layout_marginRight="30sp"
             android:textSize="19sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/textViewPiv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_column="2"
 
-            android:paddingTop="2dp"
+            android:textAlignment="textStart"
+
+            android:paddingTop="2sp"
             android:text="mm"
-            android:textAlignment="center"
+
             android:textSize="19sp"
             android:textStyle="bold" />
 
@@ -211,9 +221,9 @@
         android:id="@+id/tableRow1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="2dp"
-        android:layout_marginRight="2dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginLeft="2sp"
+        android:layout_marginRight="2sp"
+        android:layout_marginTop="2sp"
         android:background="@color/bright_foreground_disabled_material_light"
         android:gravity="center">
 
@@ -221,9 +231,9 @@
             android:id="@+id/tabla_fecha_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_column="0"
 
-            android:text="Fecha1"
+
+
             android:textAlignment="center"
 
             android:textColor="@android:color/white"
@@ -233,14 +243,15 @@
 
         <ImageView
             android:id="@+id/tabla_estado_1"
-            android:layout_width="40dp"
-            android:layout_height="30dp"
 
-            android:layout_marginLeft="2dp"
-            android:layout_marginRight="2dp"
+            android:layout_width="40sp"
+            android:layout_height="30sp"
 
-            android:src="@drawable/proxriego"
-            android:textAlignment="center"
+            android:layout_marginRight="35sp"
+
+
+
+
 
             android:visibility="visible" />
 
@@ -249,9 +260,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            android:text="mm1"
 
-            android:textAlignment="center"
+
+
             android:textColor="@android:color/white"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -263,9 +274,9 @@
         android:id="@+id/tableRow2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="2dp"
-        android:layout_marginRight="2dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginLeft="2sp"
+        android:layout_marginRight="2sp"
+        android:layout_marginTop="2sp"
         android:background="@color/bright_foreground_disabled_material_light"
         android:gravity="center">
 
@@ -274,7 +285,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            android:text="Fecha2"
+
             android:textAlignment="center"
 
 
@@ -285,15 +296,15 @@
 
         <ImageView
             android:id="@+id/tabla_estado_2"
-            android:layout_width="40dp"
-            android:layout_height="30dp"
-            android:layout_marginLeft="2dp"
+            android:layout_width="40sp"
+            android:layout_height="30sp"
+            android:layout_marginLeft="2sp"
 
-            android:layout_marginRight="2dp"
-            android:layout_marginTop="0.5dp"
+            android:layout_marginRight="35sp"
+            android:layout_marginTop="0.5sp"
 
-            android:src="@drawable/proxriego"
-            android:textAlignment="center"
+
+
             android:visibility="visible" />
 
         <TextView
@@ -301,9 +312,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            android:text="mm2"
 
-            android:textAlignment="center"
+
+
             android:textColor="@android:color/white"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -314,9 +325,9 @@
         android:id="@+id/tableRow3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="2dp"
-        android:layout_marginRight="2dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginLeft="2sp"
+        android:layout_marginRight="2sp"
+        android:layout_marginTop="2sp"
         android:background="@color/bright_foreground_disabled_material_light"
         android:gravity="center">
 
@@ -325,7 +336,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            android:text="Fecha3"
+
             android:textAlignment="center"
 
 
@@ -336,15 +347,15 @@
 
         <ImageView
             android:id="@+id/tabla_estado_3"
-            android:layout_width="40dp"
-            android:layout_height="30dp"
-            android:layout_marginLeft="2dp"
+            android:layout_width="40sp"
+            android:layout_height="30sp"
+            android:layout_marginLeft="2sp"
+            android:layout_marginRight="35sp"
 
-            android:layout_marginRight="2dp"
-            android:layout_marginTop="0.5dp"
+            android:layout_marginTop="0.5sp"
 
-            android:src="@drawable/proxriego"
-            android:textAlignment="center"
+
+
             android:visibility="visible" />
 
         <TextView
@@ -352,9 +363,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            android:text="mm3"
 
-            android:textAlignment="center"
+
+
             android:textColor="@android:color/white"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -364,9 +375,9 @@
         android:id="@+id/tableRow4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="2dp"
-        android:layout_marginRight="2dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginLeft="2sp"
+        android:layout_marginRight="2sp"
+        android:layout_marginTop="2sp"
         android:background="@color/bright_foreground_disabled_material_light"
         android:gravity="center">
 
@@ -375,7 +386,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            android:text="Fecha4"
+
             android:textAlignment="center"
 
 
@@ -386,15 +397,15 @@
 
         <ImageView
             android:id="@+id/tabla_estado_4"
-            android:layout_width="40dp"
-            android:layout_height="30dp"
-            android:layout_marginLeft="2dp"
+            android:layout_width="40sp"
+            android:layout_height="30sp"
+            android:layout_marginLeft="2sp"
 
-            android:layout_marginRight="2dp"
-            android:layout_marginTop="0.5dp"
+            android:layout_marginRight="35sp"
+            android:layout_marginTop="0.5sp"
 
-            android:src="@drawable/proxriego"
-            android:textAlignment="center"
+
+
             android:visibility="visible" />
 
         <TextView
@@ -402,9 +413,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            android:text="mm4"
 
-            android:textAlignment="center"
+
+
             android:textColor="@android:color/white"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -415,9 +426,9 @@
         android:id="@+id/tableRow5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="2dp"
-        android:layout_marginRight="2dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginLeft="2sp"
+        android:layout_marginRight="2sp"
+        android:layout_marginTop="2sp"
         android:background="@color/bright_foreground_disabled_material_light"
         android:gravity="center">
 
@@ -426,7 +437,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            android:text="Fecha5"
+
             android:textAlignment="center"
 
 
@@ -437,15 +448,15 @@
 
         <ImageView
             android:id="@+id/tabla_estado_5"
-            android:layout_width="40dp"
-            android:layout_height="30dp"
-            android:layout_marginLeft="2dp"
+            android:layout_width="40sp"
+            android:layout_height="30sp"
+            android:layout_marginLeft="2sp"
 
-            android:layout_marginRight="2dp"
-            android:layout_marginTop="0.5dp"
+            android:layout_marginRight="35sp"
+            android:layout_marginTop="0.5sp"
 
-            android:src="@drawable/proxriego"
-            android:textAlignment="center"
+
+
             android:visibility="visible" />
 
         <TextView
@@ -453,9 +464,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            android:text="mm5"
 
-            android:textAlignment="center"
+
             android:textColor="@android:color/white"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -465,9 +475,9 @@
         android:id="@+id/tableRow6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="2dp"
-        android:layout_marginRight="2dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginLeft="2sp"
+        android:layout_marginRight="2sp"
+        android:layout_marginTop="2sp"
         android:background="@color/bright_foreground_disabled_material_light"
         android:gravity="center">
 
@@ -476,7 +486,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            android:text="Fecha6"
+
             android:textAlignment="center"
 
 
@@ -487,15 +497,14 @@
 
         <ImageView
             android:id="@+id/tabla_estado_6"
-            android:layout_width="40dp"
-            android:layout_height="30dp"
-            android:layout_marginLeft="2dp"
+            android:layout_width="40sp"
+            android:layout_height="30sp"
+            android:layout_marginLeft="2sp"
 
-            android:layout_marginRight="2dp"
-            android:layout_marginTop="0.5dp"
+            android:layout_marginRight="35sp"
+            android:layout_marginTop="0.5sp"
 
-            android:src="@drawable/proxriego"
-            android:textAlignment="center"
+
             android:visibility="visible" />
 
         <TextView
@@ -503,8 +512,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            android:text="mm6"
-            android:textAlignment="center"
+
+
             android:textColor="@android:color/white"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -514,9 +523,9 @@
         android:id="@+id/tableRow7"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="2dp"
-        android:layout_marginRight="2dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginLeft="2sp"
+        android:layout_marginRight="2sp"
+        android:layout_marginTop="2sp"
         android:background="@color/bright_foreground_disabled_material_light"
         android:gravity="center">
 
@@ -525,7 +534,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            android:text="Fecha7"
+
             android:textAlignment="center"
 
 
@@ -536,15 +545,15 @@
 
         <ImageView
             android:id="@+id/tabla_estado_7"
-            android:layout_width="40dp"
-            android:layout_height="30dp"
-            android:layout_marginLeft="2dp"
+            android:layout_width="40sp"
+            android:layout_height="30sp"
+            android:layout_marginLeft="2sp"
 
-            android:layout_marginRight="2dp"
-            android:layout_marginTop="0.5dp"
+            android:layout_marginRight="35sp"
+            android:layout_marginTop="0.5sp"
 
-            android:src="@drawable/proxriego"
-            android:textAlignment="center"
+
+
             android:visibility="visible" />
 
         <TextView
@@ -552,9 +561,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            android:text="mm7"
 
-            android:textAlignment="center"
+
             android:textColor="@android:color/white"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -563,3 +571,4 @@
 
 
 </TableLayout>
+</RelativeLayout>

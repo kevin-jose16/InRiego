@@ -28,8 +28,10 @@ public class AdapterPivots extends BaseAdapter {
     public ArrayList<Pivot> getPivots() {
         return pivots;
     }
-    public void setPivots(ArrayList<Pivot> pivots) {
-        pivots = pivots;
+
+    public void setPivots(ArrayList<Clases.Pivot> pivotsr) {
+
+        pivots = pivotsr;
     }
 
     public AdapterPivots(){}
@@ -52,13 +54,21 @@ public class AdapterPivots extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         View v = view;
-        if (view == null) {
+
+       /* if (view == null) {
             LayoutInflater inf = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = inf.inflate(R.layout.fila_pivot, null);
         }
         Pivot pv = pivots.get(i);
-        CheckedTextView chtv = (CheckedTextView) v.findViewById(R.id.check_text);
-        chtv.setText(pv.getNombre());
+        Spinner spi = (Spinner) v.findViewById(R.id.spinner_pivot);
+        ArrayList <String> listita = new ArrayList<>();
+        listita.add("hola");
+        ArrayAdapter aa = new ArrayAdapter(activity,android.R.layout.select_dialog_multichoice,listita);
+         aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //Setting the ArrayAdapter data on the Spinner
+
+        spi.setAdapter(aa);*/
+
         return v;
     }
 

@@ -323,7 +323,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         JSONArray pv_riegos = pv.getJSONArray("Advices");
                         for(int r=0;r<=pv_riegos.length()-1;r++){
                             JSONObject riego = pv_riegos.getJSONObject(r);
-                            Date f_riego = CrearFecha(riego.get("Date").toString());
+                            String f_riego= riego.get("Date").toString();
                             Riego rg = new Riego(riego.get("IrrigationType").toString(), f_riego,Float.parseFloat(riego.get("Quantity").toString()));
                             p.getRiegos().add(rg);
                         }
