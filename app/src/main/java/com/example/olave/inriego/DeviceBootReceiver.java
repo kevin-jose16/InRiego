@@ -27,6 +27,8 @@ public class DeviceBootReceiver extends BroadcastReceiver {
 
             Intent alarmIntent = new Intent(context, AlarmReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
+            PendingIntent pending = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
+            Intent alarmIntent_mail = new Intent(context, AlarmReceiverMail.class);
             AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
              /* Set the alarm to start at 20:00 hs */
             Calendar calendar = Calendar.getInstance();
@@ -34,7 +36,14 @@ public class DeviceBootReceiver extends BroadcastReceiver {
             calendar.set(Calendar.HOUR_OF_DAY, 20);
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);
-            manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+
+            Calendar cal_mail = Calendar.getInstance();
+            cal_mail.set(Calendar.HOUR_OF_DAY, 21);
+            cal_mail.set(Calendar.MINUTE, 30);
+            cal_mail.set(Calendar.SECOND, 0);
+
+            manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+            manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pending);
             Toast.makeText(context, "Alarm Set", Toast.LENGTH_SHORT).show();
         }
     }

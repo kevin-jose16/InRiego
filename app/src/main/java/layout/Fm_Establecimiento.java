@@ -170,7 +170,21 @@ public class Fm_Establecimiento extends Fragment {
         }
     }
 
-    
+    public void onBackPressed() {
+        /*DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }*/
+        Fragment fragment;
+        fragment = new Fm_AgregarRiego();
+        if (fragment != null) {
+            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.frameprincipal, fragment).commit();
+        }
+    }
 
     @Override
     public void onDetach() {

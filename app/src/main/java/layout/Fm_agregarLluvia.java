@@ -187,8 +187,22 @@ public class Fm_agregarLluvia extends Fragment {
                     else {
                         String[] fechas = bt_fecha.getText().toString().split("/");
                         int year = Integer.parseInt(fechas[2]);
-                        int month = Integer.parseInt(fechas[1]);
-                        int day = Integer.parseInt(fechas[0]);
+                        int month;
+                        String month_f, day_f;
+                        int day;
+                        if(fechas[1].length()==1){
+                            month_f= "0"+fechas[1];
+                            month = Integer.parseInt(month_f);
+                        }
+                        else
+                            month = Integer.parseInt(fechas[1]);
+
+                        if(fechas[0].length()==1){
+                            day_f= "0"+fechas[1];
+                            day = Integer.parseInt(day_f);
+                        }
+                        else
+                            day = Integer.parseInt(fechas[0]);
                     /*Calendar cl = Calendar.getInstance();
                     cl.set(Calendar.DAY_OF_MONTH, day);
                     cl.set(Calendar.MONTH, month);

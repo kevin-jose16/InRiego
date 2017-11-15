@@ -202,8 +202,22 @@ public class Fm_AgregarRiego extends Fragment {
                     else {
                         String[] fechas = bt_fecha.getText().toString().split("/");
                         int year = Integer.parseInt(fechas[2]);
-                        int month = Integer.parseInt(fechas[1]);
-                        int day = Integer.parseInt(fechas[0]);
+                        int month;
+                        String month_f, day_f;
+                        int day;
+                        if(fechas[1].length()==1){
+                            month_f= "0"+fechas[1];
+                            month = Integer.parseInt(month_f);
+                        }
+                        else
+                            month = Integer.parseInt(fechas[1]);
+
+                        if(fechas[0].length()==1){
+                            day_f= "0"+fechas[1];
+                            day = Integer.parseInt(day_f);
+                        }
+                        else
+                            day = Integer.parseInt(fechas[0]);
                         String fecha = year + "-" + month + "-" + day;
                         Json_SQLiteHelper json_sq = new Json_SQLiteHelper(getActivity(), "DBJsons", null, 1);
                         SQLiteDatabase dta_base = json_sq.getReadableDatabase();

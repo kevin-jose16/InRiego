@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -66,8 +68,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     int advice_cod;
     boolean esriego; //Chequear si es riego o lluvia
     String reg_riego; //Json de registro de riego/lluvia pasado a string
-    private PendingIntent pendingIntent;
-    private PendingIntent pending;
+    private PendingIntent pendingIntent = null;
+    private PendingIntent pending = null;
     private AlarmManager manager;
     Json_SQLiteHelper json_sq;
     SQLiteDatabase dta_base;
@@ -158,14 +160,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
 
+
         Intent alarmIntent = new Intent(MainActivity.this, AlarmReceiver.class);
         Intent alarmIntent_mail = new Intent(MainActivity.this, AlarmReceiverMail.class);
-        pending = PendingIntent.getBroadcast(this, 0, alarmIntent_mail, 0);
-        pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
+        if (alarmIntent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
+            pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
+            startAt20();
+        }
+        if (alarmIntent_mail.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
+            pending = PendingIntent.getBroadcast(this, 0, alarmIntent_mail, 0);
+            startAt2130();
+        }
+        if(pendingIntent==null){
+            pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
+            startAt20();
+        }
 
-        //startAt20();
-        //startAt2130();
-       //start();
+        if(pending==null){
+            pending = PendingIntent.getBroadcast(this, 0, alarmIntent_mail, 0);
+            startAt2130();
+        }
+
     }
 
 
@@ -223,10 +238,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_verinfo) {
             fragment = new FragmentPivot();
         } else if (id == R.id.nav_sincronice){
-            json_sq= new Json_SQLiteHelper(MainActivity.this, "DBJsons", null, 1);
-            dta_base = json_sq.getReadableDatabase();
-            abd = new SQLiteHelper(dta_base,json_sq);
-            new SincronizarDatos().execute();
+            //if(probarConn()) {
+                json_sq= new Json_SQLiteHelper(MainActivity.this, "DBJsons", null, 1);
+                dta_base = json_sq.getReadableDatabase();
+                abd = new SQLiteHelper(dta_base,json_sq);
+                new SincronizarDatos().execute();
+
+            //}
+            /*else{
+                mostrarMsg("NO tiene conexion!!");
+                Intent alarmIntent2030 = new Intent(MainActivity.this, AlarmReceiver.class);
+                pendingIntent2030 = PendingIntent.getBroadcast(this, 0, alarmIntent2030, 0);
+                start2030();
+            }*/
+
+            //Toast.makeText(MainActivity.this,"Tu dispositivo NO tiene conexion", Toast.LENGTH_SHORT);*/
+
 
         } else if (id == R.id.nav_logout) {
 
@@ -400,12 +427,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return fecha_r= cal.getTime();
     }
 
+    public boolean probarConn(){
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo infoNet = cm.getActiveNetworkInfo();
+
+        if(infoNet != null){
+            if(infoNet.isConnected()){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public void mostrarMsg(String msg){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(msg).setTitle("Conexion a Internet");
+        builder.setPositiveButton("OK",null);
+        builder.create();
+        builder.show();
+    }
     public void start() {
         manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        manager.setRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis(), 60000, pending);
+        manager.setRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis(), 60000, pendingIntent);
+        //Calendar c= Calendar.getInstance();
+        //c.set(Calendar.MINUTE, 22);
+        //c.set(Calendar.SECOND, 00);
+        //c.setTimeInMillis(c.getTimeInMillis()+120000);
+        //manager.set(AlarmManager.RTC_WAKEUP,c.getTimeInMillis(),pendingIntent);
         //manager.setTime(74340000);
-        Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
     }
+
     public void startAt2130() {
         manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Toast.makeText(this, "Alarm MAIL Set", Toast.LENGTH_SHORT).show();
@@ -570,7 +626,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             else{
                 Calendar cal = Calendar.getInstance();
                 abd.insertLog(cal.getTime() +  "ERROR. No se sincronizaron los datos:\n"+reg_riego + "\nproblemas con la conexión a internet", json_sq);
-                Toast.makeText(MainActivity.this, "No tiene conexión a internet\no hay problemas con el servidor",
+                Toast.makeText(MainActivity.this, "Se perdio la conexión a internet\no hay problemas con el servidor",
                         Toast.LENGTH_LONG).show();
                 db.close();
             }
