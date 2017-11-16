@@ -5,9 +5,11 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CheckedTextView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.olave.inriego.R;
@@ -28,8 +30,10 @@ public class AdapterPivots extends BaseAdapter {
     public ArrayList<Pivot> getPivots() {
         return pivots;
     }
-    public void setPivots(ArrayList<Pivot> pivots) {
-        pivots = pivots;
+
+    public void setPivots(ArrayList<Clases.Pivot> pivotsr) {
+
+        pivots = pivotsr;
     }
 
     public AdapterPivots(){}
@@ -52,14 +56,26 @@ public class AdapterPivots extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         View v = view;
+
         if (view == null) {
             LayoutInflater inf = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = inf.inflate(R.layout.fila_pivot, null);
         }
         Pivot pv = pivots.get(i);
+
+        Spinner spi = (Spinner) v.findViewById(R.id.spinner_pivot);
+        ArrayList <String> listita = new ArrayList<>();
+        listita.add("hola");
+        ArrayAdapter aa = new ArrayAdapter(activity,android.R.layout.select_dialog_multichoice,listita);
+         aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //Setting the ArrayAdapter data on the Spinner
+
+        spi.setAdapter(aa);
+
         CheckedTextView chtv = (CheckedTextView) v.findViewById(R.id.check_text);
         //pv.getId() + " - " +
         chtv.setText( pv.getId() + " - " + pv.getNombre());
+
         return v;
     }
 

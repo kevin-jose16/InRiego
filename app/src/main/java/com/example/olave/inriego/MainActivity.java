@@ -343,9 +343,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (result!=null){
                 try {
                     JSONObject json = new JSONObject(result);
+
+                    sp = getSharedPreferences("sesion",Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sp.edit();
+                   
                     if(json.getBoolean("IsOk")){
                         sp = getSharedPreferences("sesion",Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sp.edit();
+                         editor = sp.edit();
                         JSONObject jsonData = json.optJSONObject("Data");
 
                         //Setear fecha de referencia en atributo y sesion
@@ -360,11 +364,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             JSONArray pv_riegos = pv.getJSONArray("Advices");
                             for(int r=0;r<=pv_riegos.length()-1;r++){
                                 JSONObject riego = pv_riegos.getJSONObject(r);
-                                Date f_riego = CrearFecha(riego.get("Date").toString());
+                                String f_riego = riego.get("Date").toString();
                                 Riego rg = new Riego(riego.get("IrrigationType").toString(), f_riego,Float.parseFloat(riego.get("Quantity").toString()));
                                 p.getRiegos().add(rg);
                             }
                             estab_pivots.add(p);
+
                         }
                         Establecimiento est = new Establecimiento(Integer.parseInt(farmId),farmdesc,reference_date);
                         est.setPivots(estab_pivots);

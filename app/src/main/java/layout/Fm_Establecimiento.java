@@ -21,6 +21,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.olave.inriego.AdapterPivots;
 import com.example.olave.inriego.FragmentPivot;
 import com.example.olave.inriego.Login;
 import com.example.olave.inriego.MainActivity;
@@ -64,6 +65,7 @@ public class Fm_Establecimiento extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    public static Adapters.AdapterPivots ap;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -248,11 +250,15 @@ public class Fm_Establecimiento extends Fragment {
             if (result!=null){
                 try {
                     JSONObject json = new JSONObject(result);
+
+
                     if(json.getBoolean("IsOk")){
                         sp = getActivity().getSharedPreferences("sesion",Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sp.edit();
                         JSONObject jsonData = json.optJSONObject("Data");
                         String ref_date = jsonData.getString("ReferenceDate");
+
+                        String fechaRef = jsonData.getString("ReferenceDate");
 
                         //Setear fecha en clase principal y sesion
                         MainActivity mn = (MainActivity) getActivity();
@@ -267,11 +273,12 @@ public class Fm_Establecimiento extends Fragment {
                             JSONArray pv_riegos = pv.getJSONArray("Advices");
                             for(int r=0;r<=pv_riegos.length()-1;r++){
                                 JSONObject riego = pv_riegos.getJSONObject(r);
-                                Date f_riego = CrearFecha(riego.get("Date").toString());
+                                String f_riego = riego.get("Date").toString();
                                 Riego rg = new Riego(riego.get("IrrigationType").toString(), f_riego,Float.parseFloat(riego.get("Quantity").toString()));
                                 p.getRiegos().add(rg);
                             }
                             estab_pivots.add(p);
+
                         }
                         Establecimiento est = new Establecimiento(Integer.parseInt(farmId),farmdesc,ref_date);
                         est.setPivots(estab_pivots);
@@ -279,6 +286,7 @@ public class Fm_Establecimiento extends Fragment {
                         es.add(est);
                         String jsonObjetos = new Gson().toJson(es);
                         editor.putString("actual_farm", jsonObjetos);
+                        editor.putString("Fecha_ref",fechaRef);
                         editor.putBoolean("hay_farm",true);
                         editor.commit();
                         Calendar cal = Calendar.getInstance();
@@ -292,6 +300,8 @@ public class Fm_Establecimiento extends Fragment {
                         Toast.makeText(getActivity(), "No se pudo seleccionar establecimiento",
                                 Toast.LENGTH_LONG).show();
                     }
+
+
 
                 } catch (JSONException e) {
                     e.printStackTrace();
