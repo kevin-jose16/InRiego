@@ -63,14 +63,7 @@ public class AdapterPivots extends BaseAdapter {
         }
         Pivot pv = pivots.get(i);
 
-        Spinner spi = (Spinner) v.findViewById(R.id.spinner_pivot);
-        ArrayList <String> listita = new ArrayList<>();
-        listita.add("hola");
-        ArrayAdapter aa = new ArrayAdapter(activity,android.R.layout.select_dialog_multichoice,listita);
-         aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        //Setting the ArrayAdapter data on the Spinner
 
-        spi.setAdapter(aa);
 
         CheckedTextView chtv = (CheckedTextView) v.findViewById(R.id.check_text);
         //pv.getId() + " - " +

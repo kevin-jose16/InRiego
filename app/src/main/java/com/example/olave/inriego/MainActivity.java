@@ -163,14 +163,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         Intent alarmIntent = new Intent(MainActivity.this, AlarmReceiver.class);
         Intent alarmIntent_mail = new Intent(MainActivity.this, AlarmReceiverMail.class);
-        if (alarmIntent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
+/*        if (alarmIntent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
             pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
             startAt20();
         }
         if (alarmIntent_mail.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
             pending = PendingIntent.getBroadcast(this, 0, alarmIntent_mail, 0);
             startAt2130();
-        }
+        }*/
         if(pendingIntent==null){
             pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
             startAt20();
@@ -238,19 +238,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_verinfo) {
             fragment = new FragmentPivot();
         } else if (id == R.id.nav_sincronice){
-            //if(probarConn()) {
+            if(probarConn()) {
                 json_sq= new Json_SQLiteHelper(MainActivity.this, "DBJsons", null, 1);
                 dta_base = json_sq.getReadableDatabase();
                 abd = new SQLiteHelper(dta_base,json_sq);
                 new SincronizarDatos().execute();
 
-            //}
-            /*else{
-                mostrarMsg("NO tiene conexion!!");
-                Intent alarmIntent2030 = new Intent(MainActivity.this, AlarmReceiver.class);
+            }
+            else{
+                mostrarMsg("NO tiene conexion, intente mas tarde");
+                /*Intent alarmIntent2030 = new Intent(MainActivity.this, AlarmReceiver.class);
                 pendingIntent2030 = PendingIntent.getBroadcast(this, 0, alarmIntent2030, 0);
-                start2030();
-            }*/
+                start2030();*/
+            }
 
             //Toast.makeText(MainActivity.this,"Tu dispositivo NO tiene conexion", Toast.LENGTH_SHORT);*/
 
@@ -469,7 +469,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void startAt2130() {
         manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Toast.makeText(this, "Alarm MAIL Set", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Alarm MAIL Set", Toast.LENGTH_SHORT).show();
         /* Set the alarm to start at 21:30 hs */
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 21);
@@ -490,7 +490,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         calendar.set(Calendar.HOUR_OF_DAY, 20);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
-
+        //Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
         /* Repeating on every one day interval */
         manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
                 AlarmManager.INTERVAL_DAY, pendingIntent);
