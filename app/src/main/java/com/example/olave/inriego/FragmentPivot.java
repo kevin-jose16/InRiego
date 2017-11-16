@@ -875,11 +875,11 @@ public class FragmentPivot extends Fragment {
         });
 
 
-        //MainActivity ma = (MainActivity) getActivity();
-        //ma.setItemVisible(1,true);
-        //ma.setItemVisible(2,true);
-        //ma.setItemVisible(3,true);
-        //ma.setItemVisible(4,true);
+        MainActivity ma = (MainActivity) getActivity();
+        ma.setItemVisible(1,true);
+        ma.setItemVisible(2,true);
+        ma.setItemVisible(3,true);
+        ma.setItemVisible(4,true);
 
         return v;
     }
