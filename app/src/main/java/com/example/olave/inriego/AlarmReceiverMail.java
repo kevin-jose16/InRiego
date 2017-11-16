@@ -93,8 +93,8 @@ public class AlarmReceiverMail extends BroadcastReceiver {
         Cursor result= abd.obtener();
 
         //Mail para datos no sincronizados
-        //if(result.getCount()>=1)
-            //this.mailSincronizar();
+        if(result.getCount()>=1)
+            this.mailSincronizar();
 
         //Mail para los logs del dia
         this.mailLog();
