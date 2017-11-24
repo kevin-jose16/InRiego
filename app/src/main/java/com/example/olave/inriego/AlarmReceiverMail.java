@@ -188,11 +188,12 @@ public class AlarmReceiverMail extends BroadcastReceiver {
 
                     result.moveToNext();
                 }
-                message = message + "<body><html>";
+                message = message + "</body></html>";
             }
         }
         else
-            message = "Hoy no se han ingresado o sincrinizado datos";
+            message = "Hoy no se han ingresado o sincronizado datos";
+
         dta_base.close();
 
         String email = "nadiacabrerayahn@gmail.com"; //destinatario (va mail de PGG)

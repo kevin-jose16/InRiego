@@ -73,9 +73,9 @@ public class SQLiteHelper extends Activity {
         }
     }
 
-    public void insertLog(String log, Json_SQLiteHelper usu){
+    public void insertLog(String log, String user, Json_SQLiteHelper usu){
         SQLiteDatabase db = usu.getReadableDatabase();
-        db.execSQL("INSERT INTO log (cod, salida) VALUES (null,'" + log + "' )");
+        db.execSQL("INSERT INTO log (cod, salida,user) VALUES (null,'" + log + "', '" + user + "')");
         db.close();
     }
 

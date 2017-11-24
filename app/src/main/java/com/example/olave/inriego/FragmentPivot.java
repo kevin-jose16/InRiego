@@ -647,7 +647,7 @@ public class FragmentPivot extends Fragment {
                     TextView fecha = (TextView) getActivity().findViewById(R.id.fecha_cultivo);
                     Calendar f_riego = CrearFecha(pv.getString("siembra"));
                     String anio= Integer.toString(f_riego.get(Calendar.YEAR));
-                    String mes= Integer.toString(f_riego.get(Calendar.MONTH));
+                    String mes= Integer.toString(f_riego.get(Calendar.MONTH)+1);
                     String dia =Integer.toString(f_riego.get(Calendar.DATE));
                     fecha.setText(dia + "/"+mes+ "/" +anio);
                     TextView fenologia = (TextView) getActivity().findViewById(R.id.fenologia);
