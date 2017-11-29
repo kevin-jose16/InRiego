@@ -103,10 +103,11 @@ public class AlarmReceiverMail extends BroadcastReceiver {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.clear();
         editor.commit();
-        MainActivity ma = (MainActivity) context;
-        ma.finish();
-        Intent i = new Intent(context, Login.class);
-        context.startActivity(i);
+        //MainActivity ma = (MainActivity) context;
+        //ma.finish();
+        Intent i = new Intent(contexto, Login.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        contexto.startActivity(i);
         // For our recurring task, we'll just display a message
         //Toast.makeText(context, "I'm running", Toast.LENGTH_SHORT).show();
     }
