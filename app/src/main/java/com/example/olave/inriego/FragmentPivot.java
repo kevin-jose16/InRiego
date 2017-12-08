@@ -3,6 +3,7 @@ package com.example.olave.inriego;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -700,6 +701,14 @@ public class FragmentPivot extends Fragment {
                     tipos_riegos.add((ImageView) getActivity().findViewById(R.id.tabla_estado_6));
                     tipos_riegos.add((ImageView) getActivity().findViewById(R.id.tabla_estado_7));
 
+
+                    tipos_riegos.get(0).setImageDrawable(getActivity().getDrawable(R.drawable.no_riego));
+                    tipos_riegos.get(1).setImageDrawable(getActivity().getDrawable(R.drawable.no_riego));
+                    tipos_riegos.get(2).setImageDrawable(getActivity().getDrawable(R.drawable.no_riego));
+                    tipos_riegos.get(3).setImageDrawable(getActivity().getDrawable(R.drawable.no_riego));
+                    tipos_riegos.get(4).setImageDrawable(getActivity().getDrawable(R.drawable.no_riego));
+                    tipos_riegos.get(5).setImageDrawable(getActivity().getDrawable(R.drawable.no_riego));
+                    tipos_riegos.get(6).setImageDrawable(getActivity().getDrawable(R.drawable.no_riego));
                     SetearSieteFechas(ref_date);
 
 
@@ -808,8 +817,10 @@ public class FragmentPivot extends Fragment {
                                     String mes_v= Integer.toString(fecha_valida.get(Calendar.MONTH)+1);
                                     String dia_v =Integer.toString(fecha_valida.get(Calendar.DATE));
                                     fechas_riegos.get(i).setText(dia_v+"/"+mes_v+"/"+anio_v);
-                                    mm_riegos.get(i).setText("-");
-                                    tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.no_riego));
+                                    if(mm_riegos.get(i).getText().equals("-") || mm_riegos.get(i).getText().equals(""))
+                                        mm_riegos.get(i).setText("-");
+                                    //if(!tipos_riegos.get(i).equals(R.drawable.riego) || tipos_riegos.get(i) == null)
+                                    //tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.no_riego));
                                     tipos_riegos.get(i).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
                                     tipos_riegos.get(i).setMaxWidth(10);
                                     tipos_riegos.get(i).setMaxHeight(10);
@@ -828,7 +839,7 @@ public class FragmentPivot extends Fragment {
                                     if(comparaFechas(fecha_riego,ref_d)>0 &&comparaFechas(fecha_riego,ref_d)!=-4
                                             && comparaFechas(fecha_riego,ref_d)!=4){//fecha_riego>fecha_ref y no es nulo
                                         if(tipo.equals("Irrigation")){
-                                            tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.riego));
+                                            tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.proxriego));
 
                                         }
                                         if (tipo.equals("Rain")) {
@@ -853,6 +864,11 @@ public class FragmentPivot extends Fragment {
                                         }
 
                                     }
+                                    /*int ab = comparaFechas(fecha_riego,ref_d);
+                                    if(comparaFechas(fecha_riego,ref_d)==0 &&comparaFechas(fecha_riego,ref_d)!=-4
+                                            && comparaFechas(fecha_riego,ref_d)!=4){
+                                        tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.riego));
+                                    }*/
 
                                 }
 
