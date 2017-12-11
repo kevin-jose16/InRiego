@@ -142,7 +142,10 @@ public class Login extends AppCompatActivity {
                         editor.commit();
 
                         Calendar cal = Calendar.getInstance();
-                        abd.insertLog(cal.getTime().toString() + " -- El usuario " + username + " ha ingresado en el sistema", json_sq);
+                        abd.insertLog(cal.getTime().toString() + " -- El usuario " + username + " ha ingresado en el sistema", username,json_sq);
+                        Cursor cur = abd.obtenerLog();
+                        cur.moveToFirst();
+                        cur.getString(1);
                         dta_base.close();
                         //iniciar 2da activity despues del login
                         Intent i = new Intent(Login.this,MainActivity.class);
@@ -150,7 +153,7 @@ public class Login extends AppCompatActivity {
                     }
                     else{
                         Calendar cal = Calendar.getInstance();
-                        abd.insertLog(cal.getTime().toString() + " -- El usuario " + username + " no existente, intento ingresar al sistema", json_sq);
+                        abd.insertLog(cal.getTime().toString() + " -- El usuario " + username + " no existente, intento ingresar al sistema", username, json_sq);
                         dta_base.close();
                         Toast.makeText(Login.this, "El nombre de usuario o la contraseña son incorrectos",
                                 Toast.LENGTH_LONG).show();
@@ -165,7 +168,7 @@ public class Login extends AppCompatActivity {
             }
             else{
                 Calendar cal = Calendar.getInstance();
-                abd.insertLog(cal.getTime().toString() + " -- El usuario " + username + " no pudo ingresar al sistema por problemas en el servidor o la conexión a internet", json_sq);
+                abd.insertLog(cal.getTime().toString() + " -- El usuario " + username + " no pudo ingresar al sistema por problemas en el servidor o la conexión a internet",username, json_sq);
                 dta_base.close();
                 Toast.makeText(Login.this, "Problema con servidor o conexión a internet", Toast.LENGTH_LONG).show();
             }

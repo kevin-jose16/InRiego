@@ -222,8 +222,8 @@ public class Fm_AgregarRiego extends Fragment {
                         Json_SQLiteHelper json_sq = new Json_SQLiteHelper(getActivity(), "DBJsons", null, 1);
                         SQLiteDatabase dta_base = json_sq.getReadableDatabase();
                         SQLiteHelper abd = new SQLiteHelper(dta_base, json_sq);
-                      //  abd.borrar(dta_base);
-                       // dta_base.close();
+                        //abd.borrar(dta_base);
+                        //dta_base.close();
                         ArrayList<Integer> pivotsIds = new ArrayList();
                         for (int i = 0; i < ma.pivots.size(); i++) {
                             String[] ids = ma.pivots.get(i).split(" ");

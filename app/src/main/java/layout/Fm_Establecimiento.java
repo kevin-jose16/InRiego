@@ -73,6 +73,7 @@ public class Fm_Establecimiento extends Fragment {
     ArrayList<Pivot> estab_pivots = new ArrayList<>();
     ArrayList<Establecimiento> farmslist= new ArrayList<>();
     SharedPreferences sp;
+    boolean tiene_pivots=false;
     String farmId, farmdesc;
 
     private OnFragmentInteractionListener mListener;
@@ -266,36 +267,39 @@ public class Fm_Establecimiento extends Fragment {
                         editor.putString("ReferenceDate",ref_date);
 
                         JSONArray farm_pivots = jsonData.getJSONArray("IrrigationRows");
-                        for(int i=0;i<=farm_pivots.length()-1;i++){
-                            JSONObject pv = farm_pivots.getJSONObject(i);
-                            //Integer.parseInt(pv.get("IrrigationId").toString()),
-                            Pivot p = new Pivot(Integer.parseInt(pv.get("IrrigationUnitId").toString()),pv.get("Name").toString(), pv.get("Crop").toString(), pv.get("HarvestDate").toString(), pv.get("Phenology").toString());
-                            JSONArray pv_riegos = pv.getJSONArray("Advices");
-                            for(int r=0;r<=pv_riegos.length()-1;r++){
-                                JSONObject riego = pv_riegos.getJSONObject(r);
-                                String f_riego = riego.get("Date").toString();
-                                Riego rg = new Riego(riego.get("IrrigationType").toString(), f_riego,Float.parseFloat(riego.get("Quantity").toString()));
-                                p.getRiegos().add(rg);
-                            }
-                            estab_pivots.add(p);
+                        if(farm_pivots.length()>0) {
+                            tiene_pivots=true;
+                            for (int i = 0; i <= farm_pivots.length() - 1; i++) {
+                                JSONObject pv = farm_pivots.getJSONObject(i);
+                                //Integer.parseInt(pv.get("IrrigationId").toString()),
+                                Pivot p = new Pivot(Integer.parseInt(pv.get("IrrigationUnitId").toString()), pv.get("Name").toString(), pv.get("Crop").toString(), pv.get("HarvestDate").toString(), pv.get("Phenology").toString());
+                                JSONArray pv_riegos = pv.getJSONArray("Advices");
+                                for (int r = 0; r <= pv_riegos.length() - 1; r++) {
+                                    JSONObject riego = pv_riegos.getJSONObject(r);
+                                    String f_riego = riego.get("Date").toString();
+                                    Riego rg = new Riego(riego.get("IrrigationType").toString(), f_riego, Float.parseFloat(riego.get("Quantity").toString()));
+                                    p.getRiegos().add(rg);
+                                }
+                                estab_pivots.add(p);
 
+                            }
+                            Establecimiento est = new Establecimiento(Integer.parseInt(farmId), farmdesc, ref_date);
+                            est.setPivots(estab_pivots);
+                            ArrayList<Establecimiento> es = new ArrayList<>();
+                            es.add(est);
+                            String jsonObjetos = new Gson().toJson(es);
+                            editor.putString("actual_farm", jsonObjetos);
+                            editor.putString("Fecha_ref", fechaRef);
+                            editor.putBoolean("hay_farm", true);
+                            editor.commit();
+                            Calendar cal = Calendar.getInstance();
+                            abd.insertLog(cal.getTime().toString() + "Se selecciona el establecimiento " + farmdesc + " con respuesta correcta del servidor", sp.getString("username", ""), json_sq);
+                            dta_base.close();
                         }
-                        Establecimiento est = new Establecimiento(Integer.parseInt(farmId),farmdesc,ref_date);
-                        est.setPivots(estab_pivots);
-                        ArrayList<Establecimiento> es = new ArrayList<>();
-                        es.add(est);
-                        String jsonObjetos = new Gson().toJson(es);
-                        editor.putString("actual_farm", jsonObjetos);
-                        editor.putString("Fecha_ref",fechaRef);
-                        editor.putBoolean("hay_farm",true);
-                        editor.commit();
-                        Calendar cal = Calendar.getInstance();
-                        abd.insertLog(cal.getTime().toString() + "Se selecciona el establecimiento " + farmdesc + " con respuesta correcta del servidor", json_sq);
-                        dta_base.close();
                     }
                     else{
                         Calendar cal = Calendar.getInstance();
-                        abd.insertLog(cal.getTime().toString() + "Se intento seleccionar el establecimiento " + farmdesc + " con respuesta no exitosa del servidor", json_sq);
+                        abd.insertLog(cal.getTime().toString() + "Se intento seleccionar el establecimiento " + farmdesc + " con respuesta no exitosa del servidor", sp.getString("username",""), json_sq);
                         dta_base.close();
                         Toast.makeText(getActivity(), "No se pudo seleccionar establecimiento",
                                 Toast.LENGTH_LONG).show();
@@ -306,16 +310,21 @@ public class Fm_Establecimiento extends Fragment {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-                Fragment fragment= new FragmentPivot();
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                fragmentManager.beginTransaction()
-                        .replace(R.id.frameprincipal, fragment).commit();
+                if(tiene_pivots) {
+                    Fragment fragment = new FragmentPivot();
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.frameprincipal, fragment).commit();
+                }
+                else{
+                    Toast.makeText(getActivity(), "Seleccione otro establecimiento\nque tenga pivots",
+                            Toast.LENGTH_LONG).show();
+                }
 
             }
             else{
                 Calendar cal = Calendar.getInstance();
-                abd.insertLog(cal.getTime().toString() + "No se pudo seleccionar un establecimiento por problemas en el servidor o la conexión a internet", json_sq);
+                abd.insertLog(cal.getTime().toString() + "No se pudo seleccionar un establecimiento por problemas en el servidor o la conexión a internet", sp.getString("username",""), json_sq);
                 dta_base.close();
                 Toast.makeText(getActivity(), "No tiene conexión a internet\no hay problemas con el servidor",
                         Toast.LENGTH_LONG).show();

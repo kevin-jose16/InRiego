@@ -32,11 +32,10 @@ public class DeviceBootReceiver extends BroadcastReceiver {
             AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
              /* Set the alarm to start at 20:00 hs */
             Calendar calendar = Calendar.getInstance();
-            //calendar.setTimeInMillis(System.currentTimeMillis());
             calendar.set(Calendar.HOUR_OF_DAY, 20);
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);
-
+            /* Set the alarm to start at 21:30 hs */
             Calendar cal_mail = Calendar.getInstance();
             cal_mail.set(Calendar.HOUR_OF_DAY, 21);
             cal_mail.set(Calendar.MINUTE, 30);
@@ -44,7 +43,7 @@ public class DeviceBootReceiver extends BroadcastReceiver {
 
             manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
             manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pending);
-            Toast.makeText(context, "Alarm Set", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(context, "Alarm Set", Toast.LENGTH_SHORT).show();
         }
     }
 }

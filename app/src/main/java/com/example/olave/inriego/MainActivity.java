@@ -380,12 +380,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         editor.putBoolean("hay_farm", true);
                         editor.commit();
                         Calendar cal = Calendar.getInstance();
-                        abd.insertLog(cal.getTime().toString() + "Se selecciona el establecimiento " + farmdesc + " con respuesta correcta del servidor", json_sq);
+                        abd.insertLog(cal.getTime().toString() + "Se selecciona el establecimiento " + farmdesc + " con respuesta correcta del servidor",sp.getString("username",""), json_sq);
                         dta_base.close();
                     }
                     else{
                         Calendar cal = Calendar.getInstance();
-                        abd.insertLog(cal.getTime().toString() + "Se intento seleccionar el establecimiento " + farmdesc + " con respuesta no exitosa del servidor", json_sq);
+                        abd.insertLog(cal.getTime().toString() + "Se intento seleccionar el establecimiento " + farmdesc + " con respuesta no exitosa del servidor", sp.getString("username",""),json_sq);
                         dta_base.close();
                         Toast.makeText(MainActivity.this, "No se pudo seleccionar establecimiento",
                                 Toast.LENGTH_LONG).show();
@@ -403,7 +403,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             else{
                 Calendar cal = Calendar.getInstance();
-                abd.insertLog(cal.getTime().toString() + "No se pudo seleccionar un establecimiento por problemas en el servidor o la conexión a internet", json_sq);
+                abd.insertLog(cal.getTime().toString() + "No se pudo seleccionar un establecimiento por problemas en el servidor o la conexión a internet",sp.getString("username",""), json_sq);
                 dta_base.close();
                 Toast.makeText(MainActivity.this, "No tiene conexión a internet\no hay problemas con el servidor",
                         Toast.LENGTH_LONG).show();
@@ -605,14 +605,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         if (isok) {
                             abd.borrar_regRiego(db, advice_cod);
                             if (esriego) {
-                                abd.insertLog(cal.getTime() + " -- Sincronización exitosa del suiguiente registro de riego:\n" + reg_riego, json_sq);
+                                abd.insertLog(cal.getTime() + " -- Sincronización exitosa del suiguiente registro de riego:\n" + reg_riego,sp.getString("username",""), json_sq);
                             } else {
-                                abd.insertLog(cal.getTime() + " -- Sincronización exitosa del suiguiente registro de lluvia:\n" + reg_riego, json_sq);
+                                abd.insertLog(cal.getTime() + " -- Sincronización exitosa del suiguiente registro de lluvia:\n" + reg_riego, sp.getString("username",""), json_sq);
                             }
                             Toast.makeText(MainActivity.this, " -- Sincronización exitosa -- ",
                                     Toast.LENGTH_LONG).show();
                         } else {
-                            abd.insertLog(cal.getTime() + " -- Sincronización no exitosa, ERROR: " + json.getString("ErrorMessage"), json_sq);
+                            abd.insertLog(cal.getTime() + " -- Sincronización no exitosa, ERROR: " + json.getString("ErrorMessage"), sp.getString("username",""), json_sq);
                             Toast.makeText(MainActivity.this, " -- Sincronización no exitosa, ERROR:\n" + json.getString("ErrorMessage"),
                                     Toast.LENGTH_LONG).show();
                         }
@@ -630,7 +630,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             else{
                 Calendar cal = Calendar.getInstance();
-                abd.insertLog(cal.getTime() +  "ERROR. No se sincronizaron los datos:\n"+reg_riego + "\nproblemas con la conexión a internet", json_sq);
+                abd.insertLog(cal.getTime() +  "ERROR. No se sincronizaron los datos:\n"+reg_riego + "\nproblemas con la conexión a internet", sp.getString("username",""), json_sq);
                 Toast.makeText(MainActivity.this, "Se perdio la conexión a internet\no hay problemas con el servidor",
                         Toast.LENGTH_LONG).show();
                 db.close();

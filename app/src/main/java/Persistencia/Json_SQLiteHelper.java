@@ -18,8 +18,8 @@ public class Json_SQLiteHelper extends SQLiteOpenHelper {
             " establecimiento TEXT," +
             " tipo_riego TEXT )";
 
-    //String sql = "DROP TABLE IF EXISTS Jsons";
-    String sqlLog = "CREATE TABLE log (cod INTEGER PRIMARY KEY, salida TEXT)";
+    //String sql = "DROP TABLE IF EXISTS log";
+    String sqlLog = "CREATE TABLE log (cod INTEGER PRIMARY KEY, salida TEXT, user TEXT)";
 
     public Json_SQLiteHelper(Context contexto, String nombre,
                                  CursorFactory factory, int version) {
