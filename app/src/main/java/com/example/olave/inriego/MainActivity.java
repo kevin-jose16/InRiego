@@ -527,7 +527,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 esriego=true;
                             }
                             else {
-                                if (result.getString(5)=="Rain") {
+                                if (result.getString(5).equals("Rain")) {
                                     url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/IrrigationData/AddRain");
                                     esriego=false;
                                 }
@@ -594,7 +594,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             SQLiteHelper abd = new SQLiteHelper(db,json_sq);
 
             if (result!=null){
-                if(result == "no_hay_datos")
+                if(result.equals("no_hay_datos"))
                     Toast.makeText(MainActivity.this, "No hay datos que sincronizar", Toast.LENGTH_LONG).show();
                 else {
                     try {
