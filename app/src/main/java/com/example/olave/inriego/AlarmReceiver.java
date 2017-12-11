@@ -7,6 +7,8 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
@@ -21,6 +23,9 @@ import com.example.olave.inriego.R;
 
 import java.util.Calendar;
 import java.util.Random;
+
+import Persistencia.Json_SQLiteHelper;
+import Persistencia.SQLiteHelper;
 
 public class AlarmReceiver extends BroadcastReceiver {
     MediaPlayer mMediaPlayer;
@@ -37,7 +42,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                             .setSmallIcon(R.drawable.logoinriego)
                             .setContentTitle("Informacion sin Sincronizar")
                             .setColor(color)
-                            .setContentText("Tienes N datos sin sincronizar");
+                            .setContentText("Tienes datos sin sincronizar");
 
             Intent resultIntent = new Intent(context, MainActivity.class);
 
@@ -59,7 +64,13 @@ public class AlarmReceiver extends BroadcastReceiver {
 
             int n = rand.nextInt(999) + 1;
             //When you issue multiple notifications about the same type of event, it’s best practice for your app to try to update an existing notification with this new information, rather than immediately creating a new notification. If you want to update this notification at a later date, you need to assign it an ID. You can then use this ID whenever you issue a subsequent notification. If the previous notification is still visible, the system will update this existing notification, rather than create a new one. In this example, the notification’s ID is 001//
-            mNotificationManager.notify(n, mBuilder.build());
+            Json_SQLiteHelper json_sq= new Json_SQLiteHelper(context, "DBJsons", null, 1);
+            SQLiteDatabase dta_base = json_sq.getReadableDatabase();
+            SQLiteHelper abd = new SQLiteHelper(dta_base, json_sq);
+            Cursor result= abd.obtener();
+
+            if(result.getCount()>=1)
+                mNotificationManager.notify(n, mBuilder.build());
             // For our recurring task, we'll just display a message
             //Toast.makeText(context, "I'm running", Toast.LENGTH_SHORT).show();
         }
