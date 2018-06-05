@@ -171,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             pending = PendingIntent.getBroadcast(this, 0, alarmIntent_mail, 0);
             startAt2130();
         }*/
-        if(pendingIntent==null){
+        /*if(pendingIntent==null){
             pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
             startAt20();
         }
@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if(pending==null){
             pending = PendingIntent.getBroadcast(this, 0, alarmIntent_mail, 0);
             startAt2130();
-        }
+        }*/
 
     }
 
@@ -327,7 +327,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 in.close();
                 res=response.toString();
-
             } catch (IOException e) {
                 e.printStackTrace();
             }

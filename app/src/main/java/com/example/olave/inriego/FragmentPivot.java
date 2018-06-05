@@ -239,6 +239,7 @@ public class FragmentPivot extends Fragment {
                     month7=month2=month;
                     day1 =day-2; day2=day-1;
                     day7 = day+4; day4=day+1; day5=day+2; day6=day+3;
+                    month4=month5=month6=month;
                     if(day>=28 && day<=31) {// dias 28 a 31
                         month7=month+1;
                         if (day == 28){
@@ -446,7 +447,13 @@ public class FragmentPivot extends Fragment {
             }
 
         }
-
+        /*int di1, di2,di3,di4,di5,di6,di7;
+        int y1,y2,y3,y4,y5,y6,y7;
+        int m1,m2,m3,m4,m5,m6,m7;
+        m1=month1; m2 = month2; m3=month;  m4=month4; m5=month5; m6= month6; m7=month7;
+        di1=day1; di2= day2; di3 = day; di4=day4; di5 = day5; di6= day6; di7 = day7;
+        y1= year1; y2=year2;y3=year; y4=year4; y5=year5; y6=year6; y7= year7;
+        int ab = day;*/
     }
 
     public Calendar CrearFecha(String fecha) {
@@ -468,22 +475,22 @@ public class FragmentPivot extends Fragment {
 
 
 
-            if ('-'==fecha.charAt(6)){
-                if ("0".equals(fecha.charAt(7)))
-                    day = Integer.parseInt("" + fecha.charAt(8));
+        if ('-'==fecha.charAt(6)){
+            if ("0".equals(fecha.charAt(7)))
+                day = Integer.parseInt("" + fecha.charAt(8));
+            else
+                day = Integer.parseInt("" + fecha.charAt(7));
+           }
+        else {
+            if ('-'==fecha.charAt(7)) {
+                if ("0".equals(fecha.charAt(8)))
+                    day = Integer.parseInt("" + fecha.charAt(9));
                 else
-                    day = Integer.parseInt("" + fecha.charAt(7));
-               }
-            else {
-                if ('-'==fecha.charAt(7)) {
-                    if ("0".equals(fecha.charAt(8)))
-                        day = Integer.parseInt("" + fecha.charAt(9));
-                    else
-                        day = Integer.parseInt("" + fecha.charAt(8) + fecha.charAt(9));
-                }
+                    day = Integer.parseInt("" + fecha.charAt(8) + fecha.charAt(9));
             }
+        }
 
-            month=month-1;
+        month=month-1;
         cal.set(year,month,day);
         //int anio= cal.get(Calendar.YEAR);
 
@@ -595,9 +602,9 @@ public class FragmentPivot extends Fragment {
         sp = getActivity().getSharedPreferences("sesion",Context.MODE_PRIVATE);
         final String ref_date= sp.getString("Fecha_ref", "No hay fecha");
         final Calendar ref_d = CrearFecha(ref_date);
-        String anio_rf= Integer.toString(ref_d.get(Calendar.YEAR));
-        String mes_rf= Integer.toString(ref_d.get(Calendar.MONTH));
-        String dia_rf =Integer.toString(ref_d.get(Calendar.DATE));
+        //String anio_rf= Integer.toString(ref_d.get(Calendar.YEAR));
+        //String mes_rf= Integer.toString(ref_d.get(Calendar.MONTH)+1);
+       // String dia_rf =Integer.toString(ref_d.get(Calendar.DATE));
 
 
         try {
@@ -703,12 +710,19 @@ public class FragmentPivot extends Fragment {
 
 
                     tipos_riegos.get(0).setImageDrawable(getActivity().getDrawable(R.drawable.no_riego));
+                    tipos_riegos.get(0).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
                     tipos_riegos.get(1).setImageDrawable(getActivity().getDrawable(R.drawable.no_riego));
+                    tipos_riegos.get(1).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
                     tipos_riegos.get(2).setImageDrawable(getActivity().getDrawable(R.drawable.no_riego));
+                    tipos_riegos.get(2).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
                     tipos_riegos.get(3).setImageDrawable(getActivity().getDrawable(R.drawable.no_riego));
+                    tipos_riegos.get(3).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
                     tipos_riegos.get(4).setImageDrawable(getActivity().getDrawable(R.drawable.no_riego));
+                    tipos_riegos.get(4).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
                     tipos_riegos.get(5).setImageDrawable(getActivity().getDrawable(R.drawable.no_riego));
+                    tipos_riegos.get(5).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
                     tipos_riegos.get(6).setImageDrawable(getActivity().getDrawable(R.drawable.no_riego));
+                    tipos_riegos.get(6).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
                     SetearSieteFechas(ref_date);
 
 
@@ -717,22 +731,64 @@ public class FragmentPivot extends Fragment {
                     ArrayList<String> anios_validos = new ArrayList<String>();
 
                     //setea los dias
-                    dias_validos.add(Integer.toString(day1));
-                    dias_validos.add(Integer.toString(day2));
-                    dias_validos.add(Integer.toString(day));
-                    dias_validos.add(Integer.toString(day4));
-                    dias_validos.add(Integer.toString(day5));
-                    dias_validos.add(Integer.toString(day6));
-                    dias_validos.add(Integer.toString(day7));
+                    if(Integer.toString(day1).length()==1)
+                        dias_validos.add(0+Integer.toString(day1));
+                    else
+                        dias_validos.add(Integer.toString(day1));
+                    if(Integer.toString(day2).length()==1)
+                        dias_validos.add(0+Integer.toString(day2));
+                    else
+                        dias_validos.add(Integer.toString(day2));
+                    if(Integer.toString(day).length()==1)
+                        dias_validos.add(0+Integer.toString(day));
+                    else
+                        dias_validos.add(Integer.toString(day));
+                    if(Integer.toString(day4).length()==1)
+                        dias_validos.add(0+Integer.toString(day4));
+                    else
+                        dias_validos.add(Integer.toString(day4));
+                    if(Integer.toString(day5).length()==1)
+                        dias_validos.add(0+Integer.toString(day5));
+                    else
+                        dias_validos.add(Integer.toString(day5));
+                    if(Integer.toString(day6).length()==1)
+                        dias_validos.add(0+Integer.toString(day6));
+                    else
+                        dias_validos.add(Integer.toString(day6));
+                    if(Integer.toString(day7).length()==1)
+                        dias_validos.add(0+Integer.toString(day7));
+                    else
+                        dias_validos.add(Integer.toString(day7));
 
                     //setea los meses
-                    meses_validos.add(Integer.toString(month1));
-                    meses_validos.add(Integer.toString(month2));
-                    meses_validos.add(Integer.toString(month));
-                    meses_validos.add(Integer.toString(month4));
-                    meses_validos.add(Integer.toString(month5));
-                    meses_validos.add(Integer.toString(month6));
-                    meses_validos.add(Integer.toString(month7));
+                    if(Integer.toString(month1).length()==1)
+                        meses_validos.add(0+Integer.toString(month1));
+                    else
+                        meses_validos.add(Integer.toString(month1));
+                    if(Integer.toString(month2).length()==1)
+                        meses_validos.add(0+Integer.toString(month2));
+                    else
+                        meses_validos.add(Integer.toString(month2));
+                    if(Integer.toString(month).length()==1)
+                        meses_validos.add(0+Integer.toString(month));
+                    else
+                        meses_validos.add(Integer.toString(month));
+                    if(Integer.toString(month4).length()==1)
+                        meses_validos.add(0+Integer.toString(month4));
+                    else
+                        meses_validos.add(Integer.toString(month4));
+                    if(Integer.toString(month5).length()==1)
+                        meses_validos.add(0+Integer.toString(month5));
+                    else
+                        meses_validos.add(Integer.toString(month5));
+                    if(Integer.toString(month6).length()==1)
+                        meses_validos.add(0+Integer.toString(month6));
+                    else
+                        meses_validos.add(Integer.toString(month6));
+                    if(Integer.toString(month7).length()==1)
+                        meses_validos.add(0+Integer.toString(month7));
+                    else
+                        meses_validos.add(Integer.toString(month7));
 
                     //setea los años
                     anios_validos.add(Integer.toString(year1));
@@ -744,56 +800,52 @@ public class FragmentPivot extends Fragment {
                     anios_validos.add(Integer.toString(year7));
 
 
-
-
                     JSONArray riegos= new JSONArray();
-
-
-
-
                     if(riegos_traidos.isNull(0)){
-                    for(int i =0; i<7;i++){
-                        String fec =anios_validos.get(i)+"-"+meses_validos.get(i)+"-"+dias_validos.get(i);
-                        Calendar fecha_valida = CrearFecha(fec);
-                        String anio_v= Integer.toString(fecha_valida.get(Calendar.YEAR));
-                        String mes_v= Integer.toString(fecha_valida.get(Calendar.MONTH)+1);
-                        String dia_v =Integer.toString(fecha_valida.get(Calendar.DATE));
-                        fechas_riegos.get(i).setText(dia_v+"/"+mes_v+"/"+anio_v);
-                        mm_riegos.get(i).setText("-");
-                        tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.no_riego));
-                        tipos_riegos.get(i).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
-
-                    }}
+                        for(int i =0; i<7;i++){
+                            String fec =anios_validos.get(i)+"-"+meses_validos.get(i)+"-"+dias_validos.get(i);
+                            Calendar fecha_valida = CrearFecha(fec);
+                            String anio_v= Integer.toString(fecha_valida.get(Calendar.YEAR));
+                            String mes_v= Integer.toString(fecha_valida.get(Calendar.MONTH)+1);
+                            String dia_v =Integer.toString(fecha_valida.get(Calendar.DATE));
+                            fechas_riegos.get(i).setText(dia_v+"/"+mes_v+"/"+anio_v);
+                            mm_riegos.get(i).setText("-");
+                            tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.no_riego));
+                            tipos_riegos.get(i).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
+                        }
+                    }
 
                     for(int a =0; a<7;a++){
                         for(int b=0; b<riegos_traidos.length();b++){
 
                             JSONObject riegotraido = riegos_traidos.getJSONObject(b);
                             Calendar fecha_rtraido= CrearFecha(riegotraido.getString("fecha"));
+                           // String abc = riegotraido.getString("fecha");
                            // Date fec = new Date(Integer.valueOf(anios_validos.get(a)),Integer.valueOf(meses_validos.get(a)),Integer.valueOf(dias_validos.get(a)));
                             String fec =anios_validos.get(a)+"-"+meses_validos.get(a)+"-"+dias_validos.get(a);
                             Calendar fecha_valida = CrearFecha(fec);
                             if(comparaFechas(fecha_valida,fecha_rtraido)==0)
-                                riegos.put(riegos_traidos.getJSONObject(b));
-                            }
+                                    riegos.put(riegos_traidos.getJSONObject(b));
+                        }
                     }
 
 
                     for(int i =0; i<riegos.length();i++){
                         if(riegos.get(i)!= ""){
-                        JSONObject riego = riegos.getJSONObject(i);
-                        Calendar fecha_rt= CrearFecha(riego.getString("fecha"));
+                            JSONObject riego = riegos.getJSONObject(i);
+                            Calendar fecha_rt= CrearFecha(riego.getString("fecha"));
 
-                        for(int j=0; j<riegos.length();j++){
-                            JSONObject riego1 = riegos.getJSONObject(j);
-                            Calendar fecha_riego= CrearFecha(riego1.getString("fecha"));
-                            int comp= comparaFechas(fecha_rt, fecha_riego);
-                            if(comp>3){
-                                riegos= cambiaLugar(riegos,i,j);
+                            for(int j=0; j<riegos.length();j++){
+                                JSONObject riego1 = riegos.getJSONObject(j);
+                                Calendar fecha_riego= CrearFecha(riego1.getString("fecha"));
+                                int comp= comparaFechas(fecha_rt, fecha_riego);
+                                if(comp>3){
+                                    riegos= cambiaLugar(riegos,i,j);
+
+                                }
 
                             }
-
-                        }}
+                        }
                     }
 
 
@@ -801,76 +853,96 @@ public class FragmentPivot extends Fragment {
 
 
 
-                    for(int j=0; j<riegos.length(); j++){
-                        for(int i=0; i<7;i++){
+                    for(int i=0; i<7;i++){
+                        for(int j=0; j<riegos.length(); j++){
                             String fec =anios_validos.get(i)+"-"+meses_validos.get(i)+"-"+dias_validos.get(i);
                             Calendar fecha_valida = CrearFecha(fec);
 
 
                             JSONObject riego = riegos.getJSONObject(j);
+                           /* JSONObject riego1 = riegos.getJSONObject(0);
+                            JSONObject riego2 = riegos.getJSONObject(1);
+                            JSONObject riego3 = riegos.getJSONObject(2);
+                            Calendar fecha_riego1= CrearFecha(riego1.getString("fecha"));
+                            Calendar fecha_riego2= CrearFecha(riego2.getString("fecha"));
+                            Calendar fecha_riego3= CrearFecha(riego3.getString("fecha"));
+                            int d1,d2,d3,m1,m2,m3,y1,y2,y3;
+                            d1= fecha_riego1.get(Calendar.DATE); m1= fecha_riego1.get(Calendar.MONTH); y1= fecha_riego1.get(Calendar.YEAR);
+                            d2= fecha_riego2.get(Calendar.DATE); m2= fecha_riego2.get(Calendar.MONTH); y2= fecha_riego2.get(Calendar.YEAR);
+                            d3= fecha_riego3.get(Calendar.DATE); m3= fecha_riego3.get(Calendar.MONTH); y3= fecha_riego3.get(Calendar.YEAR);
+                            int rc = 2;*/
+
                             Calendar fecha_riego= CrearFecha(riego.getString("fecha"));
                                 //Calendar fecha_valida = CrearFecha(anios_validos.get(i)+meses_validos.get(i)+ anios_validos.get(i));
 
-
-                                if(comparaFechas(fecha_riego,fecha_valida)!=0){
-                                    String anio_v= Integer.toString(fecha_valida.get(Calendar.YEAR));
-                                    String mes_v= Integer.toString(fecha_valida.get(Calendar.MONTH)+1);
-                                    String dia_v =Integer.toString(fecha_valida.get(Calendar.DATE));
-                                    fechas_riegos.get(i).setText(dia_v+"/"+mes_v+"/"+anio_v);
-                                    if(mm_riegos.get(i).getText().equals("-") || mm_riegos.get(i).getText().equals(""))
-                                        mm_riegos.get(i).setText("-");
-                                    //if(!tipos_riegos.get(i).equals(R.drawable.riego) || tipos_riegos.get(i) == null)
-                                    //tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.no_riego));
-                                    tipos_riegos.get(i).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
-                                    tipos_riegos.get(i).setMaxWidth(10);
-                                    tipos_riegos.get(i).setMaxHeight(10);
-                                    for(int n=riegos.length()-1;n>i;n--){
-                                       riegos=cambiaLugar(riegos,n,n-1);
-                                    }
+                            if(comparaFechas(fecha_riego,fecha_valida)!=0){
+                                String anio_v= Integer.toString(fecha_valida.get(Calendar.YEAR));
+                                String mes_v= Integer.toString(fecha_valida.get(Calendar.MONTH)+1);
+                                String dia_v =Integer.toString(fecha_valida.get(Calendar.DATE));
+                                fechas_riegos.get(i).setText(dia_v+"/"+mes_v+"/"+anio_v);
+                                if(mm_riegos.get(i).getText().equals("-") || mm_riegos.get(i).getText().equals(""))
+                                    mm_riegos.get(i).setText("-");
+                                //if(!tipos_riegos.get(i).equals(R.drawable.riego) || tipos_riegos.get(i) == null)
+                                //tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.no_riego));
+                                tipos_riegos.get(i).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
+                                tipos_riegos.get(i).setMaxWidth(10);
+                                tipos_riegos.get(i).setMaxHeight(10);
+                                for(int n=riegos.length()-1;n>i;n--){
+                                   riegos=cambiaLugar(riegos,n,n-1);
                                 }
-                                else{
-                                    String anio_r= Integer.toString(fecha_riego.get(Calendar.YEAR));
-                                    String mes_r= Integer.toString(fecha_riego.get(Calendar.MONTH)+1);
-                                    String dia_r =Integer.toString(fecha_riego.get(Calendar.DATE));
-                                    fechas_riegos.get(i).setText(dia_r+"/"+mes_r+"/"+anio_r);
-                                    String mm_riego= riego.getString("milimetros");
-                                    mm_riegos.get(i).setText(mm_riego);
-                                    String tipo= riego.getString("tipo");
-                                    if(comparaFechas(fecha_riego,ref_d)>0 &&comparaFechas(fecha_riego,ref_d)!=-4
-                                            && comparaFechas(fecha_riego,ref_d)!=4){//fecha_riego>fecha_ref y no es nulo
-                                        if(tipo.equals("Irrigation")){
-                                            tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.proxriego));
-
-                                        }
-                                        if (tipo.equals("Rain")) {
-
-                                            tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.no_riego));
-                                            tipos_riegos.get(i).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
-                                            String mmvacio= "-";
-                                            mm_riegos.get(i).setText(mmvacio);
-                                        }
+                            }
+                            else{
+                                String anio_r= Integer.toString(fecha_riego.get(Calendar.YEAR));
+                                String mes_r= Integer.toString(fecha_riego.get(Calendar.MONTH)+1);
+                                String dia_r =Integer.toString(fecha_riego.get(Calendar.DATE));
+                                fechas_riegos.get(i).setText(dia_r+"/"+mes_r+"/"+anio_r);
+                                String mm_riego= riego.getString("milimetros");
+                                mm_riegos.get(i).setText(mm_riego);
+                                String tipo= riego.getString("tipo");
+                                if(comparaFechas(fecha_riego,ref_d)>0 &&comparaFechas(fecha_riego,ref_d)!=-4
+                                        && comparaFechas(fecha_riego,ref_d)!=4){//fecha_riego>fecha_ref y no es nulo
+                                    if(tipo.equals("Irrigation")){
+                                        tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.proxriego));
 
                                     }
-                                    if(comparaFechas(fecha_riego,ref_d)<0 &&comparaFechas(fecha_riego,ref_d)!=-4
-                                            && comparaFechas(fecha_riego,ref_d)!=4){//fecha_riego<fecha_ref y no es nulo
-                                        if (tipo.equals("Irrigation")){
-                                            tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.riego));
+                                    if (tipo.equals("Rain")) {
 
-                                        }
-                                        if (tipo.equals("Rain")){
-                                            tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.ic_cloud));
-                                            tipos_riegos.get(i).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
-
-                                        }
-
+                                        tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.no_riego));
+                                        tipos_riegos.get(i).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
+                                        String mmvacio= "-";
+                                        mm_riegos.get(i).setText(mmvacio);
                                     }
-                                    /*int ab = comparaFechas(fecha_riego,ref_d);
-                                    if(comparaFechas(fecha_riego,ref_d)==0 &&comparaFechas(fecha_riego,ref_d)!=-4
-                                            && comparaFechas(fecha_riego,ref_d)!=4){
+
+                                }
+                                if(comparaFechas(fecha_riego,ref_d)<0 &&comparaFechas(fecha_riego,ref_d)!=-4
+                                        && comparaFechas(fecha_riego,ref_d)!=4){//fecha_riego<fecha_ref y no es nulo
+                                    if (tipo.equals("Irrigation")){
                                         tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.riego));
-                                    }*/
+
+                                    }
+                                    if (tipo.equals("Rain")){
+                                        tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.ic_cloud));
+                                        //tipos_riegos.get(i).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
+                                    }
 
                                 }
+                                //int ab = comparaFechas(fecha_riego,ref_d);
+                                if(comparaFechas(fecha_riego,ref_d)==0) { //&&comparaFechas(fecha_riego,ref_d)!=-4
+                                    //&& comparaFechas(fecha_riego,ref_d)!=4){
+                                    if (tipo.equals("Irrigation")) {
+                                        tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.riego));
+                                        tipos_riegos.get(i).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
+
+                                    }
+                                    if (tipo.equals("Rain")) {
+                                        tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.ic_cloud));
+                                        tipos_riegos.get(i).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
+
+                                    }
+                                }
+                               // }
+
+                            }
 
 
 

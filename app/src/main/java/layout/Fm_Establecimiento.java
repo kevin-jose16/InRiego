@@ -235,6 +235,7 @@ public class Fm_Establecimiento extends Fragment {
                 }
                 in.close();
                 res=response.toString();
+                String a = res;
 
             } catch (IOException e) {
                 e.printStackTrace();

@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/InRiego.iml" filepath="$PROJECT_DIR$/InRiego.iml" />
-      <module fileurl="file://$PROJECT_DIR$/InRiegoApp.iml" filepath="$PROJECT_DIR$/InRiegoApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/InRiego.iml" filepath="$PROJECT_DIR$/.idea/InRiego.iml" />
+      <module fileurl="file://C:\Users\olave\Desktop\InRiego\InRiego.iml" filepath="C:\Users\olave\Desktop\InRiego\InRiego.iml" />
+      <module fileurl="file://C:\Users\olave\Desktop\InRiego\InRiegoApp.iml" filepath="C:\Users\olave\Desktop\InRiego\InRiegoApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
