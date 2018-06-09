@@ -1,5 +1,6 @@
 package com.example.olave.inriego;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -51,6 +52,7 @@ public class Login extends AppCompatActivity {
 
     ArrayList<Establecimiento> farms = new ArrayList<Establecimiento>();
 
+    private ProgressDialog progress;  //para mostrar barrita de progreso mientras demora el servidor
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +81,7 @@ public class Login extends AppCompatActivity {
 
 
 
-    public class ClaseAsincrona extends AsyncTask<String,Void,String> {
+    public class ClaseAsincrona extends AsyncTask<String,Integer,String> {
         String res;
         String username;
         String password;
@@ -141,6 +143,8 @@ public class Login extends AppCompatActivity {
                         editor.putString("farmslist", jsonObjetos);
                         editor.commit();
 
+                        progress.setProgress(100); //progreso culminado
+
                         Calendar cal = Calendar.getInstance();
                         abd.insertLog(cal.getTime().toString() + " -- El usuario " + username + " ha ingresado en el sistema", username,json_sq);
                         Cursor cur = abd.obtenerLog();
@@ -155,6 +159,7 @@ public class Login extends AppCompatActivity {
                         Calendar cal = Calendar.getInstance();
                         abd.insertLog(cal.getTime().toString() + " -- El usuario " + username + " no existente, intento ingresar al sistema", username, json_sq);
                         dta_base.close();
+                        progress.setProgress(0);
                         Toast.makeText(Login.this, "El nombre de usuario o la contraseña son incorrectos",
                                 Toast.LENGTH_LONG).show();
                     }
@@ -171,10 +176,26 @@ public class Login extends AppCompatActivity {
                 abd.insertLog(cal.getTime().toString() + " -- El usuario " + username + " no pudo ingresar al sistema por problemas en el servidor o la conexión a internet",username, json_sq);
                 dta_base.close();
                 Toast.makeText(Login.this, "Problema con servidor o conexión a internet", Toast.LENGTH_LONG).show();
+                progress.setProgress(0);
             }
-
+            progress.dismiss();
         }
 
+        //procedimientos para ir actualizando y mostrar la barra de progreso
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            progress.setProgress(values[0]);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            progress=new ProgressDialog(Login.this);
+            progress.setMessage("Procesando....");
+            progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progress.setProgress(0);
+            progress.setMax(100);
+            progress.show();
+        }
     }
 
 }

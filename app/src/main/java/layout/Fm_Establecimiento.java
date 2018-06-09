@@ -1,5 +1,6 @@
 package layout;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -81,7 +82,7 @@ public class Fm_Establecimiento extends Fragment {
     public Fm_Establecimiento() {
         // Required empty public constructor
     }
-
+    ProgressDialog progress;  //para mostrar barrita de progreso mientras demora el servidor
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -210,7 +211,7 @@ public class Fm_Establecimiento extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public class ClaseAsincrona extends AsyncTask<String,Void,String> {
+    public class ClaseAsincrona extends AsyncTask<String,Integer,String> {
         String res;
         String token;
 
@@ -316,23 +317,41 @@ public class Fm_Establecimiento extends Fragment {
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                     fragmentManager.beginTransaction()
                             .replace(R.id.frameprincipal, fragment).commit();
+                    progress.setProgress(100); //progreso culminado
                 }
                 else{
+                    progress.setProgress(0);
                     Toast.makeText(getActivity(), "Seleccione otro establecimiento\nque tenga pivots",
                             Toast.LENGTH_LONG).show();
                 }
 
             }
             else{
+                progress.setProgress(0);
                 Calendar cal = Calendar.getInstance();
                 abd.insertLog(cal.getTime().toString() + "No se pudo seleccionar un establecimiento por problemas en el servidor o la conexión a internet", sp.getString("username",""), json_sq);
                 dta_base.close();
                 Toast.makeText(getActivity(), "No tiene conexión a internet\no hay problemas con el servidor",
                         Toast.LENGTH_LONG).show();
             }
-
+            progress.dismiss();
         }
 
+        //procedimientos para ir actualizando y mostrar la barra de progreso
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            progress.setProgress(values[0]);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            progress=new ProgressDialog(getActivity());
+            progress.setMessage("Procesando....");
+            progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progress.setProgress(0);
+            progress.setMax(100);
+            progress.show();
+        }
     }
     public Date CrearFecha(String fecha) {
         Calendar cal = Calendar.getInstance();

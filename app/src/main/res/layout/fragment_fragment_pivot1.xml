@@ -118,7 +118,7 @@
 
             android:layout_marginLeft="15sp"
             android:paddingTop="2sp"
-            android:text="Siembra"
+            android:text="Cosecha"
             android:textSize="22sp"
             android:textStyle="bold" />
 
