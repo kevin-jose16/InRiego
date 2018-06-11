@@ -63,7 +63,7 @@ public class AlarmReceiverMail extends BroadcastReceiver {
         PendingIntent resultPendingIntent =
                 PendingIntent.getActivity(
                         context,
-                        0,
+                        1,
                         resultIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
@@ -154,7 +154,7 @@ public class AlarmReceiverMail extends BroadcastReceiver {
         }
         dta_base.close();
 
-        String email = "nadiacabrerayahn@gmail.com"; //destinatario (va mail de PGG)
+        String email = "josekevin15@gmail.com"; //destinatario (va mail de PGG)
 
 
 
@@ -198,13 +198,14 @@ public class AlarmReceiverMail extends BroadcastReceiver {
 
         dta_base.close();
 
-        String email = "nadiacabrerayahn@gmail.com"; //destinatario (va mail de PGG)
+        String email = "josekevin15@gmail.com"; //destinatario (va mail de PGG)
         //Creating SendMail object
 
         SendMail sm = new SendMail(contexto, email, subject, message);
 
         //Executing sendmail to send email
         sm.execute();
+        mNotificationManager.notify(n, mBuilder.build());
     }
 
 }

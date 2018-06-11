@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
@@ -78,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         super.onCreate(savedInstanceState);
         setTitle("InRiego");
 
@@ -171,13 +173,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             pending = PendingIntent.getBroadcast(this, 0, alarmIntent_mail, 0);
             startAt2130();
         }*/
-        /*if(pendingIntent==null){
+        if(pendingIntent==null){
             pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
             startAt20();
         }
 
-        if(pending==null){
-            pending = PendingIntent.getBroadcast(this, 0, alarmIntent_mail, 0);
+        /*if(pending==null){
+            pending = PendingIntent.getBroadcast(this, 1, alarmIntent_mail, 0);
             startAt2130();
         }*/
 
@@ -243,6 +245,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 dta_base = json_sq.getReadableDatabase();
                 abd = new SQLiteHelper(dta_base,json_sq);
                 new SincronizarDatos().execute();
+                //boolean esalarma = true;
+                //Sincronizar(json_sq,esalarma);
 
             }
             else{
@@ -502,11 +506,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toast.makeText(this, "Alarm Canceled", Toast.LENGTH_SHORT).show();
     }
 
+
     public class SincronizarDatos extends AsyncTask<Void, Void, String> {
 
         String res;
-
-
         @Override
         protected String doInBackground(Void... voids) {
 

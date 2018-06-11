@@ -27,8 +27,8 @@ public class DeviceBootReceiver extends BroadcastReceiver {
 
             Intent alarmIntent = new Intent(context, AlarmReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
-            PendingIntent pending = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
             Intent alarmIntent_mail = new Intent(context, AlarmReceiverMail.class);
+            PendingIntent pending = PendingIntent.getBroadcast(context, 0, alarmIntent_mail, 0);
             AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
              /* Set the alarm to start at 20:00 hs */
             Calendar calendar = Calendar.getInstance();

@@ -936,7 +936,7 @@ public class FragmentPivot extends Fragment {
                                     }
                                     if (tipo.equals("Rain")) {
                                         tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.ic_cloud));
-                                        tipos_riegos.get(i).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
+                                        //tipos_riegos.get(i).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
 
                                     }
                                 }
