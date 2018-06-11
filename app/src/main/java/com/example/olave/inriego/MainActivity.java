@@ -1,6 +1,8 @@
 package com.example.olave.inriego;
 
 import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,6 +17,7 @@ import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -49,6 +52,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
 
 import Clases.Establecimiento;
 import Clases.Pivot;
@@ -383,7 +387,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         editor.putBoolean("hay_farm", true);
                         editor.commit();
                         Calendar cal = Calendar.getInstance();
-                        abd.insertLog(cal.getTime().toString() + "Se selecciona el establecimiento " + farmdesc + " con respuesta correcta del servidor",sp.getString("username",""), json_sq);
+                        abd.insertLog(cal.getTime().toString() + " - Se selecciona el establecimiento " + farmdesc + " con respuesta correcta del servidor",sp.getString("username",""), json_sq);
                         dta_base.close();
                     }
                     else{
@@ -506,10 +510,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toast.makeText(this, "Alarm Canceled", Toast.LENGTH_SHORT).show();
     }
 
-
-    public class SincronizarDatos extends AsyncTask<Void, Void, String> {
+    public class SincronizarDatos extends AsyncTask<Void, Integer, String> {
 
         String res;
+
+        NotificationCompat.Builder notificationBuilder;
+        NotificationManager notificationManager;
+        Random rand = new Random();
+        int n = rand.nextInt(999) + 1;
+
         @Override
         protected String doInBackground(Void... voids) {
 
@@ -613,10 +622,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             }
                             Toast.makeText(MainActivity.this, " -- Sincronización exitosa -- ",
                                     Toast.LENGTH_LONG).show();
+                            notificationBuilder.setContentTitle("¡Sincronización completada!").setAutoCancel(true).setProgress(0,0,false);
+                            notificationManager.notify(n, notificationBuilder.build());
                         } else {
                             abd.insertLog(cal.getTime() + " -- Sincronización no exitosa, ERROR: " + json.getString("ErrorMessage"), sp.getString("username",""), json_sq);
                             Toast.makeText(MainActivity.this, " -- Sincronización no exitosa, ERROR:\n" + json.getString("ErrorMessage"),
                                     Toast.LENGTH_LONG).show();
+                            notificationBuilder.setAutoCancel(true).setProgress(0,0,false).setContentText("¡Hubo un error en la sincronización!");
+                            notificationManager.notify(n, notificationBuilder.build());
                         }
 
                         db.close();
@@ -636,7 +649,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Toast.makeText(MainActivity.this, "Se perdio la conexión a internet\no hay problemas con el servidor",
                         Toast.LENGTH_LONG).show();
                 db.close();
+                //notificationBuilder.setContentText("¡Hubo un error en la sincronización!");
+                notificationManager.notify(n, notificationBuilder.build());
             }
+        }
+
+        @Override
+        protected void onPreExecute() {
+            Intent resultIntent = new Intent(getBaseContext(), MainActivity.class);
+            PendingIntent resultPendingIntent =
+                    PendingIntent.getActivity(getBaseContext(),0,resultIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+            notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationBuilder  = new NotificationCompat.Builder(getApplicationContext())
+                    .setPriority(Notification.PRIORITY_MAX)
+                    .setProgress(100,0,true)
+                    .setContentTitle("Sincronizando datos . . .")
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentIntent(resultPendingIntent)
+                    .setAutoCancel(false);
+
+
+            notificationManager.notify(n,notificationBuilder.build());
+        }
+        @Override
+        protected void onProgressUpdate(Integer... progress) {
+
+            notificationBuilder.setContentText(""+progress[0]+"%");
+            notificationBuilder.setProgress(100, progress[0],false);
+            notificationManager.notify(n, notificationBuilder.build());
+
         }
     }
 

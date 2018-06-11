@@ -131,7 +131,7 @@ public class AlarmReceiverMail extends BroadcastReceiver {
                 int cant_registrosbd = result.getCount()-1;
 
                 message = message + "<p>USUARIO: " + result.getString(3) + "</p>";
-                subject = subject + result.getString(3) + "ha agregado los siguientes registros de riego/lluvia";
+                subject = subject + result.getString(3) + " ha agregado los siguientes registros de riego/lluvia";
                 message = message + "<p>EMAIL: " + possibleEmail + "</p><hr>";
 
                 for(int i=0; i<=cant_registrosbd; i++) {
