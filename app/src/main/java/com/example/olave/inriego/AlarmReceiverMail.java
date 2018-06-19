@@ -6,6 +6,7 @@ package com.example.olave.inriego;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -27,6 +28,7 @@ import com.example.olave.inriego.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Calendar;
 import java.util.Random;
 import java.util.regex.Pattern;
 
@@ -104,6 +106,23 @@ public class AlarmReceiverMail extends BroadcastReceiver {
         editor.clear();
         editor.commit();
 
+        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent alarmIntent = new Intent(context, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
+        Intent alarmIntentmail = new Intent(context, AlarmReceiverMail.class);
+        PendingIntent pendingIntentmail = PendingIntent.getBroadcast(context, 1, alarmIntentmail, 0);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 20);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.add(Calendar.DATE,1);
+        manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                AlarmManager.INTERVAL_DAY, pendingIntent);
+        calendar.set(Calendar.HOUR_OF_DAY, 20);
+        calendar.set(Calendar.MINUTE, 20);
+        calendar.set(Calendar.SECOND, 0);
+        manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                AlarmManager.INTERVAL_DAY, pendingIntentmail);
         Intent i = new Intent(contexto, Login.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         contexto.startActivity(i);

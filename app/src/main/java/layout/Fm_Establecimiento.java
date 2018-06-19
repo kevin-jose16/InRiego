@@ -346,7 +346,7 @@ public class Fm_Establecimiento extends Fragment {
         @Override
         protected void onPreExecute() {
             progress=new ProgressDialog(getActivity());
-            progress.setMessage("Procesando....");
+            progress.setMessage("Procesando...");
             progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progress.setProgress(0);
             progress.setMax(100);

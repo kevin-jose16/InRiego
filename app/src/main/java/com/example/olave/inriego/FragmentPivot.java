@@ -447,13 +447,7 @@ public class FragmentPivot extends Fragment {
             }
 
         }
-        /*int di1, di2,di3,di4,di5,di6,di7;
-        int y1,y2,y3,y4,y5,y6,y7;
-        int m1,m2,m3,m4,m5,m6,m7;
-        m1=month1; m2 = month2; m3=month;  m4=month4; m5=month5; m6= month6; m7=month7;
-        di1=day1; di2= day2; di3 = day; di4=day4; di5 = day5; di6= day6; di7 = day7;
-        y1= year1; y2=year2;y3=year; y4=year4; y5=year5; y6=year6; y7= year7;
-        int ab = day;*/
+
     }
 
     public Calendar CrearFecha(String fecha) {
@@ -602,9 +596,6 @@ public class FragmentPivot extends Fragment {
         sp = getActivity().getSharedPreferences("sesion",Context.MODE_PRIVATE);
         final String ref_date= sp.getString("Fecha_ref", "No hay fecha");
         final Calendar ref_d = CrearFecha(ref_date);
-        //String anio_rf= Integer.toString(ref_d.get(Calendar.YEAR));
-        //String mes_rf= Integer.toString(ref_d.get(Calendar.MONTH)+1);
-       // String dia_rf =Integer.toString(ref_d.get(Calendar.DATE));
 
 
         try {
@@ -660,6 +651,7 @@ public class FragmentPivot extends Fragment {
                     fecha.setText(dia + "/"+mes+ "/" +anio);
                     TextView fenologia = (TextView) getActivity().findViewById(R.id.fenologia);
                     fenologia.setText(pv.getString("fenologia"));
+                    TextView fechareferencia = (TextView) getActivity().findViewById(R.id.tv_refdate);
                     JSONArray riegos_traidos =null;
                     riegos_traidos= pv.getJSONArray("riegos");
 
@@ -724,6 +716,7 @@ public class FragmentPivot extends Fragment {
                     tipos_riegos.get(6).setImageDrawable(getActivity().getDrawable(R.drawable.no_riego));
                     tipos_riegos.get(6).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
                     SetearSieteFechas(ref_date);
+                    fechareferencia.setText(day+"/"+month+"/"+year);
 
 
                     ArrayList<String> dias_validos = new ArrayList<String>();

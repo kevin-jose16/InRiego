@@ -79,6 +79,7 @@ public class Fm_agregarLluvia extends Fragment {
     Button bt_cancelar;
     String token;
     String reference_date;
+    AdapterPivots adppivots;
 
 
     private OnFragmentInteractionListener mListener;
@@ -146,7 +147,7 @@ public class Fm_agregarLluvia extends Fragment {
         ArrayList<Pivot> arrpv = farmslist.get(0).getPivots();
         reference_date = farmslist.get(0).getRef_date();
 
-        AdapterPivots adppivots = new AdapterPivots(getActivity(), arrpv);
+        adppivots = new AdapterPivots(getActivity(), arrpv);
         lv.setAdapter(adppivots);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -245,6 +246,10 @@ public class Fm_agregarLluvia extends Fragment {
 
                         Toast.makeText(getActivity(), "Se ha ingresado el registro de lluvia",
                                 Toast.LENGTH_LONG).show();
+                        cant_ed.setText("");
+                        bt_fecha.setText("");
+                        lv.setAdapter(adppivots);
+
                     }
                 }
 

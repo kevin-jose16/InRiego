@@ -11,8 +11,10 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -75,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     String reg_riego; //Json de registro de riego/lluvia pasado a string
     private PendingIntent pendingIntent = null;
     private PendingIntent pending = null;
+    private PendingIntent pendingI = null;
     private AlarmManager manager;
     Json_SQLiteHelper json_sq;
     SQLiteDatabase dta_base;
@@ -168,21 +171,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
         Intent alarmIntent = new Intent(MainActivity.this, AlarmReceiver.class);
+        Intent alarmI = new Intent(MainActivity.this, AlarmReceiver.class);
         Intent alarmIntent_mail = new Intent(MainActivity.this, AlarmReceiverMail.class);
 /*        if (alarmIntent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
             pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
             startAt20();
-        }
-        if (alarmIntent_mail.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
-            pending = PendingIntent.getBroadcast(this, 0, alarmIntent_mail, 0);
-            startAt2130();
         }*/
-        if(pendingIntent==null){
+        /*if (pendingI== null) {
+            pendingI = PendingIntent.getBroadcast(this, 6, alarmI, 0);
+            start();
+        }*/
+       /* if(pendingIntent==null){
             pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
             startAt20();
         }
 
-        /*if(pending==null){
+        if(pending==null){
             pending = PendingIntent.getBroadcast(this, 1, alarmIntent_mail, 0);
             startAt2130();
         }*/
@@ -249,8 +253,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 dta_base = json_sq.getReadableDatabase();
                 abd = new SQLiteHelper(dta_base,json_sq);
                 new SincronizarDatos().execute();
-                //boolean esalarma = true;
-                //Sincronizar(json_sq,esalarma);
 
             }
             else{
@@ -259,6 +261,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 pendingIntent2030 = PendingIntent.getBroadcast(this, 0, alarmIntent2030, 0);
                 start2030();*/
             }
+
 
             //Toast.makeText(MainActivity.this,"Tu dispositivo NO tiene conexion", Toast.LENGTH_SHORT);*/
 
@@ -464,12 +467,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
     public void start() {
         manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        manager.setRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis(), 60000, pendingIntent);
-        //Calendar c= Calendar.getInstance();
-        //c.set(Calendar.MINUTE, 22);
-        //c.set(Calendar.SECOND, 00);
-        //c.setTimeInMillis(c.getTimeInMillis()+120000);
-        //manager.set(AlarmManager.RTC_WAKEUP,c.getTimeInMillis(),pendingIntent);
+        //manager.setRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis(), 60000, pendingIntent);
+        Calendar c= Calendar.getInstance();
+        c.set(Calendar.HOUR_OF_DAY,20);
+        c.set(Calendar.MINUTE, 20);
+        c.set(Calendar.SECOND, 0);
+        c.setTimeInMillis(c.getTimeInMillis()+120000);
+        manager.setExact(AlarmManager.RTC_WAKEUP,c.getTimeInMillis(),pendingIntent);
         //manager.setTime(74340000);
         //Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
     }
@@ -657,10 +661,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         protected void onPreExecute() {
             Intent resultIntent = new Intent(getBaseContext(), MainActivity.class);
+            Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
             PendingIntent resultPendingIntent =
                     PendingIntent.getActivity(getBaseContext(),0,resultIntent,PendingIntent.FLAG_UPDATE_CURRENT);
             notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationBuilder  = new NotificationCompat.Builder(getApplicationContext())
+                    .setSound(uri)
                     .setPriority(Notification.PRIORITY_MAX)
                     .setProgress(100,0,true)
                     .setContentTitle("Sincronizando datos . . .")
@@ -669,16 +675,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .setAutoCancel(false);
 
 
+
             notificationManager.notify(n,notificationBuilder.build());
         }
-        @Override
+        /*@Override
         protected void onProgressUpdate(Integer... progress) {
 
             notificationBuilder.setContentText(""+progress[0]+"%");
             notificationBuilder.setProgress(100, progress[0],false);
             notificationManager.notify(n, notificationBuilder.build());
 
-        }
+        }*/
     }
 
 }

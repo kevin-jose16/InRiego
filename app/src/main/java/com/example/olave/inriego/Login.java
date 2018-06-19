@@ -190,7 +190,7 @@ public class Login extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             progress=new ProgressDialog(Login.this);
-            progress.setMessage("Procesando....");
+            progress.setMessage("Procesando...");
             progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progress.setProgress(0);
             progress.setMax(100);

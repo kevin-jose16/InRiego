@@ -78,6 +78,7 @@ public class Fm_AgregarRiego extends Fragment {
     Button bt_cancelar;
     String token;
     String reference_date;
+    AdapterPivots adppivots;
 
 
     private OnFragmentInteractionListener mListener;
@@ -161,7 +162,7 @@ public class Fm_AgregarRiego extends Fragment {
 
         ArrayList<Pivot> arrpv = farmslist.get(0).getPivots();
         reference_date = farmslist.get(0).getRef_date();
-        AdapterPivots adppivots = new AdapterPivots(getActivity(), arrpv);
+        adppivots = new AdapterPivots(getActivity(), arrpv);
         lv.setAdapter(adppivots);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -254,6 +255,9 @@ public class Fm_AgregarRiego extends Fragment {
                         db.close();
                         Toast.makeText(getActivity(), "Se ha ingresado el registro del riego",
                                 Toast.LENGTH_LONG).show();
+                        cant_ed.setText("");
+                        bt_fecha.setText("");
+                        lv.setAdapter(adppivots);
                     }
                 }
 
