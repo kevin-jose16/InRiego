@@ -249,11 +249,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             fragment = new FragmentPivot();
         } else if (id == R.id.nav_sincronice){
             if(probarConn()) {
-                /*json_sq= new Json_SQLiteHelper(MainActivity.this, "DBJsons", null, 1);
+                json_sq= new Json_SQLiteHelper(MainActivity.this, "DBJsons", null, 1);
                 dta_base = json_sq.getReadableDatabase();
                 abd = new SQLiteHelper(dta_base,json_sq);
-                new SincronizarDatos().execute();*/
-                mostrarMsg("HAY CONEXION", "Conexión a Internet");
+                new SincronizarDatos().execute();
             }
             else{
                 mostrarMsg("NO tiene conexion, intente mas tarde", "Conexión a Internet");
