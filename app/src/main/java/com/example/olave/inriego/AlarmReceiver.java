@@ -31,8 +31,23 @@ public class AlarmReceiver extends BroadcastReceiver {
     MediaPlayer mMediaPlayer;
     public boolean procedencia;
     boolean activado=false;
+    Calendar cal = Calendar.getInstance();
     @Override
     public void onReceive(Context context, Intent intent) {
+        if ("android.intent.action.BOOT_COMPLETED".equals(intent.getAction())) {
+            Calendar ca = Calendar.getInstance();
+            ca.set(Calendar.HOUR_OF_DAY, 20);
+            ca.set(Calendar.MINUTE, 0);
+            ca.set(Calendar.SECOND, 0);
+            if(cal.get(Calendar.HOUR_OF_DAY) > ca.get(Calendar.HOUR_OF_DAY) || cal.get(Calendar.MINUTE) >= ca.get(Calendar.MINUTE))
+                ca.add(Calendar.DATE,1);
+
+            AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            Intent alarmIntent = new Intent(context, AlarmReceiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
+            manager.setRepeating(AlarmManager.RTC_WAKEUP, ca.getTimeInMillis(),
+                    AlarmManager.INTERVAL_DAY, pendingIntent);
+        }
         Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         int color = context.getResources().getColor(R.color.colornotif);
         Intent resultIntent = new Intent(context, MainActivity.class);
@@ -52,46 +67,85 @@ public class AlarmReceiver extends BroadcastReceiver {
         Random rand = new Random();
         int n= 0;
 
-        if (this.probarConn(context)) {
+        Json_SQLiteHelper json_sq= new Json_SQLiteHelper(context, "DBJsons", null, 1);
+        SQLiteDatabase dta_base = json_sq.getReadableDatabase();
+        SQLiteHelper abd = new SQLiteHelper(dta_base, json_sq);
+        Cursor result= abd.obtener();
 
-            //When you issue multiple notifications about the same type of event, it’s best practice for your app to try to update an existing notification with this new information, rather than immediately creating a new notification. If you want to update this notification at a later date, you need to assign it an ID. You can then use this ID whenever you issue a subsequent notification. If the previous notification is still visible, the system will update this existing notification, rather than create a new one. In this example, the notification’s ID is 001//
-            Json_SQLiteHelper json_sq= new Json_SQLiteHelper(context, "DBJsons", null, 1);
-            SQLiteDatabase dta_base = json_sq.getReadableDatabase();
-            SQLiteHelper abd = new SQLiteHelper(dta_base, json_sq);
-            Cursor result= abd.obtener();
+        if(result.getCount()>=1){
+            if(cal.get(Calendar.HOUR_OF_DAY) == 21 && cal.get(Calendar.MINUTE) >=15) {
+                    mBuilder.setContentTitle("Se enviarán mails a las 21:30 hs");
+                    mBuilder.setContentText("Verifique tener conexión a esa hora");
+                    n = rand.nextInt(999) + 1;
+                    mNotificationManager.notify(n, mBuilder.build());
 
-            if(result.getCount()>=1){
-                mBuilder.setContentTitle("Informacion sin Sincronizar");
-                mBuilder.setContentText("Tienes datos sin sincronizar");
-                n = rand.nextInt(999) + 1;
-                mNotificationManager.notify(n, mBuilder.build());}
+                    Calendar ca = Calendar.getInstance();
+                    ca.set(Calendar.HOUR_OF_DAY, 20);
+                    ca.set(Calendar.MINUTE, 0);
+                    ca.set(Calendar.SECOND, 0);
+                    if(cal.get(Calendar.HOUR_OF_DAY) > ca.get(Calendar.HOUR_OF_DAY) || cal.get(Calendar.MINUTE) >= ca.get(Calendar.MINUTE))
+                        ca.add(Calendar.DATE,1);
+
+                    AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                    Intent alarmIntent = new Intent(context, AlarmReceiver.class);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
+                    manager.setRepeating(AlarmManager.RTC_WAKEUP, ca.getTimeInMillis(),
+                            AlarmManager.INTERVAL_DAY, pendingIntent);
+            }
+
             else{
-                mBuilder.setContentTitle("Todo Sincronizado");
-                mBuilder.setContentText("No hay datos sin sincronizar");
+                //Codigo comentado para entrega modulo 1
+                /*Calendar ca = Calendar.getInstance();
+                ca.setTimeInMillis(ca.getTimeInMillis() + 900000); //Le agrego a la hora actual 15 minutos (en milisegundos)
+                AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                Intent alarmIntent = new Intent(context, AlarmReceiver.class);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 2, alarmIntent, 0);
+                manager.setExact(AlarmManager.RTC_WAKEUP, ca.getTimeInMillis(), pendingIntent);*/
+
+                mBuilder.setContentTitle("Informacion sin Sincronizar");
+                mBuilder.setContentText("Tienes datos sin sincronizar, recuerde tener conexión");
                 n = rand.nextInt(999) + 1;
                 mNotificationManager.notify(n, mBuilder.build());
             }
-            // For our recurring task, we'll just display a message
-            //Toast.makeText(context, "I'm running", Toast.LENGTH_SHORT).show();
         }
-        else{
 
-            if(Calendar.HOUR_OF_DAY == 21 && Calendar.MINUTE ==15) {
+        else{
+            if(cal.get(Calendar.HOUR_OF_DAY) == 21 && cal.get(Calendar.MINUTE) >=15) {
+                mBuilder.setContentTitle("Se enviarán mails a las 21:30 hs");
+                mBuilder.setContentText("Verifique tener conexión a esa hora");
+                n = rand.nextInt(999) + 1;
+                mNotificationManager.notify(n, mBuilder.build());
+
                 Calendar ca = Calendar.getInstance();
-                ca.setTimeInMillis(ca.getTimeInMillis() + 120000);
+                ca.set(Calendar.HOUR_OF_DAY, 20);
+                ca.set(Calendar.MINUTE, 0);
+                ca.set(Calendar.SECOND, 0);
+                if(cal.get(Calendar.HOUR_OF_DAY) > ca.get(Calendar.HOUR_OF_DAY) || cal.get(Calendar.MINUTE) >= ca.get(Calendar.MINUTE))
+                    ca.add(Calendar.DATE,1);
+
+                AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                Intent alarmIntent = new Intent(context, AlarmReceiver.class);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
+                manager.setRepeating(AlarmManager.RTC_WAKEUP, ca.getTimeInMillis(),
+                        AlarmManager.INTERVAL_DAY, pendingIntent);
+            }
+            else{
+                Calendar ca = Calendar.getInstance();
+                ca.set(Calendar.HOUR_OF_DAY, 21);
+                ca.set(Calendar.MINUTE, 15);
+                ca.set(Calendar.SECOND, 0);
                 AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
                 Intent alarmIntent = new Intent(context, AlarmReceiver.class);
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 2, alarmIntent, 0);
                 manager.setExact(AlarmManager.RTC_WAKEUP, ca.getTimeInMillis(), pendingIntent);
-                mBuilder.setContentTitle("Sincronizacion Postergada");
-                mBuilder.setContentText("La sincronizacion sera postergada");
-                activado =true;
 
+                /*mBuilder.setContentTitle("Todo Sincronizado");
+                mBuilder.setContentText("Todo Sincronizado!!");
                 n = rand.nextInt(999) + 1;
-                mNotificationManager.notify(n, mBuilder.build());
+                mNotificationManager.notify(n, mBuilder.build());*/
             }
-
         }
+
     }
     public boolean probarConn(Context cont){
 

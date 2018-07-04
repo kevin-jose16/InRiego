@@ -74,7 +74,7 @@ public class Fm_Establecimiento extends Fragment {
     ArrayList<Pivot> estab_pivots = new ArrayList<>();
     ArrayList<Establecimiento> farmslist= new ArrayList<>();
     SharedPreferences sp;
-    boolean tiene_pivots=false;
+    boolean tiene_pivots=false, error_servidor=false;
     String farmId, farmdesc;
 
     private OnFragmentInteractionListener mListener;
@@ -236,7 +236,6 @@ public class Fm_Establecimiento extends Fragment {
                 }
                 in.close();
                 res=response.toString();
-                String a = res;
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -261,7 +260,7 @@ public class Fm_Establecimiento extends Fragment {
                         JSONObject jsonData = json.optJSONObject("Data");
                         String ref_date = jsonData.getString("ReferenceDate");
 
-                        String fechaRef = jsonData.getString("ReferenceDate");
+                        //String fechaRef = jsonData.getString("ReferenceDate");
 
                         //Setear fecha en clase principal y sesion
                         MainActivity mn = (MainActivity) getActivity();
@@ -291,19 +290,20 @@ public class Fm_Establecimiento extends Fragment {
                             es.add(est);
                             String jsonObjetos = new Gson().toJson(es);
                             editor.putString("actual_farm", jsonObjetos);
-                            editor.putString("Fecha_ref", fechaRef);
+                            editor.putString("Fecha_ref", ref_date);
                             editor.putBoolean("hay_farm", true);
                             editor.commit();
                             Calendar cal = Calendar.getInstance();
-                            abd.insertLog(cal.getTime().toString() + "Se selecciona el establecimiento " + farmdesc + " con respuesta correcta del servidor", sp.getString("username", ""), json_sq);
+                            abd.insertLog(cal.getTime().toString() + " Se selecciona el establecimiento " + farmdesc + " con respuesta correcta del servidor", sp.getString("username", ""), json_sq);
                             dta_base.close();
                         }
                     }
                     else{
+                        error_servidor = true;
                         Calendar cal = Calendar.getInstance();
-                        abd.insertLog(cal.getTime().toString() + "Se intento seleccionar el establecimiento " + farmdesc + " con respuesta no exitosa del servidor", sp.getString("username",""), json_sq);
+                        abd.insertLog(cal.getTime().toString() + " Se intento seleccionar el establecimiento " + farmdesc + " con respuesta no exitosa del servidor", sp.getString("username",""),json_sq);
                         dta_base.close();
-                        Toast.makeText(getActivity(), "No se pudo seleccionar establecimiento",
+                        Toast.makeText(getActivity(), "No se pudo seleccionar establecimiento\nError en el Servidor",
                                 Toast.LENGTH_LONG).show();
                     }
 
@@ -320,9 +320,16 @@ public class Fm_Establecimiento extends Fragment {
                     progress.setProgress(100); //progreso culminado
                 }
                 else{
-                    progress.setProgress(0);
-                    Toast.makeText(getActivity(), "Seleccione otro establecimiento\nque tenga pivots",
-                            Toast.LENGTH_LONG).show();
+                    if(!error_servidor) {
+                        progress.setProgress(0);
+                        Calendar cal = Calendar.getInstance();
+                        abd.insertLog(cal.getTime().toString() + " Se intento seleccionar el establecimiento " + farmdesc + " pero éste no tiene pivots", sp.getString("username",""),json_sq);
+                        dta_base.close();
+                        Toast.makeText(getActivity(), "Establecimiento sin pivots\nSeleccione otro",
+                                Toast.LENGTH_LONG).show();
+                    }
+                    else
+                        progress.setProgress(0);
                 }
 
             }

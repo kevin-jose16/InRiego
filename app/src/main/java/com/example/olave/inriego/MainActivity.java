@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -69,20 +70,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public ArrayList<String> pivots = new ArrayList<>();
     public ArrayList<Pivot> estab_pivots = new ArrayList<>();
-    SharedPreferences sp;
-    String farmId, farmdesc;
     ArrayList<Establecimiento> farmslist;
+    Json_SQLiteHelper json_sq;
+    SQLiteDatabase dta_base;
+    SharedPreferences sp;
+    int actual_farm;
+    String token;
+    String farmId, farmdesc;
+    boolean tiene_pivots = false, error_servidor = false;
+    public String reference_date;
     int advice_cod;
+    Calendar cal = Calendar.getInstance();
     boolean esriego; //Chequear si es riego o lluvia
     String reg_riego; //Json de registro de riego/lluvia pasado a string
     private PendingIntent pendingIntent = null;
     private PendingIntent pending = null;
-    private PendingIntent pendingI = null;
     private AlarmManager manager;
-    Json_SQLiteHelper json_sq;
-    SQLiteDatabase dta_base;
-    public String reference_date;
     SQLiteHelper abd;
+    ProgressDialog progress;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,11 +123,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             //Setear atributo de fecha de referencia
             reference_date= sp.getString("ReferenceDate",null);
-            Gson gson = new Gson(); //Instancia Gson.
             //Obtiene datos (json)
             String objetos = sp.getString("actual_farm", null);
             //Convierte json  a JsonArray.
-            //String json = new Gson().toJson(objetos);
             JSONArray jsonArray = null;
             try {
                 jsonArray = new JSONArray(objetos);
@@ -132,18 +137,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             TextView tv_est = (TextView) findViewById(R.id.nav_farm);
             tv_est.setText(hay_farm.get(0).getDescripcion());
             setTitle(hay_farm.get(0).getDescripcion());
+            actual_farm = hay_farm.get(0).getEst_id();
+            farmdesc = hay_farm.get(0).getDescripcion();
+            token = sp.getString("token", null);
             Fragment fragment= new FragmentPivot();
             FragmentManager fragmentManager =MainActivity.this.getSupportFragmentManager();
             fragmentManager.beginTransaction()
                     .replace(R.id.frameprincipal, fragment).commit();
         }
         else{
-            Gson gson = new Gson(); //Instancia Gson.
             //Obtiene datos (json)
             String objetos = sp.getString("farmslist", null);
             //Convierte json  a JsonArray.
-            //String json = new Gson().toJson(objetos);
-            JSONArray jsonArray = null;
+            JSONArray jsonArray = new JSONArray();
             try {
                 jsonArray = new JSONArray(objetos);
             } catch (JSONException e) {
@@ -163,25 +169,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 TextView tv_est = (TextView) findViewById(R.id.nav_farm);
                 tv_est.setText(farmslist.get(0).getDescripcion());
                 setTitle(farmslist.get(0).getDescripcion());
-                String token = sp.getString("token",null);
+                actual_farm = farmslist.get(0).getEst_id();
+                farmdesc = farmslist.get(0).getDescripcion();
+                token = sp.getString("token",null);
                 new ClaseAsincrona().execute(token,String.valueOf(farmslist.get(0).getEst_id()));
             }
         }
 
-
-
         Intent alarmIntent = new Intent(MainActivity.this, AlarmReceiver.class);
-        Intent alarmI = new Intent(MainActivity.this, AlarmReceiver.class);
         Intent alarmIntent_mail = new Intent(MainActivity.this, AlarmReceiverMail.class);
-/*        if (alarmIntent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
-            pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
-            startAt20();
-        }*/
-        /*if (pendingI== null) {
-            pendingI = PendingIntent.getBroadcast(this, 6, alarmI, 0);
-            start();
-        }*/
-       /* if(pendingIntent==null){
+
+        if(pendingIntent==null){
             pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
             startAt20();
         }
@@ -189,7 +187,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if(pending==null){
             pending = PendingIntent.getBroadcast(this, 1, alarmIntent_mail, 0);
             startAt2130();
-        }*/
+        }
 
     }
 
@@ -226,6 +224,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            mostrarMsg("Aplicación desarrollada por:\n\nNadia Cabrera\nnadiacabrerayahn@gmail.com\n\n" +
+                    "Kevin José\njosekevin15@gmail.com\n\nCarina Maerro\nCMaerro@gmail.com", "Información");
             return true;
         }
 
@@ -249,28 +249,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             fragment = new FragmentPivot();
         } else if (id == R.id.nav_sincronice){
             if(probarConn()) {
-                json_sq= new Json_SQLiteHelper(MainActivity.this, "DBJsons", null, 1);
+                /*json_sq= new Json_SQLiteHelper(MainActivity.this, "DBJsons", null, 1);
                 dta_base = json_sq.getReadableDatabase();
                 abd = new SQLiteHelper(dta_base,json_sq);
-                new SincronizarDatos().execute();
-
+                new SincronizarDatos().execute();*/
+                mostrarMsg("HAY CONEXION", "Conexión a Internet");
             }
             else{
-                mostrarMsg("NO tiene conexion, intente mas tarde");
-                /*Intent alarmIntent2030 = new Intent(MainActivity.this, AlarmReceiver.class);
-                pendingIntent2030 = PendingIntent.getBroadcast(this, 0, alarmIntent2030, 0);
-                start2030();*/
+                mostrarMsg("NO tiene conexion, intente mas tarde", "Conexión a Internet");
             }
 
 
-            //Toast.makeText(MainActivity.this,"Tu dispositivo NO tiene conexion", Toast.LENGTH_SHORT);*/
 
 
         } else if (id == R.id.nav_logout) {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder//.setMessage("Cantidad o fecha no ingresada\no no hay pivots seleccionados")
-                    .setTitle("¿Desea Cerrar Sesión?");
+            builder.setTitle("¿Desea Cerrar Sesión?");
             builder.setPositiveButton("SI",
             new DialogInterface.OnClickListener() {
                 @Override
@@ -313,17 +308,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         newFrag.SetearFechas(reference_date);
     }
 
-    public class ClaseAsincrona extends AsyncTask<String,Void,String> {
+    public class ClaseAsincrona extends AsyncTask<String,Integer,String> {
         String res;
-        String token;
+        String token_ca;
 
         @Override
         protected String doInBackground(String... params) {
 
             try {
-                token = params[0];
+                token_ca = params[0];
                 farmId = params[1];
-                URL url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/IrrigationData/token/"+token +"/farmId/" + farmId);
+                URL url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/IrrigationData/token/"+token_ca +"/farmId/" + farmId);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 int responseCode = conn.getResponseCode();
@@ -345,6 +340,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return res;
         }
 
+
         @Override
         protected void onPostExecute(String result) {
             Json_SQLiteHelper json_sq = new Json_SQLiteHelper(MainActivity.this, "DBJsons", null, 1);
@@ -353,51 +349,60 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (result!=null){
                 try {
                     JSONObject json = new JSONObject(result);
-
-                    sp = getSharedPreferences("sesion",Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sp.edit();
-                   
+                    boolean b = json.getBoolean("IsOk");
                     if(json.getBoolean("IsOk")){
                         sp = getSharedPreferences("sesion",Context.MODE_PRIVATE);
-                         editor = sp.edit();
+                        SharedPreferences.Editor editor = sp.edit();
                         JSONObject jsonData = json.optJSONObject("Data");
 
                         //Setear fecha de referencia en atributo y sesion
                         reference_date = jsonData.get("ReferenceDate").toString();
                         editor.putString("ReferenceDate",jsonData.get("ReferenceDate").toString());
 
-                        JSONArray farm_pivots = jsonData.getJSONArray("IrrigationRows");
-                        for(int i=0;i<=farm_pivots.length()-1;i++){
-                            JSONObject pv = farm_pivots.getJSONObject(i);
-                            //Integer.parseInt(pv.get("IrrigationId").toString()),
-                            Pivot p = new Pivot(Integer.parseInt(pv.get("IrrigationUnitId").toString()),pv.get("Name").toString(), pv.get("Crop").toString(), pv.get("HarvestDate").toString(), pv.get("Phenology").toString());
-                            JSONArray pv_riegos = pv.getJSONArray("Advices");
-                            for(int r=0;r<=pv_riegos.length()-1;r++){
-                                JSONObject riego = pv_riegos.getJSONObject(r);
-                                String f_riego = riego.get("Date").toString();
-                                Riego rg = new Riego(riego.get("IrrigationType").toString(), f_riego,Float.parseFloat(riego.get("Quantity").toString()));
-                                p.getRiegos().add(rg);
-                            }
-                            estab_pivots.add(p);
+                        //JSONObject jsobject = jsonData.getJSONObject("Farm");
+                        //farmdesc = jsobject.getString("Description");
 
+                        JSONArray farm_pivots = jsonData.getJSONArray("IrrigationRows");
+                        if(farm_pivots.length()>0) {
+                            tiene_pivots = true;
+                            for (int i = 0; i <= farm_pivots.length() - 1; i++) {
+                                JSONObject pv = farm_pivots.getJSONObject(i);
+                                //Integer.parseInt(pv.get("IrrigationId").toString()),
+                                Pivot p = new Pivot(Integer.parseInt(pv.get("IrrigationUnitId").toString()), pv.get("Name").toString(), pv.get("Crop").toString(), pv.get("HarvestDate").toString(), pv.get("Phenology").toString());
+                                JSONArray pv_riegos = pv.getJSONArray("Advices");
+
+                                for (int r = 0; r <= pv_riegos.length() - 1; r++) {
+                                    JSONObject riego = pv_riegos.getJSONObject(r);
+                                    String f_riego = riego.get("Date").toString();
+                                    Riego rg = new Riego(riego.get("IrrigationType").toString(), f_riego, Float.parseFloat(riego.get("Quantity").toString()));
+                                    p.getRiegos().add(rg);
+                                }
+                                estab_pivots.add(p);
+
+                            }
+
+                            Establecimiento est = new Establecimiento(Integer.parseInt(farmId), farmdesc, reference_date);
+                            est.setPivots(estab_pivots);
+                            if(farmslist!= null)
+                                farmslist.clear();
+                            else
+                                farmslist = new ArrayList<>();
+                            farmslist.add(est);
+                            String jsonObjetos = new Gson().toJson(farmslist);
+                            editor.putString("actual_farm", jsonObjetos);
+                            editor.putBoolean("hay_farm", true);
+                            editor.commit();
+                            Calendar cal = Calendar.getInstance();
+                            abd.insertLog(cal.getTime().toString() + " Se selecciona el establecimiento " + farmdesc + " con respuesta correcta del servidor", sp.getString("username", ""), json_sq);
+                            dta_base.close();
                         }
-                        Establecimiento est = new Establecimiento(Integer.parseInt(farmId),farmdesc,reference_date);
-                        est.setPivots(estab_pivots);
-                        farmslist.clear();
-                        farmslist.add(est);
-                        String jsonObjetos = new Gson().toJson(farmslist);
-                        editor.putString("actual_farm", jsonObjetos);
-                        editor.putBoolean("hay_farm", true);
-                        editor.commit();
-                        Calendar cal = Calendar.getInstance();
-                        abd.insertLog(cal.getTime().toString() + " - Se selecciona el establecimiento " + farmdesc + " con respuesta correcta del servidor",sp.getString("username",""), json_sq);
-                        dta_base.close();
                     }
                     else{
+                        error_servidor = true;
                         Calendar cal = Calendar.getInstance();
-                        abd.insertLog(cal.getTime().toString() + "Se intento seleccionar el establecimiento " + farmdesc + " con respuesta no exitosa del servidor", sp.getString("username",""),json_sq);
+                        abd.insertLog(cal.getTime().toString() + " Se intento seleccionar el establecimiento " + farmdesc + " con respuesta no exitosa del servidor", sp.getString("username",""),json_sq);
                         dta_base.close();
-                        Toast.makeText(MainActivity.this, "No se pudo seleccionar establecimiento",
+                        Toast.makeText(MainActivity.this, "No se pudo seleccionar establecimiento\nError en el Servidor",
                                 Toast.LENGTH_LONG).show();
                     }
 
@@ -405,23 +410,57 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     e.printStackTrace();
                 }
 
-                Fragment fragment= new FragmentPivot();
-                FragmentManager fragmentManager =MainActivity.this.getSupportFragmentManager();
-                fragmentManager.beginTransaction()
-                        .replace(R.id.frameprincipal, fragment).commit();
+
+                if(tiene_pivots) {
+                    Fragment fragment= new FragmentPivot();
+                    FragmentManager fragmentManager =MainActivity.this.getSupportFragmentManager();
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.frameprincipal, fragment).commit();
+                    progress.setProgress(100); //progreso culminado
+                }
+                else{
+                    if(!error_servidor) {
+                        progress.setProgress(0);
+                        Calendar cal = Calendar.getInstance();
+                        abd.insertLog(cal.getTime().toString() + " Se intento seleccionar el establecimiento " + farmdesc + " pero éste no tiene pivots", sp.getString("username",""),json_sq);
+                        dta_base.close();
+                        Toast.makeText(MainActivity.this, "Establecimiento sin pivots\nSeleccione otro",
+                                Toast.LENGTH_LONG).show();
+                    }
+                    else
+                        progress.setProgress(0);
+                }
 
             }
             else{
+                progress.setProgress(0);
                 Calendar cal = Calendar.getInstance();
-                abd.insertLog(cal.getTime().toString() + "No se pudo seleccionar un establecimiento por problemas en el servidor o la conexión a internet",sp.getString("username",""), json_sq);
+                abd.insertLog(cal.getTime().toString() + " No se pudo seleccionar un establecimiento por problemas en el servidor o la conexión a internet",sp.getString("username",""), json_sq);
                 dta_base.close();
-                Toast.makeText(MainActivity.this, "No tiene conexión a internet\no hay problemas con el servidor",
+                Toast.makeText(MainActivity.this, "No tiene conexión a Internet",
                         Toast.LENGTH_LONG).show();
             }
+            progress.dismiss();
+        }
 
+        //procedimientos para ir actualizando y mostrar la barra de progreso
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            progress.setProgress(values[0]);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            progress=new ProgressDialog(MainActivity.this);
+            progress.setMessage("Procesando...");
+            progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progress.setProgress(0);
+            progress.setMax(100);
+            progress.show();
         }
 
     }
+
     public Date CrearFecha(String fecha) {
         Calendar cal = Calendar.getInstance();
         int year,month,day;
@@ -442,6 +481,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return fecha_r= cal.getTime();
     }
 
+    //Esta funcion se hace para el modulo 1
+    public void cambiofragment(){
+        Fragment fragment = new FragmentPivot();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.frameprincipal, fragment).commit();
+    }
+
     public boolean probarConn(){
 
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -458,39 +505,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return false;
     }
 
-    public void mostrarMsg(String msg){
+    public void mostrarMsg(String msg, String titulo){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(msg).setTitle("Conexion a Internet");
+        builder.setMessage(msg).setTitle(titulo);
         builder.setPositiveButton("OK",null);
         builder.create();
         builder.show();
     }
-    public void start() {
-        manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        //manager.setRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis(), 60000, pendingIntent);
-        Calendar c= Calendar.getInstance();
-        c.set(Calendar.HOUR_OF_DAY,20);
-        c.set(Calendar.MINUTE, 20);
-        c.set(Calendar.SECOND, 0);
-        c.setTimeInMillis(c.getTimeInMillis()+120000);
-        manager.setExact(AlarmManager.RTC_WAKEUP,c.getTimeInMillis(),pendingIntent);
-        //manager.setTime(74340000);
-        //Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
-    }
 
     public void startAt2130() {
         manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        //Toast.makeText(this, "Alarm MAIL Set", Toast.LENGTH_SHORT).show();
         /* Set the alarm to start at 21:30 hs */
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 21);
         calendar.set(Calendar.MINUTE, 30);
         calendar.set(Calendar.SECOND, 0);
-
+        if(cal.get(Calendar.HOUR_OF_DAY) > calendar.get(Calendar.HOUR_OF_DAY) || cal.get(Calendar.MINUTE) >= calendar.get(Calendar.MINUTE))
+            calendar.add(Calendar.DATE,1);
         /* Repeating on every one day interval */
         manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
                 AlarmManager.INTERVAL_DAY, pending);
-
     }
 
 
@@ -501,18 +535,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         calendar.set(Calendar.HOUR_OF_DAY, 20);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
-        //Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
+        if(cal.get(Calendar.HOUR_OF_DAY) > calendar.get(Calendar.HOUR_OF_DAY) || cal.get(Calendar.MINUTE) >= calendar.get(Calendar.MINUTE))
+            calendar.add(Calendar.DATE,1);
         /* Repeating on every one day interval */
         manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
                 AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
-    public void cancel() {
-        manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        manager.cancel(pendingIntent);
-        //pendingIntent.cancel();
-        Toast.makeText(this, "Alarm Canceled", Toast.LENGTH_SHORT).show();
-    }
 
     public class SincronizarDatos extends AsyncTask<Void, Integer, String> {
 
@@ -624,14 +653,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             } else {
                                 abd.insertLog(cal.getTime() + " -- Sincronización exitosa del suiguiente registro de lluvia:\n" + reg_riego, sp.getString("username",""), json_sq);
                             }
-                            Toast.makeText(MainActivity.this, " -- Sincronización exitosa -- ",
-                                    Toast.LENGTH_LONG).show();
+                            //Toast.makeText(MainActivity.this, " -- Sincronización exitosa -- ", Toast.LENGTH_LONG).show();
                             notificationBuilder.setContentTitle("¡Sincronización completada!").setAutoCancel(true).setProgress(0,0,false);
                             notificationManager.notify(n, notificationBuilder.build());
                         } else {
                             abd.insertLog(cal.getTime() + " -- Sincronización no exitosa, ERROR: " + json.getString("ErrorMessage"), sp.getString("username",""), json_sq);
-                            Toast.makeText(MainActivity.this, " -- Sincronización no exitosa, ERROR:\n" + json.getString("ErrorMessage"),
-                                    Toast.LENGTH_LONG).show();
+                            //Toast.makeText(MainActivity.this, " -- Sincronización no exitosa, ERROR:\n" + json.getString("ErrorMessage"),Toast.LENGTH_LONG).show();
                             notificationBuilder.setAutoCancel(true).setProgress(0,0,false).setContentText("¡Hubo un error en la sincronización!");
                             notificationManager.notify(n, notificationBuilder.build());
                         }
@@ -641,10 +668,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    Fragment fragment = new FragmentPivot();
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.frameprincipal, fragment).commit();
+
+                    //Esto es para modulo 1
+                    cambiofragment();
+                    //new ClaseAsincrona().execute(token,String.valueOf(actual_farm));
                 }
             }
             else{
@@ -673,8 +700,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .setSmallIcon(R.mipmap.ic_launcher)
                     .setContentIntent(resultPendingIntent)
                     .setAutoCancel(false);
-
-
 
             notificationManager.notify(n,notificationBuilder.build());
         }

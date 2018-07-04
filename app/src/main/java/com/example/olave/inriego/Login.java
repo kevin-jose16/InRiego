@@ -1,5 +1,7 @@
 package com.example.olave.inriego;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -12,7 +14,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -49,6 +54,7 @@ public class Login extends AppCompatActivity {
     EditText pass;
     EditText user;
     Button boton;
+    public String possibleEmail;
 
     ArrayList<Establecimiento> farms = new ArrayList<Establecimiento>();
 
@@ -77,6 +83,35 @@ public class Login extends AppCompatActivity {
             }
         });
 
+        Account[] accounts = AccountManager.get(this).getAccountsByType("com.google");
+        if(accounts.length > 0){
+            possibleEmail = accounts[0].name;
+        }
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            mostrarMsg("Aplicación desarrollada por:\n\nNadia Cabrera\nnadiacabrerayahn@gmail.com\n\n" +
+                    "Kevin José\njosekevin15@gmail.com\n\nCarina Maerro\nCMaerro@gmail.com", "Información");
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 
@@ -146,6 +181,7 @@ public class Login extends AppCompatActivity {
                         progress.setProgress(100); //progreso culminado
 
                         Calendar cal = Calendar.getInstance();
+
                         abd.insertLog(cal.getTime().toString() + " -- El usuario " + username + " ha ingresado en el sistema", username,json_sq);
                         Cursor cur = abd.obtenerLog();
                         cur.moveToFirst();
@@ -196,6 +232,107 @@ public class Login extends AppCompatActivity {
             progress.setMax(100);
             progress.show();
         }
+    }
+
+    public void mailSincronizar(){
+
+        Json_SQLiteHelper json_sq= new Json_SQLiteHelper(this, "DBJsons", null, 1);
+        SQLiteDatabase dta_base = json_sq.getReadableDatabase();
+        SQLiteHelper abd = new SQLiteHelper(dta_base, json_sq);
+        Cursor result= abd.obtener();
+
+        String message = "<html>\n" +
+                "<body>\n";
+        String subject = "El usuario ";
+
+        if(result.getCount()>=1){
+            result.moveToFirst();
+            if ( result.getCount()>0) {
+
+                int cant_registrosbd = result.getCount()-1;
+                message = message + "<p>USUARIO: " + result.getString(3) + "</p>";
+                subject = subject + result.getString(3) + " ha agregado los siguientes registros de riego/lluvia";
+                message = message + "<p>EMAIL: " + possibleEmail + "</p><hr>";
+
+                for(int i=0; i<=cant_registrosbd; i++) {
+
+                    try {
+                        JSONObject json = new JSONObject(result.getString(1));
+                        message = message + "<p>Establecimiento: " + result.getString(4) + "</p>";
+                        message = message + "<p>Milimetros: " + json.get("Milimeters").toString() + "</p>";
+                        message = message + "<p>Fecha: " + json.get("Date").toString() + "</p>";
+                        message = message + "<p>Pivots: " + json.get("IrrigationUnitId").toString() + "</p>";
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    message = message + "<p>Tipo riego: " + result.getString(5) + "</p><hr><hr></body></html>";
+
+                    result.moveToNext();
+                }
+            }
+        }
+        dta_base.close();
+
+        String email = "josekevin15@gmail.com"; //destinatario (va mail de PGG)
+
+        //Creating SendMail object
+        SendMail sm = new SendMail(this, email, subject, message);
+
+        //Executing sendmail to send email
+        sm.execute();
+        /*n = rand.nextInt(999) + 1;
+        mNotificationManager.notify(n, mBuilder.build());*/
+
+
+    }
+
+    public void mailLog(){
+        Json_SQLiteHelper json_sq= new Json_SQLiteHelper(this, "DBJsons", null, 1);
+        SQLiteDatabase dta_base = json_sq.getReadableDatabase();
+        SQLiteHelper abd = new SQLiteHelper(dta_base, json_sq);
+        Cursor result= abd.obtenerLog();
+
+        String message = "<html>\n" +
+                "<body>\n";
+
+        String subject = "LOG total de la jornada";
+
+        if(result.getCount()>=1){
+            result.moveToFirst();
+            if ( result.getCount()>0) {
+                int cant_registrosbd = result.getCount()-1;
+
+                for(int i=0; i<=cant_registrosbd; i++) {
+                    message = message + "<p>" + result.getString(1) + "</p></br>";
+
+                    result.moveToNext();
+                }
+                message = message + "</body></html>";
+            }
+        }
+        else
+            message = "Hoy no se han ingresado o sincronizado datos";
+
+        dta_base.close();
+
+        String email = "josekevin15@gmail.com"; //destinatario (va mail de PGG)
+        //Creating SendMail object
+
+        SendMail sm = new SendMail(this, email, subject, message);
+
+        //Executing sendmail to send email
+        sm.execute();
+        /*n = rand.nextInt(999) + 1;
+        mNotificationManager.notify(n, mBuilder.build());*/
+    }
+
+    public void mostrarMsg(String msg, String titulo){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(msg).setTitle(titulo);
+        builder.setPositiveButton("OK",null);
+        builder.create();
+        builder.show();
     }
 
 }

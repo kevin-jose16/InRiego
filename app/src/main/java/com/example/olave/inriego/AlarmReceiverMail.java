@@ -18,8 +18,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Patterns;
 
 import com.example.olave.inriego.MainActivity;
@@ -43,93 +46,161 @@ public class AlarmReceiverMail extends BroadcastReceiver {
     public NotificationManager mNotificationManager;
     public Context contexto;
     public String possibleEmail;
+    Random rand;
+    Calendar cal = Calendar.getInstance();
     @Override
     public void onReceive(Context context, Intent intent) {
+        if ("android.intent.action.BOOT_COMPLETED".equals(intent.getAction())) {
+            Calendar ca = Calendar.getInstance();
+            ca.set(Calendar.HOUR_OF_DAY, 21);
+            ca.set(Calendar.MINUTE, 30);
+            ca.set(Calendar.SECOND, 0);
+            if(cal.get(Calendar.HOUR_OF_DAY) > ca.get(Calendar.HOUR_OF_DAY) || cal.get(Calendar.MINUTE) >= ca.get(Calendar.MINUTE))
+                ca.add(Calendar.DATE,1);
 
-        contexto = context;
+            AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            Intent alarmIntent = new Intent(context, AlarmReceiverMail.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 1, alarmIntent, 0);
+            manager.setRepeating(AlarmManager.RTC_WAKEUP, ca.getTimeInMillis(),
+                    AlarmManager.INTERVAL_DAY, pendingIntent);
+        }
+
+
         Uri uri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         int color = context.getResources().getColor(R.color.colornotif);
-         mBuilder =
-                new NotificationCompat.Builder(context)
-                        .setSound(uri)
-                        .setPriority(Notification.PRIORITY_MAX)
-                        .setSmallIcon(R.drawable.logoinriego)
-                        .setContentTitle("MAIL PARA SINCRONIZAR DATOS")
-                        .setColor(color)
-                        .setContentText("Se envio un mail con los datos que quedaron pendientes o no se pudieron sincronizar a tiempo");
+        mBuilder = new NotificationCompat.Builder(context)
+            .setSound(uri)
+            .setPriority(Notification.PRIORITY_MAX)
+            .setSmallIcon(R.drawable.logoinriego)
+            .setColor(color);
 
-        Intent resultIntent = new Intent(context, MainActivity.class);
-
-        // Because clicking the notification opens a new ("special") activity, there's
-        // no need to create an artificial back stack.
-        PendingIntent resultPendingIntent =
-                PendingIntent.getActivity(
-                        context,
-                        1,
-                        resultIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                );
+        Intent resultIntent = new Intent(context, Login.class);
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(context, 4, resultIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
         mBuilder.setContentIntent(resultPendingIntent);
         mBuilder.setAutoCancel(true);
 
         // Gets an instance of the NotificationManager service//
         mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        Random rand = new Random();
+        rand = new Random();
 
-        n = rand.nextInt(999) + 1;
+        n = 0;
         //When you issue multiple notifications about the same type of event, it’s best practice for your app to try to update an existing notification with this new information, rather than immediately creating a new notification. If you want to update this notification at a later date, you need to assign it an ID. You can then use this ID whenever you issue a subsequent notification. If the previous notification is still visible, the system will update this existing notification, rather than create a new one. In this example, the notification’s ID is 001//
 
         //Obtengo mail del celular
-
-
         Pattern emailPattern = Patterns.EMAIL_ADDRESS; // API level 8+
         Account[] accounts = AccountManager.get(context).getAccountsByType("com.google");
         if(accounts.length > 0){
             possibleEmail = accounts[0].name;
         }
 
+        contexto = context;
         //mNotificationManager.notify(n, mBuilder.build());
-        Json_SQLiteHelper json_sq= new Json_SQLiteHelper(contexto, "DBJsons", null, 1);
+        Json_SQLiteHelper json_sq= new Json_SQLiteHelper(context, "DBJsons", null, 1);
         SQLiteDatabase dta_base = json_sq.getReadableDatabase();
         SQLiteHelper abd = new SQLiteHelper(dta_base, json_sq);
         Cursor result= abd.obtener();
 
-        //Mail para datos no sincronizados
-        if(result.getCount()>=1)
-            this.mailSincronizar();
+        if(probarConn(context)) {
+            //Mail para datos no sincronizados
+            if (result.getCount() >= 1)
+                this.mailSincronizar();
 
-        //Mail para los logs del dia
-        this.mailLog();
-        SharedPreferences sharedPref = context.getSharedPreferences(
-                "sesion", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.clear();
-        editor.commit();
+            //Mail para los logs del dia
+            this.mailLog();
+            SharedPreferences sharedPref = context.getSharedPreferences(
+                    "sesion", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.clear();
+            editor.commit();
 
-        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent alarmIntent = new Intent(context, AlarmReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
-        Intent alarmIntentmail = new Intent(context, AlarmReceiverMail.class);
-        PendingIntent pendingIntentmail = PendingIntent.getBroadcast(context, 1, alarmIntentmail, 0);
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 20);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.add(Calendar.DATE,1);
-        manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                AlarmManager.INTERVAL_DAY, pendingIntent);
-        calendar.set(Calendar.HOUR_OF_DAY, 20);
-        calendar.set(Calendar.MINUTE, 20);
-        calendar.set(Calendar.SECOND, 0);
-        manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                AlarmManager.INTERVAL_DAY, pendingIntentmail);
-        Intent i = new Intent(contexto, Login.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        contexto.startActivity(i);
-        //MainActivity ma = (MainActivity) context;
-        //ma.finish();
-        // For our recurring task, we'll just display a message
-        //Toast.makeText(context, "I'm running", Toast.LENGTH_SHORT).show();
+            Intent i = new Intent(contexto, Login.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            contexto.startActivity(i);
+            /*resultIntent = new Intent(context, MainActivity.class);
+            resultPendingIntent = PendingIntent.getActivity(context, 4, resultIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+            mBuilder.setContentIntent(resultPendingIntent);
+            mBuilder.setContentTitle("Envío de Mails Exitoso")
+                    .setContentText("Se enviaron los mails");
+            n= rand.nextInt(999) + 1;
+            mNotificationManager.notify(n, mBuilder.build());*/
+        }
+        else{
+            /*resultIntent = new Intent(context, MainActivity.class);
+            resultPendingIntent = PendingIntent.getActivity(context, 4, resultIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+            mBuilder.setContentIntent(resultPendingIntent);
+            mBuilder.setContentTitle("Envío de Mails FALLIDO")
+                    .setContentText("No tiene Conexión para realizar esta acción");
+            n= rand.nextInt(999) + 1;
+            mNotificationManager.notify(n, mBuilder.build());*/
+
+            //Esto lo tengo comentado para enviar la primer version desarrollada
+           if(cal.get(Calendar.HOUR_OF_DAY) < 22 ) {
+                Calendar ca = Calendar.getInstance();
+                ca.setTimeInMillis(ca.getTimeInMillis() + 900000); //Le agrego a la hora actual 15 minutos (en milisegundos)
+
+                AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                Intent alarmIntent = new Intent(context, AlarmReceiverMail.class);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 1, alarmIntent, 0);
+                manager.setExact(AlarmManager.RTC_WAKEUP, ca.getTimeInMillis(), pendingIntent);
+
+                resultIntent = new Intent(context, MainActivity.class);
+                resultPendingIntent = PendingIntent.getActivity(context, 4, resultIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+                String hora, minuto;
+                if(Integer.toString(ca.get(Calendar.HOUR_OF_DAY)).length()==1)
+                    hora = 0 + Integer.toString(ca.get(Calendar.HOUR_OF_DAY));
+                else
+                    hora = Integer.toString(ca.get(Calendar.HOUR_OF_DAY));
+                if(Integer.toString(ca.get(Calendar.MINUTE)).length()==1)
+                    minuto = 0 + Integer.toString(ca.get(Calendar.MINUTE));
+                else
+                    minuto = Integer.toString(ca.get(Calendar.MINUTE));
+                mBuilder.setContentIntent(resultPendingIntent)
+                        .setContentTitle("Envio de Mails FALLIDO - No tiene conexión")
+                        .setContentText("Se van a enviar los mails a las " + hora + ":" + minuto + " hs");
+
+                n= rand.nextInt(999) + 1;
+                mNotificationManager.notify(n, mBuilder.build());
+            }
+            else{
+                Calendar ca = Calendar.getInstance();
+                ca.set(Calendar.HOUR_OF_DAY, 21);
+                ca.set(Calendar.MINUTE, 30);
+                ca.set(Calendar.SECOND, 0);
+                if(cal.get(Calendar.HOUR_OF_DAY) > ca.get(Calendar.HOUR_OF_DAY) || cal.get(Calendar.MINUTE) >= ca.get(Calendar.MINUTE))
+                    ca.add(Calendar.DATE,1);
+
+                AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                Intent alarmIntent = new Intent(context, AlarmReceiverMail.class);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 1, alarmIntent, 0);
+                manager.setRepeating(AlarmManager.RTC_WAKEUP, ca.getTimeInMillis(),
+                        AlarmManager.INTERVAL_DAY, pendingIntent);
+
+                resultIntent = new Intent(context, Login.class);
+                resultPendingIntent = PendingIntent.getActivity(context, 4, resultIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+                mBuilder.setContentIntent(resultPendingIntent)
+                        .setContentTitle("Envío de Mails FALLIDO")
+                        //.setContentText("Los mails se enviarán durante el próximo Inicio de Sesión");
+                        .setContentText("Los mails no se enviaron por falta de conexión");
+                n= rand.nextInt(999) + 1;
+                mNotificationManager.notify(n, mBuilder.build());
+
+                SharedPreferences sharedPref = context.getSharedPreferences(
+                        "sesion", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.clear();
+                editor.commit();
+
+                Intent i = new Intent(contexto, Login.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                contexto.startActivity(i);
+            }
+
+        }
     }
 
 
@@ -183,6 +254,11 @@ public class AlarmReceiverMail extends BroadcastReceiver {
 
         //Executing sendmail to send email
         sm.execute();
+
+
+        mBuilder.setContentTitle("Mail de registros de Riego/Lluvia")
+                .setContentText("Se envia un mail con los registros de riegos/lluvias ingresados que no se habian sincronizado");
+        n = rand.nextInt(999) + 1;
         mNotificationManager.notify(n, mBuilder.build());
 
 
@@ -224,7 +300,28 @@ public class AlarmReceiverMail extends BroadcastReceiver {
 
         //Executing sendmail to send email
         sm.execute();
+
+        mBuilder.setContentTitle("Mail de Logs")
+                .setContentText("Se envió un mail con los Logs de la jornada.");
+
+        n = rand.nextInt(999) + 1;
         mNotificationManager.notify(n, mBuilder.build());
     }
+    public boolean probarConn(Context cont){
+
+        ConnectivityManager cm = (ConnectivityManager) cont.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo infoNet = cm.getActiveNetworkInfo();
+
+        if(infoNet != null){
+            if(infoNet.isConnected()){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        return false;
+    }
+
 
 }
