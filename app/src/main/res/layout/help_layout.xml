@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/helpLayout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/pressed_color"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/tableLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:shrinkColumns="*"
+        tools:context="com.example.olave.inriego.MainActivity">
+
+        <TableRow
+            android:id="@+id/tableRow8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="10sp"
+            android:layout_marginLeft="20sp">
+
+        <ImageView
+            android:id="@+id/btn_help"
+            android:backgroundTint="@color/negro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:background="@drawable/ic_riego"
+            android:paddingTop="2sp"
+            />
+        <TextView
+            android:id="@+id/tv_refdate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="2"
+            android:layout_marginLeft="8sp"
+            android:paddingTop="5sp"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:text="CAMPO REGADO"
+            android:textColor="@color/negro"/>
+
+        </TableRow>
+        <TableRow
+            android:id="@+id/tableRow8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="7sp"
+            android:layout_marginLeft="20sp">
+
+            <ImageView
+                android:id="@+id/btn_help"
+                android:backgroundTint="@color/negro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:background="@drawable/ic_cloud"
+                android:paddingTop="5sp"
+                />
+            <TextView
+                android:id="@+id/tv_refdate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:layout_marginLeft="8sp"
+                android:paddingTop="5sp"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:text="LLUVIA"
+                android:textColor="@color/negro"/>
+
+        </TableRow>
+        <TableRow
+            android:id="@+id/tableRow8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="7sp"
+            android:layout_marginLeft="20sp">
+
+            <ImageView
+                android:id="@+id/btn_help"
+                android:backgroundTint="@color/negro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:background="@drawable/ic_noriego"
+                android:paddingTop="5sp"
+                />
+            <TextView
+                android:id="@+id/tv_refdate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:layout_marginLeft="8sp"
+                android:paddingTop="5sp"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:text="NO RIEGO"
+                android:textColor="@color/negro"/>
+
+        </TableRow>
+        <TableRow
+            android:id="@+id/tableRow8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="7sp"
+            android:paddingBottom="10sp"
+            android:layout_marginLeft="20sp">
+
+            <ImageView
+                android:id="@+id/btn_help"
+                android:backgroundTint="@color/negro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:background="@drawable/ic_proxriego"
+                android:paddingTop="5sp"
+                />
+            <TextView
+                android:id="@+id/tv_refdate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:layout_marginLeft="8sp"
+                android:paddingTop="5sp"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:text="PRÓXIMO RIEGO"
+                android:textColor="@color/negro"/>
+
+        </TableRow>
+    </TableLayout>
+</RelativeLayout>

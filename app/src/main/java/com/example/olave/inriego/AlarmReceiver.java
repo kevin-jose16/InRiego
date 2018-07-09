@@ -39,7 +39,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             ca.set(Calendar.HOUR_OF_DAY, 20);
             ca.set(Calendar.MINUTE, 0);
             ca.set(Calendar.SECOND, 0);
-            if(cal.get(Calendar.HOUR_OF_DAY) > ca.get(Calendar.HOUR_OF_DAY) || cal.get(Calendar.MINUTE) >= ca.get(Calendar.MINUTE))
+            if(ca.compareTo(cal) <=0)
                 ca.add(Calendar.DATE,1);
 
             AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -83,7 +83,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                     ca.set(Calendar.HOUR_OF_DAY, 20);
                     ca.set(Calendar.MINUTE, 0);
                     ca.set(Calendar.SECOND, 0);
-                    if(cal.get(Calendar.HOUR_OF_DAY) > ca.get(Calendar.HOUR_OF_DAY) || cal.get(Calendar.MINUTE) >= ca.get(Calendar.MINUTE))
+                    if(ca.compareTo(cal) <=0)
                         ca.add(Calendar.DATE,1);
 
                     AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -94,7 +94,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             }
 
             else{
-                //Codigo comentado para entrega modulo 1
+                //Codigo comentado para la entrega del módulo 2
                 /*Calendar ca = Calendar.getInstance();
                 ca.setTimeInMillis(ca.getTimeInMillis() + 900000); //Le agrego a la hora actual 15 minutos (en milisegundos)
                 AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -120,7 +120,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 ca.set(Calendar.HOUR_OF_DAY, 20);
                 ca.set(Calendar.MINUTE, 0);
                 ca.set(Calendar.SECOND, 0);
-                if(cal.get(Calendar.HOUR_OF_DAY) > ca.get(Calendar.HOUR_OF_DAY) || cal.get(Calendar.MINUTE) >= ca.get(Calendar.MINUTE))
+                if(ca.compareTo(cal) <=0)
                     ca.add(Calendar.DATE,1);
 
                 AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -139,42 +139,9 @@ public class AlarmReceiver extends BroadcastReceiver {
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 2, alarmIntent, 0);
                 manager.setExact(AlarmManager.RTC_WAKEUP, ca.getTimeInMillis(), pendingIntent);
 
-                /*mBuilder.setContentTitle("Todo Sincronizado");
-                mBuilder.setContentText("Todo Sincronizado!!");
-                n = rand.nextInt(999) + 1;
-                mNotificationManager.notify(n, mBuilder.build());*/
             }
         }
 
     }
-    public boolean probarConn(Context cont){
-
-        ConnectivityManager cm = (ConnectivityManager) cont.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo infoNet = cm.getActiveNetworkInfo();
-
-        if(infoNet != null){
-            if(infoNet.isConnected()){
-                return true;
-            }
-            else{
-                return false;
-            }
-        }
-        return false;
-    }
-
-    public void mostrarMsg(Context cont, String msg){
-        AlertDialog.Builder builder = new AlertDialog.Builder(cont);
-        builder.setMessage(msg).setTitle("Conexion a Internet");
-        builder.setPositiveButton("OK",null);
-        builder.create();
-        builder.show();
-    }
-    public void startVariable(Context cont ,AlarmManager man, PendingIntent pend, Calendar cal) {
-        AlarmManager manager = man;
-        manager.set(AlarmManager.RTC_WAKEUP,cal.getTimeInMillis(),pend);
-        Toast.makeText(cont, "Next Alarm Set", Toast.LENGTH_SHORT).show();
-    }
-
 
 }

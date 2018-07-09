@@ -55,7 +55,7 @@ public class AlarmReceiverMail extends BroadcastReceiver {
             ca.set(Calendar.HOUR_OF_DAY, 21);
             ca.set(Calendar.MINUTE, 30);
             ca.set(Calendar.SECOND, 0);
-            if(cal.get(Calendar.HOUR_OF_DAY) > ca.get(Calendar.HOUR_OF_DAY) || cal.get(Calendar.MINUTE) >= ca.get(Calendar.MINUTE))
+            if(ca.compareTo(cal) <=0)
                 ca.add(Calendar.DATE,1);
 
             AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -101,7 +101,7 @@ public class AlarmReceiverMail extends BroadcastReceiver {
         SQLiteHelper abd = new SQLiteHelper(dta_base, json_sq);
         Cursor result= abd.obtener();
 
-        if(probarConn(context)) {
+        if(probarConn(contexto)) {
             //Mail para datos no sincronizados
             if (result.getCount() >= 1)
                 this.mailSincronizar();
@@ -112,29 +112,16 @@ public class AlarmReceiverMail extends BroadcastReceiver {
                     "sesion", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.clear();
+            editor.putBoolean("mail_fallido", false);
             editor.commit();
 
             Intent i = new Intent(contexto, Login.class);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             contexto.startActivity(i);
-            /*resultIntent = new Intent(context, MainActivity.class);
-            resultPendingIntent = PendingIntent.getActivity(context, 4, resultIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
-            mBuilder.setContentIntent(resultPendingIntent);
-            mBuilder.setContentTitle("Envío de Mails Exitoso")
-                    .setContentText("Se enviaron los mails");
-            n= rand.nextInt(999) + 1;
-            mNotificationManager.notify(n, mBuilder.build());*/
+
         }
         else{
-            /*resultIntent = new Intent(context, MainActivity.class);
-            resultPendingIntent = PendingIntent.getActivity(context, 4, resultIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
-            mBuilder.setContentIntent(resultPendingIntent);
-            mBuilder.setContentTitle("Envío de Mails FALLIDO")
-                    .setContentText("No tiene Conexión para realizar esta acción");
-            n= rand.nextInt(999) + 1;
-            mNotificationManager.notify(n, mBuilder.build());*/
+
 
             //Esto lo tengo comentado para enviar la primer version desarrollada
            if(cal.get(Calendar.HOUR_OF_DAY) < 22 ) {
@@ -170,7 +157,7 @@ public class AlarmReceiverMail extends BroadcastReceiver {
                 ca.set(Calendar.HOUR_OF_DAY, 21);
                 ca.set(Calendar.MINUTE, 30);
                 ca.set(Calendar.SECOND, 0);
-                if(cal.get(Calendar.HOUR_OF_DAY) > ca.get(Calendar.HOUR_OF_DAY) || cal.get(Calendar.MINUTE) >= ca.get(Calendar.MINUTE))
+                if(ca.compareTo(cal) <=0)
                     ca.add(Calendar.DATE,1);
 
                 AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -184,8 +171,8 @@ public class AlarmReceiverMail extends BroadcastReceiver {
                     PendingIntent.FLAG_UPDATE_CURRENT);
                 mBuilder.setContentIntent(resultPendingIntent)
                         .setContentTitle("Envío de Mails FALLIDO")
-                        //.setContentText("Los mails se enviarán durante el próximo Inicio de Sesión");
-                        .setContentText("Los mails no se enviaron por falta de conexión");
+                        .setContentText("Los mails se enviarán durante el próximo Inicio de Sesión");
+                        //.setContentText("Los mails no se enviaron por falta de conexión");
                 n= rand.nextInt(999) + 1;
                 mNotificationManager.notify(n, mBuilder.build());
 
@@ -193,6 +180,7 @@ public class AlarmReceiverMail extends BroadcastReceiver {
                         "sesion", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.clear();
+                editor.putBoolean("mail_fallido",true);
                 editor.commit();
 
                 Intent i = new Intent(contexto, Login.class);
@@ -271,6 +259,7 @@ public class AlarmReceiverMail extends BroadcastReceiver {
         Cursor result= abd.obtenerLog();
 
         String message = "<html>\n" +
+
                 "<body>\n";
 
         String subject = "LOG total de la jornada";
@@ -313,7 +302,7 @@ public class AlarmReceiverMail extends BroadcastReceiver {
         NetworkInfo infoNet = cm.getActiveNetworkInfo();
 
         if(infoNet != null){
-            if(infoNet.isConnected()){
+            if(infoNet.isAvailable() && infoNet.isConnected()){
                 return true;
             }
             else{

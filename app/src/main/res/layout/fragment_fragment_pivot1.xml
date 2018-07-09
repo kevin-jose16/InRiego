@@ -393,8 +393,6 @@
             android:layout_marginLeft="2sp"
             android:layout_marginRight="35sp"
             android:layout_marginTop="0.5sp"
-
-
             android:visibility="visible" />
 
         <TextView
@@ -450,6 +448,8 @@
         android:layout_height="wrap_content"
         android:paddingTop="20sp">
 
+
+
         <TextView
             android:id="@+id/tv_fecharef"
             android:layout_width="wrap_content"
@@ -473,6 +473,14 @@
             android:textSize="15sp"
             android:textStyle="bold"
             android:textColor="@android:color/white"/>
+        <ImageButton
+            android:id="@+id/btn_help"
+            android:layout_width="40sp"
+            android:layout_height="40sp"
+            android:layout_column="1"
+            android:background="@drawable/ic_help"
+            />
+
 
     </TableRow>
 

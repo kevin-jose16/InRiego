@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -67,7 +69,7 @@ public class Login extends AppCompatActivity {
         boton = (Button) findViewById(R.id.button);
         pass = (EditText) findViewById(R.id.password);
         user = (EditText) findViewById(R.id.usuario);
-        SharedPreferences sharedPref = this.getSharedPreferences("sesion", Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = this.getSharedPreferences("sesion", Context.MODE_PRIVATE);
         String us = sharedPref.getString("username", null );
         String passw = sharedPref.getString("password", null);
         if(us!=null && passw!=null){
@@ -162,6 +164,15 @@ public class Login extends AppCompatActivity {
                     if(json.getBoolean("IsOk")){
                         SharedPreferences sp = Login.this.getSharedPreferences("sesion", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sp.edit();
+                        if(sp.getBoolean("mail_fallido",false)){
+                            Cursor datos = abd.obtener();
+                            if (datos.getCount() >= 1)
+                                mailSincronizar();
+
+                            //Mail para los logs del dia
+                            mailLog();
+                            editor.putBoolean("mail_fallido", false);
+                        }
                         editor.putString("username",username);
                         editor.putString("password",password);
                         editor.putBoolean("hay_farm", false);
@@ -188,6 +199,7 @@ public class Login extends AppCompatActivity {
                         cur.getString(1);
                         dta_base.close();
                         //iniciar 2da activity despues del login
+                        finish();
                         Intent i = new Intent(Login.this,MainActivity.class);
                         startActivity(i);
                     }
@@ -334,5 +346,6 @@ public class Login extends AppCompatActivity {
         builder.create();
         builder.show();
     }
+
 
 }

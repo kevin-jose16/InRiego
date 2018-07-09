@@ -3,26 +3,23 @@ package com.example.olave.inriego;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.TableRow;
+
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.example.olave.inriego.R;
-
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,14 +28,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 
-import Clases.Establecimiento;
-import Clases.Pivot;
-import Clases.Riego;
-import layout.Fm_Establecimiento;
-
-import static android.content.ContentValues.TAG;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class FragmentPivot extends Fragment {
@@ -582,7 +572,19 @@ public class FragmentPivot extends Fragment {
         cal.add(Calendar.DAY_OF_YEAR, dias);
         return cal.getTime();
     }
+    public void mostrarMsg(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater factory = LayoutInflater.from(getActivity());
+        View view = factory.inflate(R.layout.help_layout, null);
+        LayoutInflater factory_title = LayoutInflater.from(getActivity());
+        View view_title = factory_title.inflate(R.layout.help_layout_title, null);
+        builder.setView(view);
+        builder.setCustomTitle(view_title);
+        builder.setPositiveButton("OK",null);
 
+        builder.create();
+        builder.show();
+    }
 
 
 
@@ -621,7 +623,13 @@ public class FragmentPivot extends Fragment {
             e.printStackTrace();
         }
 
-
+        ImageButton bt_help = (ImageButton) v.findViewById(R.id.btn_help);
+        bt_help.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mostrarMsg();
+            }
+        });
         Spinner spi = (Spinner) v.findViewById(R.id.spinner_pivot);
 
         ArrayAdapter aa = new ArrayAdapter(getActivity().getApplicationContext(), android.R.layout.simple_spinner_item, listita);
@@ -732,10 +740,9 @@ public class FragmentPivot extends Fragment {
                         dias_validos.add(0+Integer.toString(day2));
                     else
                         dias_validos.add(Integer.toString(day2));
-                    //comentado para la entrega del modulo 1
-                    /*if(Integer.toString(day).length()==1)
+                    if(Integer.toString(day).length()==1)
                         dias_validos.add(0+Integer.toString(day));
-                    else*/
+                    else
                         dias_validos.add(Integer.toString(day));
                     if(Integer.toString(day4).length()==1)
                         dias_validos.add(0+Integer.toString(day4));
@@ -754,7 +761,6 @@ public class FragmentPivot extends Fragment {
                     else
                         dias_validos.add(Integer.toString(day7));
 
-                    //Los if y else estan comentados por la primer vesion desarrollada
                     //setea los meses
                     if(Integer.toString(month1).length()==1)
                         meses_validos.add(0+Integer.toString(month1));
@@ -764,9 +770,9 @@ public class FragmentPivot extends Fragment {
                         meses_validos.add(0+Integer.toString(month2));
                     else
                         meses_validos.add(Integer.toString(month2));
-                    /*if(Integer.toString(month).length()==1)
+                    if(Integer.toString(month).length()==1)
                         meses_validos.add(0+Integer.toString(month));
-                    else*/
+                    else
                         meses_validos.add(Integer.toString(month));
                     if(Integer.toString(month4).length()==1)
                         meses_validos.add(0+Integer.toString(month4));
@@ -815,8 +821,6 @@ public class FragmentPivot extends Fragment {
 
                             JSONObject riegotraido = riegos_traidos.getJSONObject(b);
                             Calendar fecha_rtraido= CrearFecha(riegotraido.getString("fecha"));
-                           // String abc = riegotraido.getString("fecha");
-                           // Date fec = new Date(Integer.valueOf(anios_validos.get(a)),Integer.valueOf(meses_validos.get(a)),Integer.valueOf(dias_validos.get(a)));
                             String fec =anios_validos.get(a)+"-"+meses_validos.get(a)+"-"+dias_validos.get(a);
                             Calendar fecha_valida = CrearFecha(fec);
                             if(comparaFechas(fecha_valida,fecha_rtraido)==0)
@@ -896,11 +900,11 @@ public class FragmentPivot extends Fragment {
                                     }
                                     if (tipo.equals("Rain")){
                                         tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.ic_cloud));
+                                        tipos_riegos.get(i).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
                                     }
 
                                 }
-                                //Este if esta comentado porque no entra en el modulo 1
-                                /*if(comparaFechas(fecha_riego,ref_d)==0) {
+                                if(comparaFechas(fecha_riego,ref_d)==0) {
                                     if (tipo.equals("Irrigation")) {
                                         tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.riego));
                                         tipos_riegos.get(i).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
@@ -908,8 +912,9 @@ public class FragmentPivot extends Fragment {
                                     }
                                     if (tipo.equals("Rain")) {
                                         tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.ic_cloud));
+                                        tipos_riegos.get(i).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
                                     }
-                                }*/
+                                }
                             }
 
 

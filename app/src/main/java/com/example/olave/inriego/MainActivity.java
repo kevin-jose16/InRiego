@@ -28,9 +28,11 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -273,6 +275,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             "sesion", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPref.edit();
                     editor.clear();
+                    editor.putBoolean("mail_fallido", false);
                     editor.commit();
                     finish();
                     Intent i = new Intent(MainActivity.this,Login.class);
@@ -494,7 +497,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NetworkInfo infoNet = cm.getActiveNetworkInfo();
 
         if(infoNet != null){
-            if(infoNet.isConnected()){
+            if(infoNet.isAvailable() && infoNet.isConnected()){
                 return true;
             }
             else{
@@ -519,8 +522,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         calendar.set(Calendar.HOUR_OF_DAY, 21);
         calendar.set(Calendar.MINUTE, 30);
         calendar.set(Calendar.SECOND, 0);
-        if(cal.get(Calendar.HOUR_OF_DAY) > calendar.get(Calendar.HOUR_OF_DAY) || cal.get(Calendar.MINUTE) >= calendar.get(Calendar.MINUTE))
+        if(calendar.compareTo(cal) <=0)
             calendar.add(Calendar.DATE,1);
+
         /* Repeating on every one day interval */
         manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
                 AlarmManager.INTERVAL_DAY, pending);
@@ -534,7 +538,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         calendar.set(Calendar.HOUR_OF_DAY, 20);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
-        if(cal.get(Calendar.HOUR_OF_DAY) > calendar.get(Calendar.HOUR_OF_DAY) || cal.get(Calendar.MINUTE) >= calendar.get(Calendar.MINUTE))
+        if(calendar.compareTo(cal) <=0)
             calendar.add(Calendar.DATE,1);
         /* Repeating on every one day interval */
         manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
@@ -589,8 +593,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 reg_riego = result.getString(1);
                                 out.write(String.valueOf(obj));
                                 out.close();
-                                //String msg = conn.getResponseMessage();
-                                //int rsp =conn.getResponseCode();
+
                                 input = new InputStreamReader(conn.getInputStream());
                                 br =new BufferedReader(input);
 
@@ -669,8 +672,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
 
                     //Esto es para modulo 1
-                    cambiofragment();
-                    //new ClaseAsincrona().execute(token,String.valueOf(actual_farm));
+                    //cambiofragment();
+                    new ClaseAsincrona().execute(token,String.valueOf(actual_farm));
                 }
             }
             else{

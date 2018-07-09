@@ -51,7 +51,7 @@ public class SendMail extends AsyncTask<Void,Void,Integer> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        Toast.makeText(context,"Sending mail", Toast.LENGTH_LONG).show();
+        Toast.makeText(context,"Enviando mail", Toast.LENGTH_LONG).show();
     }
 
     @Override
