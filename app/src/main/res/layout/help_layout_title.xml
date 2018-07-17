@@ -14,7 +14,7 @@
         android:layout_marginLeft="40sp"
         android:text="AYUDA"
         android:textColor="@color/negro"
-        android:textSize="23sp"
+        android:textSize="23dp"
         android:textStyle="bold" />
 
 </RelativeLayout>

@@ -138,7 +138,6 @@ public class AlarmReceiver extends BroadcastReceiver {
                 Intent alarmIntent = new Intent(context, AlarmReceiver.class);
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 2, alarmIntent, 0);
                 manager.setExact(AlarmManager.RTC_WAKEUP, ca.getTimeInMillis(), pendingIntent);
-
             }
         }
 

@@ -18,14 +18,14 @@
         tools:context="com.example.olave.inriego.MainActivity">
 
         <TableRow
-            android:id="@+id/tableRow8"
+            android:id="@+id/tableRow1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="10sp"
             android:layout_marginLeft="20sp">
 
         <ImageView
-            android:id="@+id/btn_help"
+            android:id="@+id/img_riego"
             android:backgroundTint="@color/negro"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -34,27 +34,27 @@
             android:paddingTop="2sp"
             />
         <TextView
-            android:id="@+id/tv_refdate"
+            android:id="@+id/tv_riego"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_column="2"
             android:layout_marginLeft="8sp"
             android:paddingTop="5sp"
-            android:textSize="17sp"
+            android:textSize="17dp"
             android:textStyle="bold"
             android:text="CAMPO REGADO"
             android:textColor="@color/negro"/>
 
         </TableRow>
         <TableRow
-            android:id="@+id/tableRow8"
+            android:id="@+id/tableRow2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="7sp"
             android:layout_marginLeft="20sp">
 
             <ImageView
-                android:id="@+id/btn_help"
+                android:id="@+id/img_lluvia"
                 android:backgroundTint="@color/negro"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -63,27 +63,27 @@
                 android:paddingTop="5sp"
                 />
             <TextView
-                android:id="@+id/tv_refdate"
+                android:id="@+id/tv_lluvia"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
                 android:layout_marginLeft="8sp"
                 android:paddingTop="5sp"
-                android:textSize="17sp"
+                android:textSize="17dp"
                 android:textStyle="bold"
                 android:text="LLUVIA"
                 android:textColor="@color/negro"/>
 
         </TableRow>
         <TableRow
-            android:id="@+id/tableRow8"
+            android:id="@+id/tableRow3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="7sp"
             android:layout_marginLeft="20sp">
 
             <ImageView
-                android:id="@+id/btn_help"
+                android:id="@+id/img_noriego"
                 android:backgroundTint="@color/negro"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -92,20 +92,20 @@
                 android:paddingTop="5sp"
                 />
             <TextView
-                android:id="@+id/tv_refdate"
+                android:id="@+id/tv_noriego"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
                 android:layout_marginLeft="8sp"
                 android:paddingTop="5sp"
-                android:textSize="17sp"
+                android:textSize="17dp"
                 android:textStyle="bold"
                 android:text="NO RIEGO"
                 android:textColor="@color/negro"/>
 
         </TableRow>
         <TableRow
-            android:id="@+id/tableRow8"
+            android:id="@+id/tableRow4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="7sp"
@@ -113,7 +113,7 @@
             android:layout_marginLeft="20sp">
 
             <ImageView
-                android:id="@+id/btn_help"
+                android:id="@+id/img_proxriego"
                 android:backgroundTint="@color/negro"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -122,13 +122,13 @@
                 android:paddingTop="5sp"
                 />
             <TextView
-                android:id="@+id/tv_refdate"
+                android:id="@+id/tv_proxriego"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
                 android:layout_marginLeft="8sp"
                 android:paddingTop="5sp"
-                android:textSize="17sp"
+                android:textSize="17dp"
                 android:textStyle="bold"
                 android:text="PRÓXIMO RIEGO"
                 android:textColor="@color/negro"/>

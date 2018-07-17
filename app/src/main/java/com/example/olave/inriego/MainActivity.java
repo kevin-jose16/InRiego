@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     boolean tiene_pivots = false, error_servidor = false;
     public String reference_date;
     int advice_cod;
-    Calendar cal = Calendar.getInstance();
     boolean esriego; //Chequear si es riego o lluvia
     String reg_riego; //Json de registro de riego/lluvia pasado a string
     private PendingIntent pendingIntent = null;
@@ -222,14 +221,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        /*int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             mostrarMsg("Aplicación desarrollada por:\n\nNadia Cabrera\nnadiacabrerayahn@gmail.com\n\n" +
                     "Kevin José\njosekevin15@gmail.com\n\nCarina Maerro\nCMaerro@gmail.com", "Información");
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -254,7 +253,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 json_sq= new Json_SQLiteHelper(MainActivity.this, "DBJsons", null, 1);
                 dta_base = json_sq.getReadableDatabase();
                 abd = new SQLiteHelper(dta_base,json_sq);
-                new SincronizarDatos().execute();
+                Cursor result= abd.obtener();
+
+                if(result.getCount()>=1)
+                    new SincronizarDatos().execute();
+                else
+                    mostrarMsg("No hay datos para sincronizar", "Sincronización");
             }
             else{
                 mostrarMsg("NO tiene conexion, intente mas tarde", "Conexión a Internet");
@@ -497,7 +501,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NetworkInfo infoNet = cm.getActiveNetworkInfo();
 
         if(infoNet != null){
-            if(infoNet.isAvailable() && infoNet.isConnected()){
+            if(infoNet.isConnected()){
                 return true;
             }
             else{
@@ -508,6 +512,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void mostrarMsg(String msg, String titulo){
+        TextView myView = new TextView(getApplicationContext());
+        myView.setText(msg);
+        myView.setTextSize(10);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(msg).setTitle(titulo);
         builder.setPositiveButton("OK",null);
@@ -522,6 +529,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         calendar.set(Calendar.HOUR_OF_DAY, 21);
         calendar.set(Calendar.MINUTE, 30);
         calendar.set(Calendar.SECOND, 0);
+        Calendar cal = Calendar.getInstance();
         if(calendar.compareTo(cal) <=0)
             calendar.add(Calendar.DATE,1);
 
@@ -538,6 +546,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         calendar.set(Calendar.HOUR_OF_DAY, 20);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
+        Calendar cal = Calendar.getInstance();
         if(calendar.compareTo(cal) <=0)
             calendar.add(Calendar.DATE,1);
         /* Repeating on every one day interval */
@@ -672,8 +681,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
 
                     //Esto es para modulo 1
-                    //cambiofragment();
-                    new ClaseAsincrona().execute(token,String.valueOf(actual_farm));
+                    cambiofragment();
+                    //new ClaseAsincrona().execute(token,String.valueOf(actual_farm));
                 }
             }
             else{

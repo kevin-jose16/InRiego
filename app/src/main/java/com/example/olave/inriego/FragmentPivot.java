@@ -740,9 +740,9 @@ public class FragmentPivot extends Fragment {
                         dias_validos.add(0+Integer.toString(day2));
                     else
                         dias_validos.add(Integer.toString(day2));
-                    if(Integer.toString(day).length()==1)
+                    /*if(Integer.toString(day).length()==1)
                         dias_validos.add(0+Integer.toString(day));
-                    else
+                    else*/
                         dias_validos.add(Integer.toString(day));
                     if(Integer.toString(day4).length()==1)
                         dias_validos.add(0+Integer.toString(day4));
@@ -770,9 +770,9 @@ public class FragmentPivot extends Fragment {
                         meses_validos.add(0+Integer.toString(month2));
                     else
                         meses_validos.add(Integer.toString(month2));
-                    if(Integer.toString(month).length()==1)
+                    /*if(Integer.toString(month).length()==1)
                         meses_validos.add(0+Integer.toString(month));
-                    else
+                    else*/
                         meses_validos.add(Integer.toString(month));
                     if(Integer.toString(month4).length()==1)
                         meses_validos.add(0+Integer.toString(month4));
@@ -904,7 +904,7 @@ public class FragmentPivot extends Fragment {
                                     }
 
                                 }
-                                if(comparaFechas(fecha_riego,ref_d)==0) {
+                                /*if(comparaFechas(fecha_riego,ref_d)==0) {
                                     if (tipo.equals("Irrigation")) {
                                         tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.riego));
                                         tipos_riegos.get(i).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
@@ -914,7 +914,7 @@ public class FragmentPivot extends Fragment {
                                         tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.ic_cloud));
                                         tipos_riegos.get(i).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
                                     }
-                                }
+                                }*/
                             }
 
 

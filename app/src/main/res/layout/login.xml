@@ -7,13 +7,12 @@
     android:layout_height="match_parent"
     android:background="@drawable/inriegobackground">
 
-
-
     <ImageView
         android:id="@+id/icono"
         android:layout_width="0dp"
         android:layout_height="61dp"
         android:src="@drawable/logo_pgw"
+        android:contentDescription="@string/Content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -23,6 +22,7 @@
         android:id="@+id/inriego_icon"
         android:layout_width="273dp"
         android:layout_height="64dp"
+        android:contentDescription="@string/Content"
         android:src="@drawable/logo_inriego"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -40,7 +40,7 @@
         android:drawableBottom="@color/colorPrimary"
         android:ems="10"
         android:gravity="center"
-        android:hint="Usuario"
+        android:hint="@string/Usuario"
         android:textColor="#636262"
         android:inputType="text"
         android:textColorHint="#636262"
@@ -61,7 +61,7 @@
         android:drawableBottom="@color/colorPrimary"
         android:ems="10"
         android:gravity="center"
-        android:hint="Contraseña"
+        android:hint="@string/Password"
         android:textColor="#636262"
         android:inputType="textPassword"
         android:textColorHint="#636262"
@@ -81,8 +81,7 @@
         android:layout_height="48dp"
         android:background="@drawable/borde_redondeado"
         android:backgroundTint="#0E417B"
-        android:elevation="5dp"
-        android:text="Ingresar"
+        android:text="@string/Ingresar"
         android:textAlignment="center"
         android:textColor="#ffff"
         android:textStyle="bold"

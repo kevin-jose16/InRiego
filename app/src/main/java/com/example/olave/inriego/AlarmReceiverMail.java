@@ -100,7 +100,6 @@ public class AlarmReceiverMail extends BroadcastReceiver {
         SQLiteDatabase dta_base = json_sq.getReadableDatabase();
         SQLiteHelper abd = new SQLiteHelper(dta_base, json_sq);
         Cursor result= abd.obtener();
-
         if(probarConn(contexto)) {
             //Mail para datos no sincronizados
             if (result.getCount() >= 1)
@@ -121,7 +120,6 @@ public class AlarmReceiverMail extends BroadcastReceiver {
 
         }
         else{
-
 
             //Esto lo tengo comentado para enviar la primer version desarrollada
            if(cal.get(Calendar.HOUR_OF_DAY) < 22 ) {
@@ -171,8 +169,8 @@ public class AlarmReceiverMail extends BroadcastReceiver {
                     PendingIntent.FLAG_UPDATE_CURRENT);
                 mBuilder.setContentIntent(resultPendingIntent)
                         .setContentTitle("Envío de Mails FALLIDO")
-                        .setContentText("Los mails se enviarán durante el próximo Inicio de Sesión");
-                        //.setContentText("Los mails no se enviaron por falta de conexión");
+                        //.setContentText("Los mails se enviarán durante el próximo Inicio de Sesión");
+                        .setContentText("Los mails no se enviaron por falta de conexión");
                 n= rand.nextInt(999) + 1;
                 mNotificationManager.notify(n, mBuilder.build());
 
@@ -234,8 +232,6 @@ public class AlarmReceiverMail extends BroadcastReceiver {
 
         String email = "josekevin15@gmail.com"; //destinatario (va mail de PGG)
 
-
-
         //Creating SendMail object
 
         SendMail sm = new SendMail(contexto, email, subject, message);
@@ -243,12 +239,10 @@ public class AlarmReceiverMail extends BroadcastReceiver {
         //Executing sendmail to send email
         sm.execute();
 
-
         mBuilder.setContentTitle("Mail de registros de Riego/Lluvia")
                 .setContentText("Se envia un mail con los registros de riegos/lluvias ingresados que no se habian sincronizado");
         n = rand.nextInt(999) + 1;
         mNotificationManager.notify(n, mBuilder.build());
-
 
     }
 
@@ -302,7 +296,7 @@ public class AlarmReceiverMail extends BroadcastReceiver {
         NetworkInfo infoNet = cm.getActiveNetworkInfo();
 
         if(infoNet != null){
-            if(infoNet.isAvailable() && infoNet.isConnected()){
+            if(infoNet.isConnected()){
                 return true;
             }
             else{

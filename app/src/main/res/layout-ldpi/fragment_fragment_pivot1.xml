@@ -5,6 +5,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
 <TableLayout
+
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/tableLayout"
     android:layout_width="wrap_content"
@@ -17,17 +18,17 @@
         android:id="@+id/table1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="20dp"
-        android:textSize="18dp"
+        android:paddingTop="15dp"
+        android:textSize="16dp"
         android:textStyle="bold">
 
         <TextView
             android:id="@+id/textViewSelPivot"
             android:layout_column="1"
-            android:paddingTop="20dp"
+            android:paddingTop="10dp"
             android:text="@string/Seleccione_pivot"
             android:textAlignment="center"
-            android:textSize="22dp"
+            android:textSize="16dp"
             android:textStyle="bold" />
     </TableRow>
 
@@ -45,7 +46,7 @@
             android:background="#b77c7c7c"
             android:spinnerMode="dropdown"
             android:textAlignment="center"
-            android:textSize="18dp"
+            android:textSize="12dp"
             android:visibility="visible" />
 
     </TableRow>
@@ -63,7 +64,7 @@
             android:layout_marginStart="15dp"
             android:paddingTop="5dp"
             android:text="@string/Cultivo"
-            android:textSize="22dp"
+            android:textSize="16dp"
             android:textStyle="bold" />
 
         <TextView
@@ -75,7 +76,7 @@
             android:background="@color/background_material_light"
             android:paddingTop="0dp"
             android:textAlignment="center"
-            android:textSize="18dp"
+            android:textSize="16dp"
             android:textStyle="bold" />
 
     </TableRow>
@@ -94,7 +95,7 @@
             android:layout_marginStart="15dp"
             android:paddingTop="2dp"
             android:text="@string/Cosecha"
-            android:textSize="22dp"
+            android:textSize="16dp"
             android:textStyle="bold" />
 
         <TextView
@@ -106,7 +107,7 @@
             android:background="@color/background_material_light"
             android:paddingTop="0dp"
             android:textAlignment="center"
-            android:textSize="18dp"
+            android:textSize="12dp"
             android:textStyle="bold" />
 
     </TableRow>
@@ -126,7 +127,7 @@
             android:layout_marginStart="15dp"
             android:paddingTop="2dp"
             android:text="@string/Fenologia"
-            android:textSize="22dp"
+            android:textSize="16dp"
             android:textStyle="bold" />
 
         <TextView
@@ -138,7 +139,7 @@
             android:background="@color/background_material_light"
             android:paddingTop="0dp"
             android:textAlignment="center"
-            android:textSize="18dp"
+            android:textSize="12dp"
             android:textStyle="bold" />
 
     </TableRow>
@@ -155,7 +156,7 @@
             android:paddingTop="2dp"
             android:text="@string/Fecha"
             android:textAlignment="center"
-            android:textSize="19dp"
+            android:textSize="13dp"
             android:textStyle="bold" />
 
         <TextView
@@ -164,7 +165,7 @@
             android:paddingTop="2dp"
             android:text="@string/Estado"
             android:textAlignment="center"
-            android:textSize="19dp"
+            android:textSize="13dp"
             android:textStyle="bold" />
 
         <TextView
@@ -172,7 +173,7 @@
             android:paddingTop="2dp"
             android:text="@string/mm"
             android:textAlignment="textStart"
-            android:textSize="19dp"
+            android:textSize="13dp"
             android:textStyle="bold" />
 
     </TableRow>
@@ -193,14 +194,14 @@
             android:layout_height="wrap_content"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="18dp"
+            android:textSize="12dp"
             android:textStyle="bold" />
 
 
         <ImageView
             android:id="@+id/tabla_estado_1"
-            android:layout_width="40dp"
-            android:layout_height="30dp"
+            android:layout_width="34dp"
+            android:layout_height="24dp"
             android:layout_marginEnd="35dp"
             android:contentDescription="@string/Content"
             android:visibility="visible" />
@@ -210,7 +211,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
-            android:textSize="18dp"
+            android:textSize="12dp"
             android:textStyle="bold" />
 
 
@@ -232,13 +233,13 @@
             android:layout_height="wrap_content"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="18dp"
+            android:textSize="12dp"
             android:textStyle="bold" />
 
         <ImageView
             android:id="@+id/tabla_estado_2"
-            android:layout_width="40dp"
-            android:layout_height="30dp"
+            android:layout_width="34dp"
+            android:layout_height="24dp"
             android:layout_marginEnd="35dp"
             android:layout_marginStart="2dp"
             android:layout_marginTop="0.5dp"
@@ -250,7 +251,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
-            android:textSize="18dp"
+            android:textSize="12dp"
             android:textStyle="bold" />
 
     </TableRow>
@@ -271,13 +272,13 @@
             android:layout_height="wrap_content"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="18dp"
+            android:textSize="12dp"
             android:textStyle="bold" />
 
         <ImageView
             android:id="@+id/tabla_estado_3"
-            android:layout_width="40dp"
-            android:layout_height="30dp"
+            android:layout_width="34dp"
+            android:layout_height="24dp"
             android:layout_marginEnd="35dp"
             android:layout_marginStart="2dp"
             android:layout_marginTop="0.5dp"
@@ -289,7 +290,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
-            android:textSize="18dp"
+            android:textSize="12dp"
             android:textStyle="bold" />
     </TableRow>
 
@@ -309,14 +310,14 @@
             android:layout_height="wrap_content"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="18dp"
+            android:textSize="12dp"
             android:textStyle="bold" />
 
 
         <ImageView
             android:id="@+id/tabla_estado_4"
-            android:layout_width="40dp"
-            android:layout_height="30dp"
+            android:layout_width="34dp"
+            android:layout_height="24dp"
             android:layout_marginEnd="35dp"
             android:layout_marginStart="2dp"
             android:layout_marginTop="0.5dp"
@@ -328,7 +329,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
-            android:textSize="18dp"
+            android:textSize="12dp"
             android:textStyle="bold" />
 
     </TableRow>
@@ -349,13 +350,13 @@
             android:layout_height="wrap_content"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="18dp"
+            android:textSize="12dp"
             android:textStyle="bold" />
 
         <ImageView
             android:id="@+id/tabla_estado_5"
-            android:layout_width="40dp"
-            android:layout_height="30dp"
+            android:layout_width="34dp"
+            android:layout_height="24dp"
             android:layout_marginEnd="35dp"
             android:layout_marginStart="2dp"
             android:layout_marginTop="0.5dp"
@@ -367,7 +368,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
-            android:textSize="18dp"
+            android:textSize="12dp"
             android:textStyle="bold" />
     </TableRow>
 
@@ -387,13 +388,13 @@
             android:layout_height="wrap_content"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="18dp"
+            android:textSize="12dp"
             android:textStyle="bold" />
 
         <ImageView
             android:id="@+id/tabla_estado_6"
-            android:layout_width="40dp"
-            android:layout_height="30dp"
+            android:layout_width="34dp"
+            android:layout_height="24dp"
             android:layout_marginEnd="35dp"
             android:layout_marginStart="2dp"
             android:layout_marginTop="0.5dp"
@@ -405,7 +406,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
-            android:textSize="18dp"
+            android:textSize="12dp"
             android:textStyle="bold" />
     </TableRow>
 
@@ -425,13 +426,13 @@
             android:layout_height="wrap_content"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="18dp"
+            android:textSize="12dp"
             android:textStyle="bold" />
 
         <ImageView
             android:id="@+id/tabla_estado_7"
-            android:layout_width="40dp"
-            android:layout_height="30dp"
+            android:layout_width="34dp"
+            android:layout_height="24dp"
             android:layout_marginEnd="35dp"
             android:layout_marginStart="2dp"
             android:layout_marginTop="0.5dp"
@@ -443,7 +444,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
-            android:textSize="18dp"
+            android:textSize="12dp"
             android:textStyle="bold" />
 
     </TableRow>
@@ -464,7 +465,7 @@
             android:paddingTop="5dp"
             android:text="@string/Fecha_referencia"
             android:textColor="@android:color/white"
-            android:textSize="15dp"
+            android:textSize="10dp"
             android:textStyle="bold" />
 
         <TextView
@@ -476,13 +477,13 @@
             android:layout_marginStart="8dp"
             android:paddingTop="5dp"
             android:textColor="@android:color/white"
-            android:textSize="15dp"
+            android:textSize="10dp"
             android:textStyle="bold" />
 
         <ImageButton
             android:id="@+id/btn_help"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
             android:layout_column="1"
             android:background="@drawable/ic_help"
             android:contentDescription="@string/Content" />
@@ -491,5 +492,4 @@
 
 
 </TableLayout>
-
 </RelativeLayout>

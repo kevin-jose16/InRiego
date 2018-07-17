@@ -95,7 +95,7 @@ public class Login extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        //getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
@@ -164,7 +164,7 @@ public class Login extends AppCompatActivity {
                     if(json.getBoolean("IsOk")){
                         SharedPreferences sp = Login.this.getSharedPreferences("sesion", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sp.edit();
-                        if(sp.getBoolean("mail_fallido",false)){
+                        /*if(sp.getBoolean("mail_fallido",false)){
                             Cursor datos = abd.obtener();
                             if (datos.getCount() >= 1)
                                 mailSincronizar();
@@ -172,7 +172,7 @@ public class Login extends AppCompatActivity {
                             //Mail para los logs del dia
                             mailLog();
                             editor.putBoolean("mail_fallido", false);
-                        }
+                        }*/
                         editor.putString("username",username);
                         editor.putString("password",password);
                         editor.putBoolean("hay_farm", false);
@@ -204,9 +204,13 @@ public class Login extends AppCompatActivity {
                         startActivity(i);
                     }
                     else{
-                        Calendar cal = Calendar.getInstance();
-                        abd.insertLog(cal.getTime().toString() + " -- El usuario " + username + " no existente, intento ingresar al sistema", username, json_sq);
-                        dta_base.close();
+                        SharedPreferences sp = Login.this.getSharedPreferences("sesion", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sp.edit();
+                        if(!sp.getBoolean("mail_fallido",false)){
+                            Calendar cal = Calendar.getInstance();
+                            abd.insertLog(cal.getTime().toString() + " -- El usuario " + username + " no existente, intento ingresar al sistema", username, json_sq);
+                            dta_base.close();
+                        }
                         progress.setProgress(0);
                         Toast.makeText(Login.this, "El nombre de usuario o la contraseña son incorrectos",
                                 Toast.LENGTH_LONG).show();

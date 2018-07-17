@@ -2,6 +2,25 @@
     <string name="app_name">InRiego</string>
     <string name="action_settings">Información</string>
     <string name="title_activity_main">InRiego</string>
+    <string name="Ingresar">Ingresar</string>
+    <string name="Usuario">Usuario</string>
+    <string name="Password">Contraseña</string>
+    <string name="Content">TODO</string>
+
+    <string name="Fecha">Fecha</string>
+    <string name="Cancelar">Cancelar</string>
+    <string name="Agregar">Agregar</string>
+    <string name="Agregar_riego">Agregar Riego</string>
+    <string name="Agregar_lluvia">Agregar Lluvia</string>
+    <string name="Cantidad">Cantidad (mm)</string>
+
+    <string name="Seleccione_pivot">Seleccione Pivot</string>
+    <string name="Cultivo">Cultivo</string>
+    <string name="Cosecha">Cosecha</string>
+    <string name="Fenologia">Fenología</string>
+    <string name="Estado">Estado</string>
+    <string name="mm">mm</string>
+    <string name="Fecha_referencia">Fecha de Referencia</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

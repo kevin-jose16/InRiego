@@ -8,5 +8,6 @@
         android:background="@drawable/bg_key"
         android:checkMark="?android:attr/listChoiceIndicatorMultiple"
         android:checkMarkTint="#4384F7"
+        android:textSize="17dp"
         android:padding="5dp"
        />
