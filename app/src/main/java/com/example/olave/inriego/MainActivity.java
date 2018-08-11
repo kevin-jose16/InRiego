@@ -1,5 +1,6 @@
 package com.example.olave.inriego;
 
+import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -89,8 +90,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private AlarmManager manager;
     SQLiteHelper abd;
     ProgressDialog progress;
+    boolean servicio_iniciado = false;
+    Intent intentmail = null;
 
-
+    public MainActivity(){}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -188,7 +191,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if(pending==null){
             pending = PendingIntent.getBroadcast(this, 1, alarmIntent_mail, 0);
             startAt2130();
+
         }
+        /*if(!isMyServiceRunning(ServicioMail.class)){
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 45);
+            calendar.set(Calendar.SECOND, 0);
+            Calendar cal = Calendar.getInstance();
+            if(calendar.compareTo(cal) <=0)
+                calendar.add(Calendar.DATE,1);
+
+            intentmail = new Intent(MainActivity.this, ServicioMail.class);
+            //pending = PendingIntent.getBroadcast(this, 1, alarmIntent_mail, 0);
+            SharedPreferences sharedPref = getSharedPreferences(
+                    "sesion", Context.MODE_PRIVATE);
+            SharedPreferences.Editor sp = sharedPref.edit();
+            sp.putBoolean("repetitivo", true);
+            sp.putLong("hora_mail", calendar.getTimeInMillis());
+            sp.commit();
+            startService(intentmail);
+            //startAt2130();
+        }*/
 
     }
 
@@ -221,14 +245,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        /*int id = item.getItemId();
+        int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             mostrarMsg("Aplicación desarrollada por:\n\nNadia Cabrera\nnadiacabrerayahn@gmail.com\n\n" +
                     "Kevin José\njosekevin15@gmail.com\n\nCarina Maerro\nCMaerro@gmail.com", "Información");
             return true;
-        }*/
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -263,8 +287,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             else{
                 mostrarMsg("NO tiene conexion, intente mas tarde", "Conexión a Internet");
             }
-
-
 
 
         } else if (id == R.id.nav_logout) {
@@ -523,11 +545,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void startAt2130() {
-        manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        //manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         /* Set the alarm to start at 21:30 hs */
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 21);
-        calendar.set(Calendar.MINUTE, 30);
+        calendar.set(Calendar.MINUTE, 28);
         calendar.set(Calendar.SECOND, 0);
         Calendar cal = Calendar.getInstance();
         if(calendar.compareTo(cal) <=0)
@@ -536,6 +558,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         /* Repeating on every one day interval */
         manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
                 AlarmManager.INTERVAL_DAY, pending);
+        /*SharedPreferences sharedPref = getSharedPreferences(
+                "sesion", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean("repetitivo", true);
+        editor.putLong("hora_mail", calendar.getTimeInMillis());
+        editor.commit();
+        startService(intentmail);*/
+
     }
 
 
@@ -552,6 +582,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         /* Repeating on every one day interval */
         manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
                 AlarmManager.INTERVAL_DAY, pendingIntent);
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true; }
+        }
+        return false;
     }
 
 
@@ -681,8 +720,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
 
                     //Esto es para modulo 1
-                    cambiofragment();
                     //new ClaseAsincrona().execute(token,String.valueOf(actual_farm));
+                    cambiofragment();
+
                 }
             }
             else{

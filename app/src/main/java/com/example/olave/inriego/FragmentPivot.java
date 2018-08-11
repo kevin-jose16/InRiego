@@ -874,8 +874,8 @@ public class FragmentPivot extends Fragment {
                                 String mes_r= Integer.toString(fecha_riego.get(Calendar.MONTH)+1);
                                 String dia_r =Integer.toString(fecha_riego.get(Calendar.DATE));
                                 fechas_riegos.get(i).setText(dia_r+"/"+mes_r+"/"+anio_r);
-                                String mm_riego= riego.getString("milimetros");
-                                mm_riegos.get(i).setText(mm_riego);
+                                int mm_riego= riego.getInt("milimetros");
+                                mm_riegos.get(i).setText(Integer.toString(mm_riego));
                                 String tipo= riego.getString("tipo");
                                 if(comparaFechas(fecha_riego,ref_d)>0 &&comparaFechas(fecha_riego,ref_d)!=-4
                                         && comparaFechas(fecha_riego,ref_d)!=4){//fecha_riego>fecha_ref y no es nulo

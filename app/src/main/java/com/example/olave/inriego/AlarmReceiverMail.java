@@ -22,6 +22,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.WakefulBroadcastReceiver;
 import android.support.v7.app.AlertDialog;
 import android.util.Patterns;
 
@@ -44,7 +45,6 @@ public class AlarmReceiverMail extends BroadcastReceiver {
     public int  n;
     public NotificationCompat.Builder mBuilder;
     public NotificationManager mNotificationManager;
-    public Context contexto;
     public String possibleEmail;
     Random rand;
     Calendar cal = Calendar.getInstance();
@@ -53,7 +53,7 @@ public class AlarmReceiverMail extends BroadcastReceiver {
         if ("android.intent.action.BOOT_COMPLETED".equals(intent.getAction())) {
             Calendar ca = Calendar.getInstance();
             ca.set(Calendar.HOUR_OF_DAY, 21);
-            ca.set(Calendar.MINUTE, 30);
+            ca.set(Calendar.MINUTE, 28);
             ca.set(Calendar.SECOND, 0);
             if(ca.compareTo(cal) <=0)
                 ca.add(Calendar.DATE,1);
@@ -64,9 +64,23 @@ public class AlarmReceiverMail extends BroadcastReceiver {
             manager.setRepeating(AlarmManager.RTC_WAKEUP, ca.getTimeInMillis(),
                     AlarmManager.INTERVAL_DAY, pendingIntent);
         }
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 21);
+        calendar.set(Calendar.MINUTE, 30);
+        calendar.set(Calendar.SECOND, 0);
+        Calendar cal = Calendar.getInstance();
+        if(calendar.compareTo(cal) <=0)
+            calendar.add(Calendar.DATE,1);
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                "sesion", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean("repetitivo", true);
+        editor.putLong("hora_mail", calendar.getTimeInMillis());
+        editor.commit();
+        Intent intent_mail = new Intent(context, ServicioMail.class);
+        context.startService(intent_mail);
 
-
-        Uri uri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        /*Uri uri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         int color = context.getResources().getColor(R.color.colornotif);
         mBuilder = new NotificationCompat.Builder(context)
             .setSound(uri)
@@ -85,6 +99,8 @@ public class AlarmReceiverMail extends BroadcastReceiver {
         rand = new Random();
 
         n = 0;
+
+
         //When you issue multiple notifications about the same type of event, it’s best practice for your app to try to update an existing notification with this new information, rather than immediately creating a new notification. If you want to update this notification at a later date, you need to assign it an ID. You can then use this ID whenever you issue a subsequent notification. If the previous notification is still visible, the system will update this existing notification, rather than create a new one. In this example, the notification’s ID is 001//
 
         //Obtengo mail del celular
@@ -94,19 +110,20 @@ public class AlarmReceiverMail extends BroadcastReceiver {
             possibleEmail = accounts[0].name;
         }
 
-        contexto = context;
+
         //mNotificationManager.notify(n, mBuilder.build());
         Json_SQLiteHelper json_sq= new Json_SQLiteHelper(context, "DBJsons", null, 1);
         SQLiteDatabase dta_base = json_sq.getReadableDatabase();
         SQLiteHelper abd = new SQLiteHelper(dta_base, json_sq);
         Cursor result= abd.obtener();
-        if(probarConn(contexto)) {
+
+        if(probarConn(context)) {
             //Mail para datos no sincronizados
             if (result.getCount() >= 1)
-                this.mailSincronizar();
+                this.mailSincronizar(context);
 
             //Mail para los logs del dia
-            this.mailLog();
+            this.mailLog(context);
             SharedPreferences sharedPref = context.getSharedPreferences(
                     "sesion", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
@@ -114,9 +131,9 @@ public class AlarmReceiverMail extends BroadcastReceiver {
             editor.putBoolean("mail_fallido", false);
             editor.commit();
 
-            Intent i = new Intent(contexto, Login.class);
+            Intent i = new Intent(context, Login.class);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            contexto.startActivity(i);
+            context.startActivity(i);
 
         }
         else{
@@ -181,16 +198,16 @@ public class AlarmReceiverMail extends BroadcastReceiver {
                 editor.putBoolean("mail_fallido",true);
                 editor.commit();
 
-                Intent i = new Intent(contexto, Login.class);
+                Intent i = new Intent(context, Login.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                contexto.startActivity(i);
+                context.startActivity(i);
             }
 
-        }
+        }*/
     }
 
 
-    public void mailSincronizar(){
+    public void mailSincronizar(Context contexto){
 
         Json_SQLiteHelper json_sq= new Json_SQLiteHelper(contexto, "DBJsons", null, 1);
         SQLiteDatabase dta_base = json_sq.getReadableDatabase();
@@ -246,7 +263,7 @@ public class AlarmReceiverMail extends BroadcastReceiver {
 
     }
 
-    public void mailLog(){
+    public void mailLog(Context contexto){
         Json_SQLiteHelper json_sq= new Json_SQLiteHelper(contexto, "DBJsons", null, 1);
         SQLiteDatabase dta_base = json_sq.getReadableDatabase();
         SQLiteHelper abd = new SQLiteHelper(dta_base, json_sq);

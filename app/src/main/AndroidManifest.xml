@@ -29,7 +29,8 @@
         </activity>
         <activity android:name=".MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
 
         <!-- Will not be called unless the application explicitly enables it-->
         <receiver android:name=".AlarmReceiver">
@@ -40,8 +41,16 @@
         <receiver android:name=".AlarmReceiverMail">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
+
             </intent-filter>
         </receiver>
+
+        <service
+            android:name=".ServicioMail"
+            android:enabled="true"
+            android:exported="true"
+            >
+        </service>
 
     </application>
 

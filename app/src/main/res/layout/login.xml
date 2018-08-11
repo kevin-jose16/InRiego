@@ -10,8 +10,9 @@
     <ImageView
         android:id="@+id/icono"
         android:layout_width="0dp"
-        android:layout_height="61dp"
-        android:src="@drawable/logo_pgw"
+        android:layout_height="60dp"
+        android:src="@drawable/logo_pggww"
+        android:background="#013571"
         android:contentDescription="@string/Content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -20,8 +21,8 @@
         app:layout_constraintVertical_bias="0.062" />
     <ImageView
         android:id="@+id/inriego_icon"
-        android:layout_width="273dp"
-        android:layout_height="64dp"
+        android:layout_width="275dp"
+        android:layout_height="66dp"
         android:contentDescription="@string/Content"
         android:src="@drawable/logo_inriego"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -29,7 +30,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.279"
-        app:layout_constraintHorizontal_bias="0.594" />
+         />
 
 
     <EditText
