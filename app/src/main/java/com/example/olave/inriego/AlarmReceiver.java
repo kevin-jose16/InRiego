@@ -11,14 +11,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
-import android.support.v7.app.AlertDialog;
-import android.widget.Toast;
 
-import com.example.olave.inriego.MainActivity;
 import com.example.olave.inriego.R;
 
 import java.util.Calendar;

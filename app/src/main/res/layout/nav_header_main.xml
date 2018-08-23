@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
 
         android:background="@drawable/borde_redondeado"
-        android:src="@drawable/logo_inriego_menu" />
+        android:src="@drawable/logoinriegosw_menu" />
 
     <TextView
         android:id="@+id/nav_farm"

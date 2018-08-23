@@ -2,15 +2,11 @@ package layout;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.ParseException;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.constraint.solver.SolverVariable;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
@@ -22,9 +18,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.olave.inriego.AdapterPivots;
 import com.example.olave.inriego.FragmentPivot;
-import com.example.olave.inriego.Login;
 import com.example.olave.inriego.MainActivity;
 import com.example.olave.inriego.R;
 import com.google.gson.Gson;
@@ -44,7 +38,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import Adapters.AdapterEstablecimientos;
 import Clases.Establecimiento;
@@ -126,6 +119,7 @@ public class Fm_Establecimiento extends Fragment {
         sp = getActivity().getSharedPreferences("sesion",Context.MODE_PRIVATE);
         Gson gson = new Gson(); //Instancia Gson.
         String objetos = sp.getString("farmslist", null); //Obtiene datos (json)
+        String user = sp.getString("username",null);
         //String json = new Gson().toJson(objetos);
         //Convierte json  a JsonArray.
         JSONArray jsonArray = null;
@@ -141,7 +135,15 @@ public class Fm_Establecimiento extends Fragment {
 
         ListView lv = (ListView) rootview.findViewById(R.id.lst_establecimientos);
         lv.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
-
+        user = user.substring(0, 1).toUpperCase() + user.substring(1);
+        for(int i=0; i<farmslist.size(); i++){
+            String completo="";
+            if(farmslist.get(i).getDescripcion().contains(user)) {
+                completo = farmslist.get(i).getDescripcion();
+                String spl[] = completo.split(user);
+                farmslist.get(i).setDescripcion(spl[1]);
+            }
+        }
         AdapterEstablecimientos adpfarms = new AdapterEstablecimientos(getActivity(), farmslist);
         lv.setAdapter(adpfarms);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -240,7 +242,6 @@ public class Fm_Establecimiento extends Fragment {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             return res;
         }
 
@@ -252,15 +253,11 @@ public class Fm_Establecimiento extends Fragment {
             if (result!=null){
                 try {
                     JSONObject json = new JSONObject(result);
-
-
                     if(json.getBoolean("IsOk")){
                         sp = getActivity().getSharedPreferences("sesion",Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sp.edit();
                         JSONObject jsonData = json.optJSONObject("Data");
                         String ref_date = jsonData.getString("ReferenceDate");
-
-                        //String fechaRef = jsonData.getString("ReferenceDate");
 
                         //Setear fecha en clase principal y sesion
                         MainActivity mn = (MainActivity) getActivity();
@@ -272,7 +269,6 @@ public class Fm_Establecimiento extends Fragment {
                             tiene_pivots=true;
                             for (int i = 0; i <= farm_pivots.length() - 1; i++) {
                                 JSONObject pv = farm_pivots.getJSONObject(i);
-                                //Integer.parseInt(pv.get("IrrigationId").toString()),
                                 Pivot p = new Pivot(Integer.parseInt(pv.get("IrrigationUnitId").toString()), pv.get("Name").toString(), pv.get("Crop").toString(), pv.get("HarvestDate").toString(), pv.get("Phenology").toString());
                                 JSONArray pv_riegos = pv.getJSONArray("Advices");
                                 for (int r = 0; r <= pv_riegos.length() - 1; r++) {
@@ -290,7 +286,6 @@ public class Fm_Establecimiento extends Fragment {
                             es.add(est);
                             String jsonObjetos = new Gson().toJson(es);
                             editor.putString("actual_farm", jsonObjetos);
-                            editor.putString("Fecha_ref", ref_date);
                             editor.putBoolean("hay_farm", true);
                             editor.commit();
                             Calendar cal = Calendar.getInstance();
@@ -308,7 +303,6 @@ public class Fm_Establecimiento extends Fragment {
                     }
 
 
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -322,11 +316,11 @@ public class Fm_Establecimiento extends Fragment {
                 else{
                     if(!error_servidor) {
                         progress.setProgress(0);
-                        Calendar cal = Calendar.getInstance();
+                        /*Calendar cal = Calendar.getInstance();
                         abd.insertLog(cal.getTime().toString() + " Se intento seleccionar el establecimiento " + farmdesc + " pero éste no tiene pivots", sp.getString("username",""),json_sq);
                         dta_base.close();
                         Toast.makeText(getActivity(), "Establecimiento sin pivots\nSeleccione otro",
-                                Toast.LENGTH_LONG).show();
+                                Toast.LENGTH_LONG).show();*/
                     }
                     else
                         progress.setProgress(0);

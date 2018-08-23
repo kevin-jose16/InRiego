@@ -15,15 +15,11 @@ import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Patterns;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -87,7 +83,7 @@ public class ServicioMail extends Service {
         SharedPreferences sp = getSharedPreferences(
                 "sesion", Context.MODE_PRIVATE);
         cal.setTimeInMillis(sp.getLong("hora_mail",calendar.getTimeInMillis()));
-        repetitivo = sp.getBoolean("repetitivo",false);
+        //repetitivo = sp.getBoolean("repetitivo",false);
         long delay = cal.getTimeInMillis()-hora_actual.getTimeInMillis();
        /* Uri uri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         int color = getApplicationContext().getResources().getColor(R.color.colornotif);
@@ -109,7 +105,7 @@ public class ServicioMail extends Service {
 
         //conexion = probarConn();
 
-        if(repetitivo){
+        //if(repetitivo){
             //Toast.makeText(getApplicationContext(), "Se enviaran los mails", Toast.LENGTH_LONG).show();
             Timer tm = new Timer();
             tm.schedule(new TimerTask() {
@@ -119,7 +115,7 @@ public class ServicioMail extends Service {
                             }
                         }
                     , delay, 86400000);
-        }
+        /*}
         else{
             //Toast.makeText(getApplicationContext(), "Envio de mails", Toast.LENGTH_LONG).show();
             Timer tm = new Timer();
@@ -130,8 +126,8 @@ public class ServicioMail extends Service {
                             }
                         }
                     , cal.getTime());
-        }
-        return START_STICKY;
+        }*/
+        return START_NOT_STICKY;
     }
 
     @Override
@@ -209,10 +205,10 @@ public class ServicioMail extends Service {
 
         }
         else{
-            hora_actual = Calendar.getInstance();
+            /*hora_actual = Calendar.getInstance();
             if(hora_actual.get(Calendar.HOUR_OF_DAY) < 22 ){
                 Calendar calendar = Calendar.getInstance();
-                calendar.setTimeInMillis(calendar.getTimeInMillis() + 900000); //Le agrego a la hora actual 15 minutos (en milisegundos)
+                calendar.setTimeInMillis(calendar.getTimeInMillis() + 180000); //Le agrego a la hora actual 15 minutos (en milisegundos)
                 String hora, minuto;
                 if(Integer.toString(calendar.get(Calendar.HOUR_OF_DAY)).length()==1)
                     hora = 0 + Integer.toString(calendar.get(Calendar.HOUR_OF_DAY));
@@ -239,23 +235,23 @@ public class ServicioMail extends Service {
                 startService(new Intent(getApplicationContext(), ServicioMail.class));
 
             }
-            else{
+            else{*/
                 n= rand.nextInt(999) + 1;
-                mBuilder.setContentTitle("Envío de Mails FALLIDO")
-                        //.setContentText("Los mails se enviarán durante el próximo Inicio de Sesión");
-                        .setContentText("Los mails no se enviaron por falta de conexión");
-                mNotificationManager.notify(n, mBuilder.build());
+                /*mBuilder.setContentTitle("Envío de Mails FALLIDO")
+                        .setContentText("Se enviarán durante el próximo Inicio de Sesión");
+                        //.setContentText("Los mails no se enviaron por falta de conexión");
+                mNotificationManager.notify(n, mBuilder.build());*/
                 SharedPreferences sp = getSharedPreferences(
                         "sesion", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sp.edit();
                 editor.clear();
                 editor.putBoolean("mail_fallido", true);
+                editor.putLong("fecha_mail",Calendar.getInstance().getTimeInMillis());
                 editor.commit();
-                //startService(new Intent(getApplicationContext(), ServicioMail.class));
                 Intent i = new Intent(contexto, Login.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 contexto.startActivity(i);
-            }
+            //}
 
         }
     }
@@ -351,10 +347,10 @@ public class ServicioMail extends Service {
         sm.execute();
 
         /*mBuilder.setContentTitle("Mail de Logs")
-                .setContentText("Se envió un mail con los Logs de la jornada.");
+                .setContentText("Se envió un mail con los Logs de la jornada.");*/
 
         n = rand.nextInt(999) + 1;
-        mNotificationManager.notify(n, mBuilder.build());*/
+        mNotificationManager.notify(n, mBuilder.build());
     }
     /*
     public class Mail_sincronizacion extends AsyncTask<Void, Integer, Cursor>{

@@ -29,11 +29,9 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,11 +45,8 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -80,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     int actual_farm;
     String token;
     String farmId, farmdesc;
-    boolean tiene_pivots = false, error_servidor = false;
+    boolean tiene_pivots = false, error_servidor = false, sincro = false;
     public String reference_date;
     int advice_cod;
     boolean esriego; //Chequear si es riego o lluvia
@@ -170,10 +165,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 //Convierte JSONArray a Lista de Objetos!
                 Type listType = new TypeToken<ArrayList<Establecimiento>>(){}.getType();
                 farmslist = new Gson().fromJson(jsonArray.toString(), listType);
+
+                String user = sp.getString("username",null);
+                user = user.substring(0, 1).toUpperCase() + user.substring(1);
+                String completo="";
+                if(farmslist.get(0).getDescripcion().contains(user)) {
+                    completo = farmslist.get(0).getDescripcion();
+                    String spl[] = completo.split(user);
+                    farmslist.get(0).setDescripcion(spl[1]);
+                }
+
                 TextView tv_est = (TextView) findViewById(R.id.nav_farm);
                 tv_est.setText(farmslist.get(0).getDescripcion());
                 setTitle(farmslist.get(0).getDescripcion());
                 actual_farm = farmslist.get(0).getEst_id();
+
                 farmdesc = farmslist.get(0).getDescripcion();
                 token = sp.getString("token",null);
                 new ClaseAsincrona().execute(token,String.valueOf(farmslist.get(0).getEst_id()));
@@ -279,10 +285,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 abd = new SQLiteHelper(dta_base,json_sq);
                 Cursor result= abd.obtener();
 
-                if(result.getCount()>=1)
+                if(result.getCount()>=1) {
+                    setItemVisible(0,false);
+                    setItemVisible(1,false);
+                    setItemVisible(2,false);
+                    setItemVisible(4,false);
+                    setItemVisible(5,false);
+
                     new SincronizarDatos().execute();
-                else
+                    sincro = true;
+                    new ClaseAsincrona().execute(token,String.valueOf(actual_farm));
+                }
+                else{
                     mostrarMsg("No hay datos para sincronizar", "Sincronización");
+                }
+
             }
             else{
                 mostrarMsg("NO tiene conexion, intente mas tarde", "Conexión a Internet");
@@ -340,9 +357,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String res;
         String token_ca;
 
+
         @Override
         protected String doInBackground(String... params) {
-
+            tiene_pivots = false;
+            error_servidor = false;
             try {
                 token_ca = params[0];
                 farmId = params[1];
@@ -364,7 +383,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             return res;
         }
 
@@ -377,18 +395,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (result!=null){
                 try {
                     JSONObject json = new JSONObject(result);
-                    boolean b = json.getBoolean("IsOk");
                     if(json.getBoolean("IsOk")){
                         sp = getSharedPreferences("sesion",Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sp.edit();
                         JSONObject jsonData = json.optJSONObject("Data");
 
                         //Setear fecha de referencia en atributo y sesion
-                        reference_date = jsonData.get("ReferenceDate").toString();
-                        editor.putString("ReferenceDate",jsonData.get("ReferenceDate").toString());
+                        reference_date = jsonData.getString("ReferenceDate");
+                        editor.putString("ReferenceDate",reference_date);
 
-                        //JSONObject jsobject = jsonData.getJSONObject("Farm");
-                        //farmdesc = jsobject.getString("Description");
+                        /*JSONObject jsobject = jsonData.getJSONObject("Farm");
+                        farmdesc = jsobject.getString("Description");*/
 
                         JSONArray farm_pivots = jsonData.getJSONArray("IrrigationRows");
                         if(farm_pivots.length()>0) {
@@ -430,8 +447,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         Calendar cal = Calendar.getInstance();
                         abd.insertLog(cal.getTime().toString() + " Se intento seleccionar el establecimiento " + farmdesc + " con respuesta no exitosa del servidor", sp.getString("username",""),json_sq);
                         dta_base.close();
-                        Toast.makeText(MainActivity.this, "No se pudo seleccionar establecimiento\nError en el Servidor",
-                                Toast.LENGTH_LONG).show();
+                        mostrarMsg("No se pudo seleccionar establecimiento","Error en el Servidor");
+                        //Toast.makeText(MainActivity.this, "No se pudo seleccionar establecimiento\nError en el Servidor",Toast.LENGTH_LONG).show();
                     }
 
                 } catch (JSONException e) {
@@ -448,12 +465,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 else{
                     if(!error_servidor) {
-                        progress.setProgress(0);
-                        Calendar cal = Calendar.getInstance();
-                        abd.insertLog(cal.getTime().toString() + " Se intento seleccionar el establecimiento " + farmdesc + " pero éste no tiene pivots", sp.getString("username",""),json_sq);
-                        dta_base.close();
-                        Toast.makeText(MainActivity.this, "Establecimiento sin pivots\nSeleccione otro",
-                                Toast.LENGTH_LONG).show();
+                        if(sincro){
+                            progress.setProgress(0);
+                            Fragment fragment= new FragmentPivot();
+                            FragmentManager fragmentManager =MainActivity.this.getSupportFragmentManager();
+                            fragmentManager.beginTransaction()
+                                    .replace(R.id.frameprincipal, fragment).commit();
+                            sincro = false;
+                        }
+                        else{
+                            progress.setProgress(0);
+                            /*Calendar cal = Calendar.getInstance();
+                            abd.insertLog(cal.getTime().toString() + " Se intento seleccionar el establecimiento " + farmdesc + " pero éste no tiene pivots", sp.getString("username", ""), json_sq);
+                            dta_base.close();
+                            mostrarMsg("Su Establecimiento no tiene pivots", "Establecimiento sin datos");
+                            Toast.makeText(MainActivity.this, "Establecimiento sin pivots", Toast.LENGTH_LONG).show();*/
+                        }
                     }
                     else
                         progress.setProgress(0);
@@ -509,14 +536,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return fecha_r= cal.getTime();
     }
 
-    //Esta funcion se hace para el modulo 1
-    public void cambiofragment(){
-        Fragment fragment = new FragmentPivot();
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.frameprincipal, fragment).commit();
-    }
-
     public boolean probarConn(){
 
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -548,8 +567,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         /* Set the alarm to start at 21:30 hs */
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 21);
-        calendar.set(Calendar.MINUTE, 28);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 17);
         calendar.set(Calendar.SECOND, 0);
         Calendar cal = Calendar.getInstance();
         if(calendar.compareTo(cal) <=0)
@@ -567,7 +586,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startService(intentmail);*/
 
     }
-
 
     public void startAt20() {
         manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -597,7 +615,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public class SincronizarDatos extends AsyncTask<Void, Integer, String> {
 
         String res;
-
         NotificationCompat.Builder notificationBuilder;
         NotificationManager notificationManager;
         Random rand = new Random();
@@ -671,14 +688,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             break;
                         }
                     }
+
                 }
                 else{
-
                 }
                 return res;
             }
-            else
+            else{
+                String ab = "sin datos";
                 return "no_hay_datos";
+            }
+
         }
 
         @Override
@@ -703,12 +723,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             } else {
                                 abd.insertLog(cal.getTime() + " -- Sincronización exitosa del suiguiente registro de lluvia:\n" + reg_riego, sp.getString("username",""), json_sq);
                             }
-                            //Toast.makeText(MainActivity.this, " -- Sincronización exitosa -- ", Toast.LENGTH_LONG).show();
                             notificationBuilder.setContentTitle("¡Sincronización completada!").setAutoCancel(true).setProgress(0,0,false);
                             notificationManager.notify(n, notificationBuilder.build());
-                        } else {
+
+                        }
+                        else {
                             abd.insertLog(cal.getTime() + " -- Sincronización no exitosa, ERROR: " + json.getString("ErrorMessage"), sp.getString("username",""), json_sq);
-                            //Toast.makeText(MainActivity.this, " -- Sincronización no exitosa, ERROR:\n" + json.getString("ErrorMessage"),Toast.LENGTH_LONG).show();
                             notificationBuilder.setAutoCancel(true).setProgress(0,0,false).setContentText("¡Hubo un error en la sincronización!");
                             notificationManager.notify(n, notificationBuilder.build());
                         }
@@ -720,16 +740,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
 
                     //Esto es para modulo 1
-                    //new ClaseAsincrona().execute(token,String.valueOf(actual_farm));
-                    cambiofragment();
+                    //cambiofragment();
+                    setItemVisible(0,true);
+                    setItemVisible(1,true);
+                    setItemVisible(2,true);
+                    setItemVisible(4,true);
+                    setItemVisible(5,true);
 
                 }
             }
             else{
+                setItemVisible(0,true);
+                setItemVisible(1,true);
+                setItemVisible(2,true);
+                setItemVisible(4,true);
+                setItemVisible(5,true);
                 Calendar cal = Calendar.getInstance();
                 abd.insertLog(cal.getTime() +  "ERROR. No se sincronizaron los datos:\n"+reg_riego + "\nproblemas con la conexión a internet", sp.getString("username",""), json_sq);
-                Toast.makeText(MainActivity.this, "Se perdio la conexión a internet\no hay problemas con el servidor",
-                        Toast.LENGTH_LONG).show();
+                //Toast.makeText(MainActivity.this, "Se perdio la conexión a internet\no hay problemas con el servidor",
+                       // Toast.LENGTH_LONG).show();
+                mostrarMsg("No se sincronizaron los datos\nSe perdio la conexión a internet", "ERROR");
                 db.close();
                 //notificationBuilder.setContentText("¡Hubo un error en la sincronización!");
                 notificationManager.notify(n, notificationBuilder.build());
@@ -762,6 +792,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             notificationManager.notify(n, notificationBuilder.build());
 
         }*/
+    }
+
+    //Esta funcion se hace para el modulo 1
+    public void cambiofragment(){
+        Fragment fragment = new FragmentPivot();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.frameprincipal, fragment).commit();
     }
 
 }

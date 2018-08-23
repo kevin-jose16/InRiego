@@ -2,10 +2,8 @@ package layout;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,7 +11,6 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -35,20 +32,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 import Clases.Establecimiento;
 import Clases.Pivot;
-import Clases.Riego;
 import Persistencia.Json_SQLiteHelper;
 import Persistencia.SQLiteHelper;
 
@@ -244,11 +232,14 @@ public class Fm_agregarLluvia extends Fragment {
                         //abd.insertLog("El usuario " + us + " ha ingresado una lluvia en el establecimiento " + text_farm.getText() + " con los siguientes datos: " + irrigation.toString(), json_sq);
                         db.close();
 
-                        Toast.makeText(getActivity(), "Se ha ingresado el registro de lluvia",
-                                Toast.LENGTH_LONG).show();
+                        mostrarMsg("Se ha ingresado el registro del lluvia","Lluvia");
                         cant_ed.setText("");
                         bt_fecha.setText("");
                         lv.setAdapter(adppivots);
+                        Fragment fragment= new FragmentPivot();
+                        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.frameprincipal, fragment).commit();
 
                     }
                 }
@@ -302,6 +293,15 @@ public class Fm_agregarLluvia extends Fragment {
         newFrag.show(getActivity().getSupportFragmentManager(), "datePicker");
         newFrag.SetearFechas(reference_date);
     }
-
+    public void mostrarMsg(String msg, String titulo){
+        TextView myView = new TextView(this.getActivity());
+        myView.setText(msg);
+        myView.setTextSize(10);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
+        builder.setMessage(msg).setTitle(titulo);
+        builder.setPositiveButton("OK",null);
+        builder.create();
+        builder.show();
+    }
 
 }

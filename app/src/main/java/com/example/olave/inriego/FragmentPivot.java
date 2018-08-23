@@ -5,10 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 
 import android.widget.TextView;
@@ -486,10 +483,11 @@ public class FragmentPivot extends Fragment {
         if (cal1 == null || cal2 == null)
             return -4;//alguna fecha es nula
         else {
+            //si son iguales
             if (cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
                     && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
                     && cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE))
-                return 0;//si son iguales
+                return 0;
 
             //cal1 menor que cal2
 
@@ -566,6 +564,7 @@ public class FragmentPivot extends Fragment {
         return "@drawable/noriego";
 
     }
+
     public static Date sumaDias(Date fecha, int dias){
         Calendar cal = Calendar.getInstance();
         cal.setTime(fecha);
@@ -596,7 +595,7 @@ public class FragmentPivot extends Fragment {
         ArrayList<String> listita = new ArrayList<>();
         SharedPreferences sp;
         sp = getActivity().getSharedPreferences("sesion",Context.MODE_PRIVATE);
-        final String ref_date= sp.getString("Fecha_ref", "No hay fecha");
+        final String ref_date= sp.getString("ReferenceDate", "No hay fecha");
         final Calendar ref_d = CrearFecha(ref_date);
 
 
@@ -631,14 +630,12 @@ public class FragmentPivot extends Fragment {
             }
         });
         Spinner spi = (Spinner) v.findViewById(R.id.spinner_pivot);
+        ArrayAdapter aa = new ArrayAdapter(getActivity().getApplicationContext(), R.layout.spinner_item, listita);
 
-        ArrayAdapter aa = new ArrayAdapter(getActivity().getApplicationContext(), android.R.layout.simple_spinner_item, listita);
-
-        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        aa.setDropDownViewResource(R.layout.dropdown_spinner_item);
         //Setting the ArrayAdapter data on the Spinner
 
         spi.setAdapter(aa);
-
 
         spi.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -650,7 +647,8 @@ public class FragmentPivot extends Fragment {
                 try {
                     JSONObject pv = pivots_est.getJSONObject(position);
                     TextView cultivo = (TextView) getActivity().findViewById(R.id.piv_cultivo);
-                    cultivo.setText(pv.getString("cultivo"));
+                    String cultivo_separado [] = pv.getString("cultivo").split(" ");
+                    cultivo.setText(cultivo_separado[0]);
                     TextView fecha = (TextView) getActivity().findViewById(R.id.fecha_cultivo);
                     Calendar f_riego = CrearFecha(pv.getString("siembra"));
                     String anio= Integer.toString(f_riego.get(Calendar.YEAR));
@@ -740,9 +738,9 @@ public class FragmentPivot extends Fragment {
                         dias_validos.add(0+Integer.toString(day2));
                     else
                         dias_validos.add(Integer.toString(day2));
-                    /*if(Integer.toString(day).length()==1)
+                    if(Integer.toString(day).length()==1)
                         dias_validos.add(0+Integer.toString(day));
-                    else*/
+                    else
                         dias_validos.add(Integer.toString(day));
                     if(Integer.toString(day4).length()==1)
                         dias_validos.add(0+Integer.toString(day4));
@@ -770,9 +768,9 @@ public class FragmentPivot extends Fragment {
                         meses_validos.add(0+Integer.toString(month2));
                     else
                         meses_validos.add(Integer.toString(month2));
-                    /*if(Integer.toString(month).length()==1)
+                    if(Integer.toString(month).length()==1)
                         meses_validos.add(0+Integer.toString(month));
-                    else*/
+                    else
                         meses_validos.add(Integer.toString(month));
                     if(Integer.toString(month4).length()==1)
                         meses_validos.add(0+Integer.toString(month4));
@@ -840,9 +838,7 @@ public class FragmentPivot extends Fragment {
                                 int comp= comparaFechas(fecha_rt, fecha_riego);
                                 if(comp>3){
                                     riegos= cambiaLugar(riegos,i,j);
-
                                 }
-
                             }
                         }
                     }
@@ -865,9 +861,9 @@ public class FragmentPivot extends Fragment {
                                 tipos_riegos.get(i).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
                                 tipos_riegos.get(i).setMaxWidth(10);
                                 tipos_riegos.get(i).setMaxHeight(10);
-                                for(int n=riegos.length()-1;n>i;n--){
+                               /* for(int n=riegos.length()-1;n>i;n--){
                                    riegos=cambiaLugar(riegos,n,n-1);
-                                }
+                                }*/
                             }
                             else{
                                 String anio_r= Integer.toString(fecha_riego.get(Calendar.YEAR));
@@ -877,8 +873,9 @@ public class FragmentPivot extends Fragment {
                                 int mm_riego= riego.getInt("milimetros");
                                 mm_riegos.get(i).setText(Integer.toString(mm_riego));
                                 String tipo= riego.getString("tipo");
+                                //fecha_riego>fecha_ref y no es nulo
                                 if(comparaFechas(fecha_riego,ref_d)>0 &&comparaFechas(fecha_riego,ref_d)!=-4
-                                        && comparaFechas(fecha_riego,ref_d)!=4){//fecha_riego>fecha_ref y no es nulo
+                                        && comparaFechas(fecha_riego,ref_d)!=4){
                                     if(tipo.equals("Irrigation")){
                                         tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.proxriego));
 
@@ -892,8 +889,9 @@ public class FragmentPivot extends Fragment {
                                     }
 
                                 }
+                                //fecha_riego<fecha_ref y no es nulo
                                 if(comparaFechas(fecha_riego,ref_d)<0 &&comparaFechas(fecha_riego,ref_d)!=-4
-                                        && comparaFechas(fecha_riego,ref_d)!=4){//fecha_riego<fecha_ref y no es nulo
+                                        && comparaFechas(fecha_riego,ref_d)!=4){
                                     if (tipo.equals("Irrigation")){
                                         tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.riego));
 
@@ -904,7 +902,8 @@ public class FragmentPivot extends Fragment {
                                     }
 
                                 }
-                                /*if(comparaFechas(fecha_riego,ref_d)==0) {
+                                //Fecha de referencia
+                                if(comparaFechas(fecha_riego,ref_d)==0) {
                                     if (tipo.equals("Irrigation")) {
                                         tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.riego));
                                         tipos_riegos.get(i).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
@@ -914,7 +913,7 @@ public class FragmentPivot extends Fragment {
                                         tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.ic_cloud));
                                         tipos_riegos.get(i).setColorFilter(getActivity().getResources().getColor(R.color.colorNoriego));
                                     }
-                                }*/
+                                }
                             }
 
 

@@ -8,14 +8,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -23,7 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -33,23 +26,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.Date;
 
 import Clases.Establecimiento;
 import Persistencia.Json_SQLiteHelper;
 import Persistencia.SQLiteHelper;
-import layout.Fm_Establecimiento;
-import layout.Fm_agregarLluvia;
 
 public class Login extends AppCompatActivity {
 
@@ -164,7 +153,7 @@ public class Login extends AppCompatActivity {
                     if(json.getBoolean("IsOk")){
                         SharedPreferences sp = Login.this.getSharedPreferences("sesion", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sp.edit();
-                        /*if(sp.getBoolean("mail_fallido",false)){
+                        if(sp.getBoolean("mail_fallido",false)){
                             Cursor datos = abd.obtener();
                             if (datos.getCount() >= 1)
                                 mailSincronizar();
@@ -172,7 +161,8 @@ public class Login extends AppCompatActivity {
                             //Mail para los logs del dia
                             mailLog();
                             editor.putBoolean("mail_fallido", false);
-                        }*/
+                            editor.putLong("fecha_mail", 0);
+                        }
                         editor.putString("username",username);
                         editor.putString("password",password);
                         editor.putBoolean("hay_farm", false);
@@ -205,7 +195,6 @@ public class Login extends AppCompatActivity {
                     }
                     else{
                         SharedPreferences sp = Login.this.getSharedPreferences("sesion", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sp.edit();
                         if(!sp.getBoolean("mail_fallido",false)){
                             Calendar cal = Calendar.getInstance();
                             abd.insertLog(cal.getTime().toString() + " -- El usuario " + username + " no existente, intento ingresar al sistema", username, json_sq);
@@ -250,7 +239,7 @@ public class Login extends AppCompatActivity {
         }
     }
 
-    public void mailSincronizar(){
+    public void mailSincronizar() throws JSONException {
 
         Json_SQLiteHelper json_sq= new Json_SQLiteHelper(this, "DBJsons", null, 1);
         SQLiteDatabase dta_base = json_sq.getReadableDatabase();
@@ -267,9 +256,21 @@ public class Login extends AppCompatActivity {
 
                 int cant_registrosbd = result.getCount()-1;
                 message = message + "<p>USUARIO: " + result.getString(3) + "</p>";
-                subject = subject + result.getString(3) + " ha agregado los siguientes registros de riego/lluvia";
+
                 message = message + "<p>EMAIL: " + possibleEmail + "</p><hr>";
 
+                Calendar hoy = Calendar.getInstance();
+                SharedPreferences sp = Login.this.getSharedPreferences("sesion", Context.MODE_PRIVATE);
+                Calendar fecha_m = Calendar.getInstance();
+                fecha_m.setTimeInMillis(sp.getLong("fecha_mail",0));
+                if(!fecha_m.equals(0) || fecha_m!=null) {
+                    if (comparaFechas(fecha_m, hoy) == 0)
+                        subject = subject + result.getString(3) + " ha agregado los siguientes registros de riego/lluvia";
+                    else {
+                        subject = subject + result.getString(3) + " ha agregado los siguientes registros de riego/lluvia el dia "
+                                + fecha_m.get(Calendar.DAY_OF_MONTH) + "/" + fecha_m.get(Calendar.MONTH) + "/" + fecha_m.get(Calendar.YEAR);
+                    }
+                }
                 for(int i=0; i<=cant_registrosbd; i++) {
 
                     try {
@@ -312,7 +313,11 @@ public class Login extends AppCompatActivity {
         String message = "<html>\n" +
                 "<body>\n";
 
-        String subject = "LOG total de la jornada";
+        String subject = "";
+        Calendar hoy = Calendar.getInstance();
+        SharedPreferences sp = Login.this.getSharedPreferences("sesion", Context.MODE_PRIVATE);
+        Calendar fecha_m = Calendar.getInstance();
+        fecha_m.setTimeInMillis(sp.getLong("fecha_mail",0));
 
         if(result.getCount()>=1){
             result.moveToFirst();
@@ -327,8 +332,24 @@ public class Login extends AppCompatActivity {
                 message = message + "</body></html>";
             }
         }
-        else
-            message = "Hoy no se han ingresado o sincronizado datos";
+
+        if(!fecha_m.equals(0) || fecha_m!=null) {
+            if (comparaFechas(fecha_m, hoy) == 0) {
+                subject = "LOG total de la jornada";
+                if(result.getCount()<1 || result == null){
+                    message = "Hoy no se han ingresado o sincronizado datos";
+                }
+
+            }
+            else {
+                subject = "LOG total del dia " + fecha_m.get(Calendar.DAY_OF_MONTH) + "/" + fecha_m.get(Calendar.MONTH) + "/" + fecha_m.get(Calendar.YEAR);
+                if(result.getCount()<1 || result == null){
+                    message = "El dia " + fecha_m.get(Calendar.DAY_OF_MONTH) + "/" + fecha_m.get(Calendar.MONTH) + "/" + fecha_m.get(Calendar.YEAR) + " no se han ingresado o sincronizado datos";
+                }
+            }
+        }
+
+
 
         dta_base.close();
 
@@ -349,6 +370,94 @@ public class Login extends AppCompatActivity {
         builder.setPositiveButton("OK",null);
         builder.create();
         builder.show();
+    }
+    public Calendar CrearFecha(String fecha) {
+        Calendar cal = Calendar.getInstance();
+        int year=0,month=0 ,day=0;
+        Date fecha_r = new Date();
+        year = Integer.parseInt("" + fecha.charAt(0) + fecha.charAt(1) + fecha.charAt(2) + fecha.charAt(3));
+
+        if ("0".equals(fecha.charAt(5)))
+            month = Integer.parseInt("" + fecha.charAt(6));
+
+        else{
+            if ('-'==fecha.charAt(6))
+                month = Integer.parseInt("" + fecha.charAt(5));
+            else
+            if ('-'!=fecha.charAt(6))
+                month = Integer.parseInt("" + fecha.charAt(5) + fecha.charAt(6));
+        }
+
+
+
+        if ('-'==fecha.charAt(6)){
+            if ("0".equals(fecha.charAt(7)))
+                day = Integer.parseInt("" + fecha.charAt(8));
+            else
+                day = Integer.parseInt("" + fecha.charAt(7));
+        }
+        else {
+            if ('-'==fecha.charAt(7)) {
+                if ("0".equals(fecha.charAt(8)))
+                    day = Integer.parseInt("" + fecha.charAt(9));
+                else
+                    day = Integer.parseInt("" + fecha.charAt(8) + fecha.charAt(9));
+            }
+        }
+
+        month=month-1;
+        cal.set(year,month,day);
+        //int anio= cal.get(Calendar.YEAR);
+
+
+        return cal;
+    }
+
+    public int comparaFechas(Calendar cal1, Calendar cal2) {
+        if (cal1 == null || cal2 == null)
+            return -4;//alguna fecha es nula
+        else {
+            //si son iguales
+            if (cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE))
+                return 0;
+
+            //cal1 menor que cal2
+
+            if (cal1.get(Calendar.YEAR) < cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE))
+                return -1;// año menor
+            if (cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) < cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE))
+                return -2;//mes menor
+            if (cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) < cal2.get(Calendar.DATE))
+                return -3;//dia menor
+
+            //cal1 mayor que cal2
+
+            if (cal1.get(Calendar.YEAR) > cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE))
+                return 1;// año mayor
+            if (cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) > cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE))
+                return 2;//mes mayor
+            if (cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) > cal2.get(Calendar.DATE))
+                return 3;//dia mayor
+
+        }
+
+
+        return 4;
+
     }
 
 

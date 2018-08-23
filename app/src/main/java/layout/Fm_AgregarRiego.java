@@ -1,11 +1,10 @@
 package layout;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -35,16 +34,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 import Clases.Establecimiento;
 import Clases.Pivot;
@@ -195,7 +186,7 @@ public class Fm_AgregarRiego extends Fragment {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                         builder.setMessage("La cantidad(mm) debe ser mayor que 0 y menor o igual a 50")
                                 .setTitle("Cantidad(mm) Incorrecta");
-                        builder.setPositiveButton("OK",null);
+                        builder.setPositiveButton("OK", null);
 
                         builder.create();
                         builder.show();
@@ -250,14 +241,15 @@ public class Fm_AgregarRiego extends Fragment {
                         TextView text_farm = (TextView) getActivity().findViewById(R.id.nav_farm);
                         abd = new SQLiteHelper(db, json_sq, irrigation.toString(), us, text_farm.getText().toString(), "Irrigation");
 
-                    /*Calendar cal = Calendar.getInstance();
-                    abd.insertLog(cal.getTime().toString() + " -- El usuario " + us + " ha ingresado un riego en el establecimiento " + text_farm.getText() + " con los siguientes datos: " + irrigation.toString(), json_sq);*/
                         db.close();
-                        Toast.makeText(getActivity(), "Se ha ingresado el registro del riego",
-                                Toast.LENGTH_LONG).show();
+                        mostrarMsg("Se ha ingresado el registro del riego","Riego");
                         cant_ed.setText("");
                         bt_fecha.setText("");
                         lv.setAdapter(adppivots);
+                        Fragment fragment= new FragmentPivot();
+                        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.frameprincipal, fragment).commit();
                     }
                 }
 
@@ -319,6 +311,15 @@ public class Fm_AgregarRiego extends Fragment {
         newFrag.SetearFechas(reference_date);
     }
 
-
+    public void mostrarMsg(String msg, String titulo){
+        TextView myView = new TextView(this.getActivity());
+        myView.setText(msg);
+        myView.setTextSize(10);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
+        builder.setMessage(msg).setTitle(titulo);
+        builder.setPositiveButton("OK",null);
+        builder.create();
+        builder.show();
+    }
 
 }

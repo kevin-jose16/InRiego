@@ -4,10 +4,7 @@ package com.example.olave.inriego;
  * Created by olave on 23/10/2017.
  */
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.app.AlarmManager;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -17,16 +14,10 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
-import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.WakefulBroadcastReceiver;
-import android.support.v7.app.AlertDialog;
-import android.util.Patterns;
 
-import com.example.olave.inriego.MainActivity;
 import com.example.olave.inriego.R;
 
 import org.json.JSONException;
@@ -34,7 +25,6 @@ import org.json.JSONObject;
 
 import java.util.Calendar;
 import java.util.Random;
-import java.util.regex.Pattern;
 
 import Persistencia.Json_SQLiteHelper;
 import Persistencia.SQLiteHelper;
@@ -65,8 +55,8 @@ public class AlarmReceiverMail extends BroadcastReceiver {
                     AlarmManager.INTERVAL_DAY, pendingIntent);
         }
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 21);
-        calendar.set(Calendar.MINUTE, 30);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 19);
         calendar.set(Calendar.SECOND, 0);
         Calendar cal = Calendar.getInstance();
         if(calendar.compareTo(cal) <=0)
@@ -74,7 +64,7 @@ public class AlarmReceiverMail extends BroadcastReceiver {
         SharedPreferences sharedPref = context.getSharedPreferences(
                 "sesion", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putBoolean("repetitivo", true);
+        //editor.putBoolean("repetitivo", true);
         editor.putLong("hora_mail", calendar.getTimeInMillis());
         editor.commit();
         Intent intent_mail = new Intent(context, ServicioMail.class);
