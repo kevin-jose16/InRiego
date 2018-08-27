@@ -271,63 +271,78 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Fragment fragment = null;
 
         if (id == R.id.nav_home) {
-            fragment = new Fm_Establecimiento();
+            if(!sp.getBoolean("sincronizacion", false))
+                fragment = new Fm_Establecimiento();
+            else
+                mostrarMsg("Sincronizacion en Curso", "Aguarde un momento");
+
         } else if (id == R.id.nav_riego) {
-            fragment = new Fm_AgregarRiego();
+            if(!sp.getBoolean("sincronizacion", false))
+                fragment = new Fm_AgregarRiego();
+            else
+                mostrarMsg("Sincronizacion en Curso", "Aguarde un momento");
         } else if (id == R.id.nav_lluvia) {
-            fragment = new Fm_agregarLluvia();
+            if(!sp.getBoolean("sincronizacion", false))
+                fragment = new Fm_agregarLluvia();
+            else
+                mostrarMsg("Sincronizacion en Curso", "Aguarde un momento");
         } else if (id == R.id.nav_verinfo) {
             fragment = new FragmentPivot();
         } else if (id == R.id.nav_sincronice){
-            if(probarConn()) {
-                json_sq= new Json_SQLiteHelper(MainActivity.this, "DBJsons", null, 1);
-                dta_base = json_sq.getReadableDatabase();
-                abd = new SQLiteHelper(dta_base,json_sq);
-                Cursor result= abd.obtener();
+            if(!sp.getBoolean("sincronizacion", false)) {
+                if (probarConn()) {
+                    json_sq = new Json_SQLiteHelper(MainActivity.this, "DBJsons", null, 1);
+                    dta_base = json_sq.getReadableDatabase();
+                    abd = new SQLiteHelper(dta_base, json_sq);
+                    Cursor result = abd.obtener();
 
-                if(result.getCount()>=1) {
-                    setItemVisible(0,false);
+                    if (result.getCount() >= 1) {
+                    /*setItemVisible(0,false);
                     setItemVisible(1,false);
                     setItemVisible(2,false);
                     setItemVisible(4,false);
-                    setItemVisible(5,false);
+                    setItemVisible(5,false);*/
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.putBoolean("sincronizando", true);
+                        editor.commit();
+                        new SincronizarDatos().execute();
+                        sincro = true;
+                        new ClaseAsincrona().execute(token, String.valueOf(actual_farm));
 
-                    new SincronizarDatos().execute();
-                    sincro = true;
-                    new ClaseAsincrona().execute(token,String.valueOf(actual_farm));
-                }
-                else{
-                    mostrarMsg("No hay datos para sincronizar", "Sincronización");
-                }
+                    } else {
+                        //new ClaseAsincrona().execute(token,String.valueOf(actual_farm));
+                        mostrarMsg("No hay datos para sincronizar", "Sincronización");
+                    }
 
-            }
-            else{
-                mostrarMsg("NO tiene conexion, intente mas tarde", "Conexión a Internet");
+                } else {
+                    mostrarMsg("NO tiene conexion, intente mas tarde", "Conexión a Internet");
+                }
             }
 
 
         } else if (id == R.id.nav_logout) {
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("¿Desea Cerrar Sesión?");
-            builder.setPositiveButton("SI",
-            new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    SharedPreferences sharedPref = getSharedPreferences(
-                            "sesion", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPref.edit();
-                    editor.clear();
-                    editor.putBoolean("mail_fallido", false);
-                    editor.commit();
-                    finish();
-                    Intent i = new Intent(MainActivity.this,Login.class);
-                    startActivity(i);
-                }
-            });
-            builder.setNegativeButton("NO",null);
-            builder.create();
-            builder.show();
+            if(!sp.getBoolean("sincronizacion", false)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("¿Desea Cerrar Sesión?");
+                builder.setPositiveButton("SI",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                SharedPreferences sharedPref = getSharedPreferences(
+                                        "sesion", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPref.edit();
+                                editor.clear();
+                                editor.putBoolean("mail_fallido", false);
+                                editor.commit();
+                                finish();
+                                Intent i = new Intent(MainActivity.this, Login.class);
+                                startActivity(i);
+                            }
+                        });
+                builder.setNegativeButton("NO", null);
+                builder.create();
+                builder.show();
+            }
         }
 
         if (fragment != null) {
@@ -447,6 +462,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         Calendar cal = Calendar.getInstance();
                         abd.insertLog(cal.getTime().toString() + " Se intento seleccionar el establecimiento " + farmdesc + " con respuesta no exitosa del servidor", sp.getString("username",""),json_sq);
                         dta_base.close();
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.putBoolean("sincronizacion", false);
+                        editor.commit();
                         mostrarMsg("No se pudo seleccionar establecimiento","Error en el Servidor");
                         //Toast.makeText(MainActivity.this, "No se pudo seleccionar establecimiento\nError en el Servidor",Toast.LENGTH_LONG).show();
                     }
@@ -457,47 +475,57 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
                 if(tiene_pivots) {
+                    sincro = false;
+                    SharedPreferences.Editor editor = sp.edit();
+                    editor.putBoolean("sincronizacion", false);
+                    editor.commit();
                     Fragment fragment= new FragmentPivot();
                     FragmentManager fragmentManager =MainActivity.this.getSupportFragmentManager();
                     fragmentManager.beginTransaction()
                             .replace(R.id.frameprincipal, fragment).commit();
-                    progress.setProgress(100); //progreso culminado
+                    //progress.setProgress(100); //progreso culminado
                 }
                 else{
                     if(!error_servidor) {
                         if(sincro){
-                            progress.setProgress(0);
+                            //progress.setProgress(0);
                             Fragment fragment= new FragmentPivot();
                             FragmentManager fragmentManager =MainActivity.this.getSupportFragmentManager();
                             fragmentManager.beginTransaction()
                                     .replace(R.id.frameprincipal, fragment).commit();
                             sincro = false;
+                            SharedPreferences.Editor editor = sp.edit();
+                            editor.putBoolean("sincronizacion", false);
+                            editor.commit();
                         }
                         else{
-                            progress.setProgress(0);
-                            /*Calendar cal = Calendar.getInstance();
+                            //progress.setProgress(0);
+                            Calendar cal = Calendar.getInstance();
                             abd.insertLog(cal.getTime().toString() + " Se intento seleccionar el establecimiento " + farmdesc + " pero éste no tiene pivots", sp.getString("username", ""), json_sq);
                             dta_base.close();
                             mostrarMsg("Su Establecimiento no tiene pivots", "Establecimiento sin datos");
-                            Toast.makeText(MainActivity.this, "Establecimiento sin pivots", Toast.LENGTH_LONG).show();*/
+                            //Toast.makeText(MainActivity.this, "Establecimiento sin pivots", Toast.LENGTH_LONG).show();*/
                         }
                     }
-                    else
-                        progress.setProgress(0);
+                    /*else
+                        progress.setProgress(0);*/
                 }
 
             }
             else{
-                progress.setProgress(0);
+                //progress.setProgress(0);
                 Calendar cal = Calendar.getInstance();
                 abd.insertLog(cal.getTime().toString() + " No se pudo seleccionar un establecimiento por problemas en el servidor o la conexión a internet",sp.getString("username",""), json_sq);
                 dta_base.close();
                 Toast.makeText(MainActivity.this, "No tiene conexión a Internet",
                         Toast.LENGTH_LONG).show();
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putBoolean("sincronizacion", false);
+                editor.commit();
             }
-            progress.dismiss();
+            //progress.dismiss();
         }
-
+        /*
         //procedimientos para ir actualizando y mostrar la barra de progreso
         @Override
         protected void onProgressUpdate(Integer... values) {
@@ -512,7 +540,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             progress.setProgress(0);
             progress.setMax(100);
             progress.show();
-        }
+        }*/
 
     }
 
@@ -567,8 +595,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         /* Set the alarm to start at 21:30 hs */
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 17);
+        calendar.set(Calendar.HOUR_OF_DAY, 21);
+        calendar.set(Calendar.MINUTE, 28);
         calendar.set(Calendar.SECOND, 0);
         Calendar cal = Calendar.getInstance();
         if(calendar.compareTo(cal) <=0)
@@ -741,20 +769,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     //Esto es para modulo 1
                     //cambiofragment();
-                    setItemVisible(0,true);
+                    /*setItemVisible(0,true);
                     setItemVisible(1,true);
                     setItemVisible(2,true);
                     setItemVisible(4,true);
-                    setItemVisible(5,true);
+                    setItemVisible(5,true);*/
 
                 }
             }
             else{
-                setItemVisible(0,true);
+                /*setItemVisible(0,true);
                 setItemVisible(1,true);
                 setItemVisible(2,true);
                 setItemVisible(4,true);
-                setItemVisible(5,true);
+                setItemVisible(5,true);*/
                 Calendar cal = Calendar.getInstance();
                 abd.insertLog(cal.getTime() +  "ERROR. No se sincronizaron los datos:\n"+reg_riego + "\nproblemas con la conexión a internet", sp.getString("username",""), json_sq);
                 //Toast.makeText(MainActivity.this, "Se perdio la conexión a internet\no hay problemas con el servidor",

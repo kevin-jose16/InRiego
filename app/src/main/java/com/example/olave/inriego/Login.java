@@ -46,6 +46,7 @@ public class Login extends AppCompatActivity {
     EditText user;
     Button boton;
     public String possibleEmail;
+    SharedPreferences sp;
 
     ArrayList<Establecimiento> farms = new ArrayList<Establecimiento>();
 
@@ -61,6 +62,8 @@ public class Login extends AppCompatActivity {
         final SharedPreferences sharedPref = this.getSharedPreferences("sesion", Context.MODE_PRIVATE);
         String us = sharedPref.getString("username", null );
         String passw = sharedPref.getString("password", null);
+        sp = getSharedPreferences(
+                "sesion", Context.MODE_PRIVATE);
         if(us!=null && passw!=null){
             Intent i = new Intent(Login.this,MainActivity.class);
             startActivity(i);
@@ -70,7 +73,11 @@ public class Login extends AppCompatActivity {
         boton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new ClaseAsincrona().execute(user.getText().toString(),pass.getText().toString());
+                if(!sp.getBoolean("sincronizacion", false))
+                    new ClaseAsincrona().execute(user.getText().toString(),pass.getText().toString());
+                else
+                    mostrarMsg("Sincronizacion en Curso", "Aguarde un momento");
+
             }
         });
 

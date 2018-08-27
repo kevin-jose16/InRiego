@@ -154,95 +154,96 @@ public class Fm_agregarLluvia extends Fragment {
         bt_aceptar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(bt_fecha.getText()=="" || cant_ed.getText().toString()== "" || ma.pivots.size()==0){
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setMessage("Cantidad o fecha no ingresada\no no hay pivots seleccionados")
-                            .setTitle("Faltan completar campos");
-                    builder.setPositiveButton("OK",null);
-
-                    builder.create();
-                    builder.show();
-                }
-                else {
-                    if(Integer.parseInt(cant_ed.getText().toString())==0){
+                if(!sp.getBoolean("sincronizacion", false)) {
+                    if (bt_fecha.getText() == "" || cant_ed.getText().toString() == "" || ma.pivots.size() == 0) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        builder.setMessage("La cantidad(mm) debe ser mayor que 0")
-                                .setTitle("Cantidad(mm) Incorrecta");
-                        builder.setPositiveButton("OK",null);
+                        builder.setMessage("Cantidad o fecha no ingresada\no no hay pivots seleccionados")
+                                .setTitle("Faltan completar campos");
+                        builder.setPositiveButton("OK", null);
 
                         builder.create();
                         builder.show();
-                    }
-                    else {
-                        String[] fechas = bt_fecha.getText().toString().split("/");
-                        int year = Integer.parseInt(fechas[2]);
-                        int month;
-                        String month_f, day_f;
-                        int day;
-                        if(fechas[1].length()==1){
-                            month_f= "0"+fechas[1];
-                            month = Integer.parseInt(month_f);
-                        }
-                        else
-                            month = Integer.parseInt(fechas[1]);
+                    } else {
+                        if (Integer.parseInt(cant_ed.getText().toString()) == 0) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                            builder.setMessage("La cantidad(mm) debe ser mayor que 0")
+                                    .setTitle("Cantidad(mm) Incorrecta");
+                            builder.setPositiveButton("OK", null);
 
-                        if(fechas[0].length()==1){
-                            day_f= "0"+fechas[1];
-                            day = Integer.parseInt(day_f);
-                        }
-                        else
-                            day = Integer.parseInt(fechas[0]);
+                            builder.create();
+                            builder.show();
+                        } else {
+                            String[] fechas = bt_fecha.getText().toString().split("/");
+                            int year = Integer.parseInt(fechas[2]);
+                            int month;
+                            String month_f, day_f;
+                            int day;
+                            if (fechas[1].length() == 1) {
+                                month_f = "0" + fechas[1];
+                                month = Integer.parseInt(month_f);
+                            } else
+                                month = Integer.parseInt(fechas[1]);
+
+                            if (fechas[0].length() == 1) {
+                                day_f = "0" + fechas[1];
+                                day = Integer.parseInt(day_f);
+                            } else
+                                day = Integer.parseInt(fechas[0]);
                     /*Calendar cl = Calendar.getInstance();
                     cl.set(Calendar.DAY_OF_MONTH, day);
                     cl.set(Calendar.MONTH, month);
                     cl.set(Calendar.YEAR, year);
                     Date date = new Date();
                     date = cl.getTime();*/
-                        String fecha = year + "-" + month + "-" + day;
-                        Json_SQLiteHelper json_sq = new Json_SQLiteHelper(getActivity(), "DBJsons", null, 1);
-                        SQLiteDatabase dta_base = json_sq.getReadableDatabase();
-                        SQLiteHelper abd = new SQLiteHelper(dta_base, json_sq);
-                        //abd.borrar(dta_base, json_sq);
-                        //dta_base.close();
-                        ArrayList<Integer> pivotsIds = new ArrayList();
-                        for (int i = 0; i < ma.pivots.size(); i++) {
-                            String[] ids = ma.pivots.get(i).split(" ");
-                            int pivotid = Integer.parseInt(ids[0]);
-                            pivotsIds.add(pivotid);
-                        }
-                        JSONObject irrigation = new JSONObject();
-                        JSONArray arraypiv = new JSONArray();
-                        for (int i = 0; i < pivotsIds.size(); i++) {
-                            int pivotid = pivotsIds.get(i);
-                            arraypiv.put(pivotid);
-                        }
-                        try {
-                            irrigation.put("Token", token);
-                            irrigation.put("IrrigationUnitId", arraypiv);
-                            irrigation.put("Milimeters", Float.parseFloat(cant_ed.getText().toString()));
-                            irrigation.put("Date", fecha);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        SQLiteDatabase db = json_sq.getReadableDatabase();
-                        String us = sp.getString("username", null);
-                        TextView text_farm = (TextView) getActivity().findViewById(R.id.nav_farm);
-                        abd = new SQLiteHelper(db, json_sq, irrigation.toString(), us, text_farm.getText().toString(), "Rain");
+                            String fecha = year + "-" + month + "-" + day;
+                            Json_SQLiteHelper json_sq = new Json_SQLiteHelper(getActivity(), "DBJsons", null, 1);
+                            SQLiteDatabase dta_base = json_sq.getReadableDatabase();
+                            SQLiteHelper abd = new SQLiteHelper(dta_base, json_sq);
+                            //abd.borrar(dta_base, json_sq);
+                            //dta_base.close();
+                            ArrayList<Integer> pivotsIds = new ArrayList();
+                            for (int i = 0; i < ma.pivots.size(); i++) {
+                                String[] ids = ma.pivots.get(i).split(" ");
+                                int pivotid = Integer.parseInt(ids[0]);
+                                pivotsIds.add(pivotid);
+                            }
+                            JSONObject irrigation = new JSONObject();
+                            JSONArray arraypiv = new JSONArray();
+                            for (int i = 0; i < pivotsIds.size(); i++) {
+                                int pivotid = pivotsIds.get(i);
+                                arraypiv.put(pivotid);
+                            }
+                            try {
+                                irrigation.put("Token", token);
+                                irrigation.put("IrrigationUnitId", arraypiv);
+                                irrigation.put("Milimeters", Float.parseFloat(cant_ed.getText().toString()));
+                                irrigation.put("Date", fecha);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            SQLiteDatabase db = json_sq.getReadableDatabase();
+                            String us = sp.getString("username", null);
+                            TextView text_farm = (TextView) getActivity().findViewById(R.id.nav_farm);
+                            abd = new SQLiteHelper(db, json_sq, irrigation.toString(), us, text_farm.getText().toString(), "Rain");
 
-                        //abd.insertLog("El usuario " + us + " ha ingresado una lluvia en el establecimiento " + text_farm.getText() + " con los siguientes datos: " + irrigation.toString(), json_sq);
-                        db.close();
+                            //abd.insertLog("El usuario " + us + " ha ingresado una lluvia en el establecimiento " + text_farm.getText() + " con los siguientes datos: " + irrigation.toString(), json_sq);
+                            db.close();
 
-                        mostrarMsg("Se ha ingresado el registro del lluvia","Lluvia");
-                        cant_ed.setText("");
-                        bt_fecha.setText("");
-                        lv.setAdapter(adppivots);
-                        Fragment fragment= new FragmentPivot();
-                        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                        fragmentManager.beginTransaction()
-                                .replace(R.id.frameprincipal, fragment).commit();
+                            mostrarMsg("Se ha ingresado el registro del lluvia", "Lluvia");
+                            cant_ed.setText("");
+                            bt_fecha.setText("");
+                            lv.setAdapter(adppivots);
+                            Fragment fragment = new FragmentPivot();
+                            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                            fragmentManager.beginTransaction()
+                                    .replace(R.id.frameprincipal, fragment).commit();
 
+                        }
                     }
                 }
+                else
+                    mostrarMsg("Sincronizacion en Curso", "Aguarde un momento");
+
 
             }
         });
