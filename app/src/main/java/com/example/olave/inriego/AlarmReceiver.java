@@ -45,8 +45,8 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
         Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         int color = context.getResources().getColor(R.color.colornotif);
-        Intent resultIntent = new Intent(context, MainActivity.class);
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(context, 3, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        //Intent resultIntent = new Intent(context, MainActivity.class);
+        //PendingIntent resultPendingIntent = PendingIntent.getActivity(context, 3, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)
                         .setSound(uri)
@@ -55,7 +55,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                         .setContentTitle("Informacion sin Sincronizar")
                         .setColor(color)
                         .setContentText("Tienes datos sin sincronizar")
-                        .setContentIntent(resultPendingIntent)
+                        //.setContentIntent(resultPendingIntent)
                         .setAutoCancel(true);
 
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

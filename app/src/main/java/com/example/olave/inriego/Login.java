@@ -73,7 +73,7 @@ public class Login extends AppCompatActivity {
         boton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!sp.getBoolean("sincronizacion", false))
+                if(!sp.getBoolean("sincronizando", false))
                     new ClaseAsincrona().execute(user.getText().toString(),pass.getText().toString());
                 else
                     mostrarMsg("Sincronizacion en Curso", "Aguarde un momento");

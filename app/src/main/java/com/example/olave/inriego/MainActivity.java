@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     int actual_farm;
     String token;
     String farmId, farmdesc;
-    boolean tiene_pivots = false, error_servidor = false, sincro = false;
+    boolean tiene_pivots = false, error_servidor = false;
     public String reference_date;
     int advice_cod;
     boolean esriego; //Chequear si es riego o lluvia
@@ -84,9 +84,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private PendingIntent pending = null;
     private AlarmManager manager;
     SQLiteHelper abd;
-    ProgressDialog progress;
-    boolean servicio_iniciado = false;
-    Intent intentmail = null;
+
 
     public MainActivity(){}
 
@@ -116,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //Sesion
         sp = getSharedPreferences("sesion",Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
+        //SharedPreferences.Editor editor = sp.edit();
         //Preguntar si hay establecimiento seleccionado
         if(sp.getBoolean("hay_farm",false)){
 
@@ -182,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 farmdesc = farmslist.get(0).getDescripcion();
                 token = sp.getString("token",null);
-                new ClaseAsincrona().execute(token,String.valueOf(farmslist.get(0).getEst_id()));
+                new ClaseAsincrona().execute(token,String.valueOf(actual_farm));
             }
         }
 
@@ -271,25 +269,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Fragment fragment = null;
 
         if (id == R.id.nav_home) {
-            if(!sp.getBoolean("sincronizacion", false))
+            if(!sp.getBoolean("sincronizando", false))
                 fragment = new Fm_Establecimiento();
             else
                 mostrarMsg("Sincronizacion en Curso", "Aguarde un momento");
 
         } else if (id == R.id.nav_riego) {
-            if(!sp.getBoolean("sincronizacion", false))
+            if(!sp.getBoolean("sincronizando", false))
                 fragment = new Fm_AgregarRiego();
             else
                 mostrarMsg("Sincronizacion en Curso", "Aguarde un momento");
         } else if (id == R.id.nav_lluvia) {
-            if(!sp.getBoolean("sincronizacion", false))
+            if(!sp.getBoolean("sincronizando", false))
                 fragment = new Fm_agregarLluvia();
             else
                 mostrarMsg("Sincronizacion en Curso", "Aguarde un momento");
         } else if (id == R.id.nav_verinfo) {
             fragment = new FragmentPivot();
         } else if (id == R.id.nav_sincronice){
-            if(!sp.getBoolean("sincronizacion", false)) {
+            //new ClaseAsincrona().execute(token, String.valueOf(actual_farm));
+           if(!sp.getBoolean("sincronizando", false)) {
                 if (probarConn()) {
                     json_sq = new Json_SQLiteHelper(MainActivity.this, "DBJsons", null, 1);
                     dta_base = json_sq.getReadableDatabase();
@@ -297,20 +296,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Cursor result = abd.obtener();
 
                     if (result.getCount() >= 1) {
-                    /*setItemVisible(0,false);
-                    setItemVisible(1,false);
-                    setItemVisible(2,false);
-                    setItemVisible(4,false);
-                    setItemVisible(5,false);*/
+
+                        new SincronizarDatos().execute();
+                        //RecargarTabla();
                         SharedPreferences.Editor editor = sp.edit();
                         editor.putBoolean("sincronizando", true);
-                        editor.commit();
-                        new SincronizarDatos().execute();
-                        sincro = true;
                         new ClaseAsincrona().execute(token, String.valueOf(actual_farm));
 
                     } else {
-                        //new ClaseAsincrona().execute(token,String.valueOf(actual_farm));
+
+                        //String tkn = token, act = String.valueOf(actual_farm);
+                        //new ClaseAsincrona().execute(token, String.valueOf(actual_farm));
                         mostrarMsg("No hay datos para sincronizar", "Sincronización");
                     }
 
@@ -318,10 +314,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     mostrarMsg("NO tiene conexion, intente mas tarde", "Conexión a Internet");
                 }
             }
+            else
+                mostrarMsg("Hay otra Sincronizacion en Curso", "Aguarde un momento");
+
 
 
         } else if (id == R.id.nav_logout) {
-            if(!sp.getBoolean("sincronizacion", false)) {
+            if(!sp.getBoolean("sincronizando", false)) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("¿Desea Cerrar Sesión?");
                 builder.setPositiveButton("SI",
@@ -343,6 +342,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 builder.create();
                 builder.show();
             }
+            else
+                mostrarMsg("Sincronizacion en Curso", "Aguarde un momento");
+
         }
 
         if (fragment != null) {
@@ -380,7 +382,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             try {
                 token_ca = params[0];
                 farmId = params[1];
-                URL url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/IrrigationData/token/"+token_ca +"/farmId/" + farmId);
+                URL url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/IrrigationData/token/"+token +"/farmId/" + farmId);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 int responseCode = conn.getResponseCode();
@@ -462,10 +464,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         Calendar cal = Calendar.getInstance();
                         abd.insertLog(cal.getTime().toString() + " Se intento seleccionar el establecimiento " + farmdesc + " con respuesta no exitosa del servidor", sp.getString("username",""),json_sq);
                         dta_base.close();
+                        if(sp.getBoolean("sincronizando",false))
+                            mostrarMsg("No se actualizo la tabla de riegos","Error en el Servidor");
+                        else
+                            mostrarMsg("No se pudo seleccionar establecimiento","Error en el Servidor");
                         SharedPreferences.Editor editor = sp.edit();
-                        editor.putBoolean("sincronizacion", false);
+                        editor.putBoolean("sincronizando", false);
                         editor.commit();
-                        mostrarMsg("No se pudo seleccionar establecimiento","Error en el Servidor");
                         //Toast.makeText(MainActivity.this, "No se pudo seleccionar establecimiento\nError en el Servidor",Toast.LENGTH_LONG).show();
                     }
 
@@ -475,9 +480,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
                 if(tiene_pivots) {
-                    sincro = false;
                     SharedPreferences.Editor editor = sp.edit();
-                    editor.putBoolean("sincronizacion", false);
+                    editor.putBoolean("sincronizando", false);
                     editor.commit();
                     Fragment fragment= new FragmentPivot();
                     FragmentManager fragmentManager =MainActivity.this.getSupportFragmentManager();
@@ -487,15 +491,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 else{
                     if(!error_servidor) {
-                        if(sincro){
+                        if(sp.getBoolean("sincronizando",false)){
                             //progress.setProgress(0);
                             Fragment fragment= new FragmentPivot();
                             FragmentManager fragmentManager =MainActivity.this.getSupportFragmentManager();
                             fragmentManager.beginTransaction()
                                     .replace(R.id.frameprincipal, fragment).commit();
-                            sincro = false;
                             SharedPreferences.Editor editor = sp.edit();
-                            editor.putBoolean("sincronizacion", false);
+                            editor.putBoolean("sincronizando", false);
                             editor.commit();
                         }
                         else{
@@ -503,7 +506,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             Calendar cal = Calendar.getInstance();
                             abd.insertLog(cal.getTime().toString() + " Se intento seleccionar el establecimiento " + farmdesc + " pero éste no tiene pivots", sp.getString("username", ""), json_sq);
                             dta_base.close();
-                            mostrarMsg("Su Establecimiento no tiene pivots", "Establecimiento sin datos");
+                            mostrarMsg("Su establecimiento no tiene pivots", "Establecimiento sin datos");
                             //Toast.makeText(MainActivity.this, "Establecimiento sin pivots", Toast.LENGTH_LONG).show();*/
                         }
                     }
@@ -520,7 +523,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Toast.makeText(MainActivity.this, "No tiene conexión a Internet",
                         Toast.LENGTH_LONG).show();
                 SharedPreferences.Editor editor = sp.edit();
-                editor.putBoolean("sincronizacion", false);
+                editor.putBoolean("sincronizando", false);
                 editor.commit();
             }
             //progress.dismiss();
@@ -674,10 +677,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             }
                             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-                            BufferedReader br;
-                            InputStreamReader input;
-
-                            StringBuffer response;
                             try {
                                 conn.setRequestMethod("POST");
                                 conn.setRequestProperty("Content-Type", "application/json;charset=utf-8");
@@ -687,21 +686,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 out.write(String.valueOf(obj));
                                 out.close();
 
-                                input = new InputStreamReader(conn.getInputStream());
-                                br =new BufferedReader(input);
+                                BufferedReader br =new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
                                 String inputLine;
-                                response = new StringBuffer();
+                                StringBuffer response = new StringBuffer();
 
                                 while ((inputLine = br.readLine()) != null) {
                                         response.append(inputLine);
                                 }
                                 br.close();
+                                res = response.toString();
                             }
                             finally {
                                 conn.disconnect();
                             }
-                            res=response.toString();
                             return res;
 
                         } catch (IOException e) {
@@ -723,7 +721,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return res;
             }
             else{
-                String ab = "sin datos";
                 return "no_hay_datos";
             }
 
@@ -774,6 +771,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     setItemVisible(2,true);
                     setItemVisible(4,true);
                     setItemVisible(5,true);*/
+
+
 
                 }
             }
@@ -828,6 +827,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.frameprincipal, fragment).commit();
+    }
+
+    public void RecargarTabla(){
+        //sincro = true;
+        //String tk = token; String ac = String.valueOf(actual_farm);
+        new ClaseAsincrona().execute(token, String.valueOf(actual_farm));
     }
 
 }

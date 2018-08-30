@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -288,6 +289,7 @@ public class Fm_Establecimiento extends Fragment {
                             String jsonObjetos = new Gson().toJson(es);
                             editor.putString("actual_farm", jsonObjetos);
                             editor.putBoolean("hay_farm", true);
+                            editor.putBoolean("sincronizando", false);
                             editor.commit();
                             Calendar cal = Calendar.getInstance();
                             abd.insertLog(cal.getTime().toString() + " Se selecciona el establecimiento " + farmdesc + " con respuesta correcta del servidor", sp.getString("username", ""), json_sq);
@@ -317,11 +319,12 @@ public class Fm_Establecimiento extends Fragment {
                 else{
                     if(!error_servidor) {
                         progress.setProgress(0);
-                        /*Calendar cal = Calendar.getInstance();
+                        Calendar cal = Calendar.getInstance();
                         abd.insertLog(cal.getTime().toString() + " Se intento seleccionar el establecimiento " + farmdesc + " pero éste no tiene pivots", sp.getString("username",""),json_sq);
                         dta_base.close();
-                        Toast.makeText(getActivity(), "Establecimiento sin pivots\nSeleccione otro",
-                                Toast.LENGTH_LONG).show();*/
+                        //mostrarMsg("Seleccione otro", "Establecimiento sin pivots");
+                        Toast.makeText(getActivity(), "Establecimiento sin pivots",
+                                Toast.LENGTH_LONG).show();
                     }
                     else
                         progress.setProgress(0);
@@ -373,5 +376,16 @@ public class Fm_Establecimiento extends Fragment {
 
         cal.set(year,month,day);
         return fecha_r= cal.getTime();
+    }
+
+    public void mostrarMsg(String msg, String titulo){
+        TextView myView = new TextView(this.getActivity());
+        myView.setText(msg);
+        myView.setTextSize(10);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
+        builder.setMessage(msg).setTitle(titulo);
+        builder.setPositiveButton("OK",null);
+        builder.create();
+        builder.show();
     }
 }

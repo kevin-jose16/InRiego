@@ -172,7 +172,7 @@ public class Fm_AgregarRiego extends Fragment {
         bt_aceptar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!sp.getBoolean("sincronizacion", false)) {
+                if(!sp.getBoolean("sincronizando", false)) {
                     if (bt_fecha.getText() == "" || cant_ed.getText().toString() == "" || ma.pivots.size() == 0) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                         builder.setMessage("Cantidad o fecha no ingresada\no no hay pivots seleccionados")
