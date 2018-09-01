@@ -114,6 +114,7 @@ public class Fm_Establecimiento extends Fragment {
         ma.setItemVisible(2,false);
         ma.setItemVisible(3,false);
         ma.setItemVisible(4,false);
+
         TextView tv = (TextView) getActivity().findViewById(R.id.nav_farm);
         tv.setText("InRiego");
         getActivity().setTitle("InRiego");
@@ -290,6 +291,8 @@ public class Fm_Establecimiento extends Fragment {
                             editor.putString("actual_farm", jsonObjetos);
                             editor.putBoolean("hay_farm", true);
                             editor.putBoolean("sincronizando", false);
+                            mn.setToken(sp.getString("token", ""));
+                            mn.setActual_farm(Integer.parseInt(farmId));
                             editor.commit();
                             Calendar cal = Calendar.getInstance();
                             abd.insertLog(cal.getTime().toString() + " Se selecciona el establecimiento " + farmdesc + " con respuesta correcta del servidor", sp.getString("username", ""), json_sq);

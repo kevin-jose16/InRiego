@@ -88,6 +88,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public MainActivity(){}
 
+    public String getToken() {
+        return token;
+    }
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public int getActual_farm() {
+        return actual_farm;
+    }
+    public void setActual_farm(int actual_farm) {
+        this.actual_farm = actual_farm;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -158,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction()
                         .replace(R.id.frameprincipal, fragment).commit();
+
             }
             else{
                 //Convierte JSONArray a Lista de Objetos!
@@ -287,7 +302,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_verinfo) {
             fragment = new FragmentPivot();
         } else if (id == R.id.nav_sincronice){
-            //new ClaseAsincrona().execute(token, String.valueOf(actual_farm));
+           //new ClaseAsincrona().execute(token, String.valueOf(actual_farm));
            if(!sp.getBoolean("sincronizando", false)) {
                 if (probarConn()) {
                     json_sq = new Json_SQLiteHelper(MainActivity.this, "DBJsons", null, 1);
@@ -316,8 +331,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             else
                 mostrarMsg("Hay otra Sincronizacion en Curso", "Aguarde un momento");
-
-
 
         } else if (id == R.id.nav_logout) {
             if(!sp.getBoolean("sincronizando", false)) {
@@ -382,7 +395,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             try {
                 token_ca = params[0];
                 farmId = params[1];
-                URL url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/IrrigationData/token/"+token +"/farmId/" + farmId);
+                URL url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/IrrigationData/token/"+token_ca +"/farmId/" + farmId);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 int responseCode = conn.getResponseCode();
@@ -834,6 +847,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //String tk = token; String ac = String.valueOf(actual_farm);
         new ClaseAsincrona().execute(token, String.valueOf(actual_farm));
     }
+
 
 }
 
