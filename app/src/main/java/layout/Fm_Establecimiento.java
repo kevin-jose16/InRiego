@@ -267,6 +267,9 @@ public class Fm_Establecimiento extends Fragment {
                         mn.reference_date = ref_date;
                         editor.putString("ReferenceDate",ref_date);
 
+                        JSONObject jsobject = jsonData.getJSONObject("Farm");
+                        farmdesc = jsobject.getString("Description");
+
                         JSONArray farm_pivots = jsonData.getJSONArray("IrrigationRows");
                         if(farm_pivots.length()>0) {
                             tiene_pivots=true;

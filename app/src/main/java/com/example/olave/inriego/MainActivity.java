@@ -212,29 +212,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startAt2130();
 
         }
-        /*if(!isMyServiceRunning(ServicioMail.class)){
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 45);
-            calendar.set(Calendar.SECOND, 0);
-            Calendar cal = Calendar.getInstance();
-            if(calendar.compareTo(cal) <=0)
-                calendar.add(Calendar.DATE,1);
-
-            intentmail = new Intent(MainActivity.this, ServicioMail.class);
-            //pending = PendingIntent.getBroadcast(this, 1, alarmIntent_mail, 0);
-            SharedPreferences sharedPref = getSharedPreferences(
-                    "sesion", Context.MODE_PRIVATE);
-            SharedPreferences.Editor sp = sharedPref.edit();
-            sp.putBoolean("repetitivo", true);
-            sp.putLong("hora_mail", calendar.getTimeInMillis());
-            sp.commit();
-            startService(intentmail);
-            //startAt2130();
-        }*/
-
     }
-
 
     public void setItemVisible(int index, boolean inv){
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -313,10 +291,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     if (result.getCount() >= 1) {
 
                         new SincronizarDatos().execute();
-                        //RecargarTabla();
                         SharedPreferences.Editor editor = sp.edit();
                         editor.putBoolean("sincronizando", true);
+                        editor.commit();
+                        String tk = token;
+                        int actfarm = actual_farm;
+                        String fmdsc = farmdesc;
+                        int ab = 1;
                         new ClaseAsincrona().execute(token, String.valueOf(actual_farm));
+                        //RecargarTabla();
 
                     } else {
 
@@ -434,8 +417,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         reference_date = jsonData.getString("ReferenceDate");
                         editor.putString("ReferenceDate",reference_date);
 
-                        /*JSONObject jsobject = jsonData.getJSONObject("Farm");
-                        farmdesc = jsobject.getString("Description");*/
+                        JSONObject jsobject = jsonData.getJSONObject("Farm");
+                        farmdesc = jsobject.getString("Description");
 
                         JSONArray farm_pivots = jsonData.getJSONArray("IrrigationRows");
                         if(farm_pivots.length()>0) {
@@ -455,7 +438,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 estab_pivots.add(p);
 
                             }
-
+                            String fmd = farmdesc,fmi = farmId;
                             Establecimiento est = new Establecimiento(Integer.parseInt(farmId), farmdesc, reference_date);
                             est.setPivots(estab_pivots);
                             if(farmslist!= null)
@@ -484,7 +467,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         SharedPreferences.Editor editor = sp.edit();
                         editor.putBoolean("sincronizando", false);
                         editor.commit();
-                        //Toast.makeText(MainActivity.this, "No se pudo seleccionar establecimiento\nError en el Servidor",Toast.LENGTH_LONG).show();
                     }
 
                 } catch (JSONException e) {
@@ -496,11 +478,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     SharedPreferences.Editor editor = sp.edit();
                     editor.putBoolean("sincronizando", false);
                     editor.commit();
-                    Fragment fragment= new FragmentPivot();
-                    FragmentManager fragmentManager =MainActivity.this.getSupportFragmentManager();
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.frameprincipal, fragment).commit();
-                    //progress.setProgress(100); //progreso culminado
+                    cambiofragment();
                 }
                 else{
                     if(!error_servidor) {
@@ -523,8 +501,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             //Toast.makeText(MainActivity.this, "Establecimiento sin pivots", Toast.LENGTH_LONG).show();*/
                         }
                     }
-                    /*else
-                        progress.setProgress(0);*/
                 }
 
             }
@@ -761,6 +737,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             } else {
                                 abd.insertLog(cal.getTime() + " -- Sincronización exitosa del suiguiente registro de lluvia:\n" + reg_riego, sp.getString("username",""), json_sq);
                             }
+
                             notificationBuilder.setContentTitle("¡Sincronización completada!").setAutoCancel(true).setProgress(0,0,false);
                             notificationManager.notify(n, notificationBuilder.build());
 
@@ -776,32 +753,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
                     //Esto es para modulo 1
                     //cambiofragment();
-                    /*setItemVisible(0,true);
-                    setItemVisible(1,true);
-                    setItemVisible(2,true);
-                    setItemVisible(4,true);
-                    setItemVisible(5,true);*/
-
-
-
                 }
             }
             else{
-                /*setItemVisible(0,true);
-                setItemVisible(1,true);
-                setItemVisible(2,true);
-                setItemVisible(4,true);
-                setItemVisible(5,true);*/
                 Calendar cal = Calendar.getInstance();
                 abd.insertLog(cal.getTime() +  "ERROR. No se sincronizaron los datos:\n"+reg_riego + "\nproblemas con la conexión a internet", sp.getString("username",""), json_sq);
-                //Toast.makeText(MainActivity.this, "Se perdio la conexión a internet\no hay problemas con el servidor",
-                       // Toast.LENGTH_LONG).show();
                 mostrarMsg("No se sincronizaron los datos\nSe perdio la conexión a internet", "ERROR");
                 db.close();
-                //notificationBuilder.setContentText("¡Hubo un error en la sincronización!");
+                notificationBuilder.setContentText("¡Hubo un error en la sincronización!");
                 notificationManager.notify(n, notificationBuilder.build());
             }
         }
@@ -834,7 +795,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }*/
     }
 
-    //Esta funcion se hace para el modulo 1
     public void cambiofragment(){
         Fragment fragment = new FragmentPivot();
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -842,11 +802,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .replace(R.id.frameprincipal, fragment).commit();
     }
 
-    public void RecargarTabla(){
-        //sincro = true;
-        //String tk = token; String ac = String.valueOf(actual_farm);
-        new ClaseAsincrona().execute(token, String.valueOf(actual_farm));
-    }
+
 
 
 }
