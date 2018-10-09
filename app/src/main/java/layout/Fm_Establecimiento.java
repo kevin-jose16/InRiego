@@ -290,7 +290,7 @@ public class Fm_Establecimiento extends Fragment {
                             est.setPivots(estab_pivots);
                             ArrayList<Establecimiento> es = new ArrayList<>();
                             es.add(est);
-                            String jsonObjetos = new Gson().toJson(es);
+                            String jsonObjetos = new Gson().toJson(est);
                             editor.putString("actual_farm", jsonObjetos);
                             editor.putBoolean("hay_farm", true);
                             editor.putBoolean("sincronizando", false);

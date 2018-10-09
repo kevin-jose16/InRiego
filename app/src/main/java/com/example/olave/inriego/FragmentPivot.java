@@ -18,13 +18,20 @@ import android.widget.Spinner;
 
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+
+import Clases.Establecimiento;
 
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -571,6 +578,7 @@ public class FragmentPivot extends Fragment {
         cal.add(Calendar.DAY_OF_YEAR, dias);
         return cal.getTime();
     }
+
     public void mostrarMsg(){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater factory = LayoutInflater.from(getActivity());
@@ -586,7 +594,6 @@ public class FragmentPivot extends Fragment {
     }
 
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -600,10 +607,16 @@ public class FragmentPivot extends Fragment {
 
 
         try {
-            String farm_pivots= sp.getString("actual_farm", "no hay actual farm");
-            JSONArray todo = new JSONArray(farm_pivots) ;
-            JSONObject establecimiento = todo.getJSONObject(0);
-            pivots_est = establecimiento.getJSONArray("pivots");
+            String farm_pivots= sp.getString("actual_farm", null);
+            JSONObject jsb = null;
+            try {
+                jsb = new JSONObject(farm_pivots);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            pivots_est = null;
+            pivots_est = jsb.getJSONArray("pivots");
 
             for(int i=0; i<pivots_est.length(); i++){
                 JSONObject pv = pivots_est.getJSONObject(i);
@@ -634,9 +647,7 @@ public class FragmentPivot extends Fragment {
 
         aa.setDropDownViewResource(R.layout.dropdown_spinner_item);
         //Setting the ArrayAdapter data on the Spinner
-
         spi.setAdapter(aa);
-
         spi.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -878,7 +889,6 @@ public class FragmentPivot extends Fragment {
                                         && comparaFechas(fecha_riego,ref_d)!=4){
                                     if(tipo.equals("Irrigation")){
                                         tipos_riegos.get(i).setImageDrawable(getActivity().getDrawable(R.drawable.proxriego));
-
                                     }
                                     if (tipo.equals("Rain")) {
 
@@ -916,7 +926,6 @@ public class FragmentPivot extends Fragment {
                                 }
                             }
 
-
                         }
 
                     }
@@ -932,7 +941,6 @@ public class FragmentPivot extends Fragment {
 
             }
         });
-
 
         MainActivity ma = (MainActivity) getActivity();
         ma.setItemVisible(1,true);

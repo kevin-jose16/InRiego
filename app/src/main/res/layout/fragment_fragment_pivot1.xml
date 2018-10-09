@@ -262,7 +262,7 @@
         android:layout_marginLeft="2dp"
         android:layout_marginRight="2dp"
         android:layout_marginTop="2dp"
-        android:background="@color/bright_foreground_disabled_material_light"
+        android:background="@drawable/borde_fila"
         android:gravity="center">
 
         <TextView
@@ -301,7 +301,8 @@
         android:layout_marginRight="2dp"
         android:layout_marginTop="2dp"
         android:background="@color/bright_foreground_disabled_material_light"
-        android:gravity="center">
+        android:gravity="center"
+        >
 
         <TextView
             android:id="@+id/tabla_fecha_4"
@@ -417,7 +418,8 @@
         android:layout_marginRight="2dp"
         android:layout_marginTop="2dp"
         android:background="@color/bright_foreground_disabled_material_light"
-        android:gravity="center">
+        android:gravity="center"
+        >
 
         <TextView
             android:id="@+id/tabla_fecha_7"

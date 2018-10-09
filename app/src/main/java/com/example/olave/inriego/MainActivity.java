@@ -68,6 +68,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public ArrayList<String> pivots = new ArrayList<>();
     public ArrayList<Pivot> estab_pivots = new ArrayList<>();
+    ArrayList<String> registros_riegos =  new ArrayList<>();
+    ArrayList<String> registros_lluvias =  new ArrayList<>();
+    ArrayList<Integer> codes_advices = new ArrayList<>();
     ArrayList<Establecimiento> farmslist;
     Json_SQLiteHelper json_sq;
     SQLiteDatabase dta_base;
@@ -78,7 +81,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     boolean tiene_pivots = false, error_servidor = false;
     public String reference_date;
     int advice_cod;
-    boolean esriego; //Chequear si es riego o lluvia
     String reg_riego; //Json de registro de riego/lluvia pasado a string
     private PendingIntent pendingIntent = null;
     private PendingIntent pending = null;
@@ -134,22 +136,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             //Setear atributo de fecha de referencia
             reference_date= sp.getString("ReferenceDate",null);
-            //Obtiene datos (json)
+            //Obtiene datos (json) en string
             String objetos = sp.getString("actual_farm", null);
-            //Convierte json  a JsonArray.
-            JSONArray jsonArray = null;
+
+            //Convierte el string a jsonobject.
+            JSONObject jsb = null;
             try {
-                jsonArray = new JSONArray(objetos);
+                jsb = new JSONObject(objetos);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            Type listType = new TypeToken<ArrayList<Establecimiento>>(){}.getType();
-            ArrayList<Establecimiento> hay_farm = new Gson().fromJson(jsonArray.toString(), listType);
+            Type listType = new TypeToken<Establecimiento>(){}.getType();
+            Establecimiento hay_farm = new Gson().fromJson(jsb.toString(), listType);
             TextView tv_est = (TextView) findViewById(R.id.nav_farm);
-            tv_est.setText(hay_farm.get(0).getDescripcion());
-            setTitle(hay_farm.get(0).getDescripcion());
-            actual_farm = hay_farm.get(0).getEst_id();
-            farmdesc = hay_farm.get(0).getDescripcion();
+            tv_est.setText(hay_farm.getDescripcion());
+            setTitle(hay_farm.getDescripcion());
+            actual_farm = hay_farm.getEst_id();
+
+            farmdesc = hay_farm.getDescripcion();
             token = sp.getString("token", null);
             Fragment fragment= new FragmentPivot();
             FragmentManager fragmentManager =MainActivity.this.getSupportFragmentManager();
@@ -262,25 +266,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Fragment fragment = null;
 
         if (id == R.id.nav_home) {
-            if(!sp.getBoolean("sincronizando", false))
+            if(!sp.getBoolean("sincronizando", false)) {
+                SharedPreferences.Editor editor = sp.edit();
+                editor.remove("actual_farm");
                 fragment = new Fm_Establecimiento();
+            }
             else
                 mostrarMsg("Sincronizacion en Curso", "Aguarde un momento");
 
         } else if (id == R.id.nav_riego) {
-            if(!sp.getBoolean("sincronizando", false))
+            //if(!sp.getBoolean("sincronizando", false))
                 fragment = new Fm_AgregarRiego();
-            else
-                mostrarMsg("Sincronizacion en Curso", "Aguarde un momento");
+            /*else
+                mostrarMsg("Sincronizacion en Curso", "Aguarde un momento");*/
         } else if (id == R.id.nav_lluvia) {
-            if(!sp.getBoolean("sincronizando", false))
+            //if(!sp.getBoolean("sincronizando", false))
                 fragment = new Fm_agregarLluvia();
-            else
-                mostrarMsg("Sincronizacion en Curso", "Aguarde un momento");
+            /*else
+                mostrarMsg("Sincronizacion en Curso", "Aguarde un momento");*/
         } else if (id == R.id.nav_verinfo) {
             fragment = new FragmentPivot();
         } else if (id == R.id.nav_sincronice){
-           //new ClaseAsincrona().execute(token, String.valueOf(actual_farm));
            if(!sp.getBoolean("sincronizando", false)) {
                 if (probarConn()) {
                     json_sq = new Json_SQLiteHelper(MainActivity.this, "DBJsons", null, 1);
@@ -289,23 +295,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Cursor result = abd.obtener();
 
                     if (result.getCount() >= 1) {
-
+                        /*if(result!=null) {
+                            result.moveToFirst();
+                            for (int i = 0; i < result.getCount(); i++) {
+                                new SincronizarDatos().execute();
+                                result.moveToNext();
+                            }
+                            result.close();
+                        }*/
                         new SincronizarDatos().execute();
-                        SharedPreferences.Editor editor = sp.edit();
-                        editor.putBoolean("sincronizando", true);
-                        editor.commit();
-                        String tk = token;
-                        int actfarm = actual_farm;
-                        String fmdsc = farmdesc;
-                        int ab = 1;
-                        new ClaseAsincrona().execute(token, String.valueOf(actual_farm));
+
                         //RecargarTabla();
 
                     } else {
-
-                        //String tkn = token, act = String.valueOf(actual_farm);
-                        //new ClaseAsincrona().execute(token, String.valueOf(actual_farm));
-                        mostrarMsg("No hay datos para sincronizar", "Sincronización");
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.putBoolean("sincronizando", true);
+                        editor.commit();
+                        new ClaseAsincrona().execute(token, String.valueOf(actual_farm));
+                        //mostrarMsg("No hay datos para sincronizar", "Sincronización");
                     }
 
                 } else {
@@ -370,7 +377,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String res;
         String token_ca;
 
-
         @Override
         protected String doInBackground(String... params) {
             tiene_pivots = false;
@@ -381,7 +387,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 URL url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/IrrigationData/token/"+token_ca +"/farmId/" + farmId);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
-                int responseCode = conn.getResponseCode();
+                //int responseCode = conn.getResponseCode();
 
                 BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
@@ -421,11 +427,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         farmdesc = jsobject.getString("Description");
 
                         JSONArray farm_pivots = jsonData.getJSONArray("IrrigationRows");
+                        estab_pivots.clear();
                         if(farm_pivots.length()>0) {
                             tiene_pivots = true;
                             for (int i = 0; i <= farm_pivots.length() - 1; i++) {
                                 JSONObject pv = farm_pivots.getJSONObject(i);
-                                //Integer.parseInt(pv.get("IrrigationId").toString()),
                                 Pivot p = new Pivot(Integer.parseInt(pv.get("IrrigationUnitId").toString()), pv.get("Name").toString(), pv.get("Crop").toString(), pv.get("HarvestDate").toString(), pv.get("Phenology").toString());
                                 JSONArray pv_riegos = pv.getJSONArray("Advices");
 
@@ -441,12 +447,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             String fmd = farmdesc,fmi = farmId;
                             Establecimiento est = new Establecimiento(Integer.parseInt(farmId), farmdesc, reference_date);
                             est.setPivots(estab_pivots);
-                            if(farmslist!= null)
-                                farmslist.clear();
-                            else
-                                farmslist = new ArrayList<>();
-                            farmslist.add(est);
-                            String jsonObjetos = new Gson().toJson(farmslist);
+                            String jsonObjetos = new Gson().toJson(est);
                             editor.putString("actual_farm", jsonObjetos);
                             editor.putBoolean("hay_farm", true);
                             editor.commit();
@@ -478,7 +479,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     SharedPreferences.Editor editor = sp.edit();
                     editor.putBoolean("sincronizando", false);
                     editor.commit();
-                    cambiofragment();
+                    Fragment fragment = new FragmentPivot();
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.frameprincipal, fragment).commit();//AllowingStateLoss();
                 }
                 else{
                     if(!error_servidor) {
@@ -498,7 +502,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             abd.insertLog(cal.getTime().toString() + " Se intento seleccionar el establecimiento " + farmdesc + " pero éste no tiene pivots", sp.getString("username", ""), json_sq);
                             dta_base.close();
                             mostrarMsg("Su establecimiento no tiene pivots", "Establecimiento sin datos");
-                            //Toast.makeText(MainActivity.this, "Establecimiento sin pivots", Toast.LENGTH_LONG).show();*/
                         }
                     }
                 }
@@ -644,75 +647,81 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         protected String doInBackground(Void... voids) {
 
             Cursor result= abd.obtener();
-            if(result.getCount()>=1){
+
+            if(result!=null) {
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putBoolean("sincronizando", true);
+                editor.commit();
                 result.moveToFirst();
-                if(result.getCount()>0) {
-                    int cant_registrosbd = result.getCount()-1;
-
-                    for(int i= 0; i<= cant_registrosbd; i++){
-                        advice_cod = result.getInt(0);
-
+                JSONObject json_env = new JSONObject();
+                try {
+                    json_env.put("Application", "InRiego Mobile");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                JSONArray riegos= new JSONArray();
+                JSONArray lluvias= new JSONArray();
+                registros_riegos = new ArrayList<>();
+                registros_lluvias = new ArrayList<>();
+                while(!result.isAfterLast()) {
+                    advice_cod = result.getInt(0);
+                    codes_advices.add(advice_cod);
+                    if (result.getString(5).equals("Irrigation")) {
                         try {
-                            URL url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/IrrigationData/AddIrrigation");
-                            if(result.getString(5).equals("Irrigation")) {
-                                url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/IrrigationData/AddIrrigation");
-                                esriego=true;
-                            }
-                            else {
-                                if (result.getString(5).equals("Rain")) {
-                                    url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/IrrigationData/AddRain");
-                                    esriego=false;
-                                }
-                            }
-                            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-                            try {
-                                conn.setRequestMethod("POST");
-                                conn.setRequestProperty("Content-Type", "application/json;charset=utf-8");
-                                OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
-                                JSONObject obj = new JSONObject(result.getString(1));
-                                reg_riego = result.getString(1);
-                                out.write(String.valueOf(obj));
-                                out.close();
-
-                                BufferedReader br =new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
-                                String inputLine;
-                                StringBuffer response = new StringBuffer();
-
-                                while ((inputLine = br.readLine()) != null) {
-                                        response.append(inputLine);
-                                }
-                                br.close();
-                                res = response.toString();
-                            }
-                            finally {
-                                conn.disconnect();
-                            }
-                            return res;
-
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                            riegos.put(new JSONObject(result.getString(1)));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
-                        if(!result.isLast())
-                            result.moveToNext();
-                        else{
-                            break;
+                        reg_riego = result.getString(1);
+                        registros_riegos.add(reg_riego);
+                    } else {
+                        if (result.getString(5).equals("Rain")) {
+                            lluvias.put(result.getString(1));
+                            reg_riego = result.getString(1);
+                            registros_lluvias.add(reg_riego);
                         }
                     }
+                    result.moveToNext();
+                }
+                    try {
+                        URL url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/IrrigationData/AddIrrigationAndRain");
+                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-                }
-                else{
-                }
-                return res;
+                        json_env.put("Irrigations", riegos);
+                        json_env.put("Rains", lluvias);
+                        try {
+
+                            conn.setRequestMethod("POST");
+                            conn.setRequestProperty("Content-Type", "application/json;charset=utf-8");
+                            OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+                            out.write(String.valueOf(json_env));
+                            out.close();
+
+                            BufferedReader br =new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+                            String inputLine;
+                            StringBuffer response = new StringBuffer();
+
+                            while ((inputLine = br.readLine()) != null) {
+                                    response.append(inputLine);
+                            }
+                            br.close();
+                            res = response.toString();
+                        }
+                        finally {
+                            conn.disconnect();
+                        }
+                        return res;
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
             }
             else{
-                return "no_hay_datos";
             }
-
+            return res;
         }
 
         @Override
@@ -722,44 +731,52 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             SQLiteHelper abd = new SQLiteHelper(db,json_sq);
 
             if (result!=null){
-                if(result.equals("no_hay_datos"))
-                    Toast.makeText(MainActivity.this, "No hay datos que sincronizar", Toast.LENGTH_LONG).show();
-                else {
-                    try {
-                        JSONObject json = new JSONObject(result);
-                        Boolean isok = json.getBoolean("IsOk");
-                        Calendar cal = Calendar.getInstance();
-                        //preguntar isOk
-                        if (isok) {
-                            abd.borrar_regRiego(db, advice_cod);
-                            if (esriego) {
-                                abd.insertLog(cal.getTime() + " -- Sincronización exitosa del suiguiente registro de riego:\n" + reg_riego,sp.getString("username",""), json_sq);
-                            } else {
-                                abd.insertLog(cal.getTime() + " -- Sincronización exitosa del suiguiente registro de lluvia:\n" + reg_riego, sp.getString("username",""), json_sq);
-                            }
-
-                            notificationBuilder.setContentTitle("¡Sincronización completada!").setAutoCancel(true).setProgress(0,0,false);
-                            notificationManager.notify(n, notificationBuilder.build());
-
+                try {
+                    JSONObject json = new JSONObject(result);
+                    Boolean isok = json.getBoolean("IsOk");
+                    Calendar cal = Calendar.getInstance();
+                    //preguntar isOk
+                    if (isok) {
+                        String riegos_sinc = "";
+                        String lluvias_sinc = "";
+                        for(int i =0; i < registros_riegos.size(); i++){
+                            riegos_sinc+= registros_riegos.get(i)+"\n";
                         }
-                        else {
-                            abd.insertLog(cal.getTime() + " -- Sincronización no exitosa, ERROR: " + json.getString("ErrorMessage"), sp.getString("username",""), json_sq);
-                            notificationBuilder.setAutoCancel(true).setProgress(0,0,false).setContentText("¡Hubo un error en la sincronización!");
-                            notificationManager.notify(n, notificationBuilder.build());
+                        for(int i =0; i < registros_lluvias.size(); i++){
+                            lluvias_sinc+= registros_lluvias.get(i)+"\n";
                         }
-
-                        db.close();
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                        abd.insertLog(cal.getTime() + " -- Sincronización exitosa de los siguientes registros de riego/lluvia:\nRiegos:\n" + riegos_sinc + "Lluvias:\n"+lluvias_sinc,sp.getString("username",""), json_sq);
+                        for(int i=0; i<codes_advices.size();i++){
+                            db = json_sq.getReadableDatabase();
+                            abd.borrar_regRiego(db, codes_advices.get(i));
+                        }
+                        notificationBuilder.setContentTitle("¡Sincronización completada!").setAutoCancel(true).setProgress(0,0,false);
+                        notificationManager.notify(n, notificationBuilder.build());
+                        new ClaseAsincrona().execute(token, String.valueOf(actual_farm));
                     }
-                    //Esto es para modulo 1
-                    //cambiofragment();
+                    else {
+                        abd.insertLog(cal.getTime() + " -- Sincronización no exitosa, ERROR: " + json.getString("ErrorMessage"), sp.getString("username",""), json_sq);
+                        notificationBuilder.setAutoCancel(true).setProgress(0,0,false).setContentText("¡Hubo un error en la sincronización!");
+                        notificationManager.notify(n, notificationBuilder.build());
+                    }
+
+                    db.close();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             }
             else{
                 Calendar cal = Calendar.getInstance();
-                abd.insertLog(cal.getTime() +  "ERROR. No se sincronizaron los datos:\n"+reg_riego + "\nproblemas con la conexión a internet", sp.getString("username",""), json_sq);
+                String riegos_sinc = "";
+                String lluvias_sinc = "";
+                for(int i =0; i < registros_riegos.size(); i++){
+                    riegos_sinc+= registros_riegos.get(i)+"\n";
+                }
+                for(int i =0; i < registros_lluvias.size(); i++){
+                    lluvias_sinc+= registros_lluvias.get(i)+"\n";
+                }
+                abd.insertLog(cal.getTime() +  "ERROR. No se sincronizaron los datos:\nRiegos:\n"+riegos_sinc + "\nLluvias:\n" + lluvias_sinc + "\nproblemas con la conexión a internet", sp.getString("username",""), json_sq);
                 mostrarMsg("No se sincronizaron los datos\nSe perdio la conexión a internet", "ERROR");
                 db.close();
                 notificationBuilder.setContentText("¡Hubo un error en la sincronización!");
@@ -794,16 +811,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         }*/
     }
-
-    public void cambiofragment(){
-        Fragment fragment = new FragmentPivot();
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.frameprincipal, fragment).commit();
-    }
-
-
-
 
 }
 

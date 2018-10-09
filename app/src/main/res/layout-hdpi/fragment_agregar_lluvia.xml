@@ -68,7 +68,7 @@
 
     <Button
         android:id="@+id/btn_agregar_l"
-        android:layout_width="150dp"
+        android:layout_width="140dp"
         android:layout_height="40dp"
         android:layout_marginTop="430dp"
         android:layout_marginStart="30dp"
@@ -86,10 +86,10 @@
         />
     <Button
         android:id="@+id/btn_cancelar_l"
-        android:layout_width="150dp"
+        android:layout_width="140dp"
         android:layout_height="40dp"
         android:layout_marginTop="430dp"
-        android:layout_marginStart="200dp"
+        android:layout_marginStart="180dp"
         android:background="@drawable/borde_redondeado"
         android:backgroundTint="#0E417B"
         android:elevation="5dp"
