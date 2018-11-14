@@ -115,8 +115,8 @@ public class Fm_Establecimiento extends Fragment {
         ma.setItemVisible(3,false);
         ma.setItemVisible(4,false);
 
-        TextView tv = (TextView) getActivity().findViewById(R.id.nav_farm);
-        tv.setText("InRiego");
+        //TextView tv = (TextView) getActivity().findViewById(R.id.nav_farm);
+        //tv.setText("InRiego");
         getActivity().setTitle("InRiego");
         sp = getActivity().getSharedPreferences("sesion",Context.MODE_PRIVATE);
         Gson gson = new Gson(); //Instancia Gson.
@@ -305,7 +305,7 @@ public class Fm_Establecimiento extends Fragment {
                     else{
                         error_servidor = true;
                         Calendar cal = Calendar.getInstance();
-                        abd.insertLog(cal.getTime().toString() + " Se intento seleccionar el establecimiento " + farmdesc + " con respuesta no exitosa del servidor", sp.getString("username",""),json_sq);
+                        abd.insertLog(cal.getTime().toString() + " ERROR -- Se intento seleccionar el establecimiento " + farmdesc + " con respuesta no exitosa del servidor", sp.getString("username",""),json_sq);
                         dta_base.close();
                         Toast.makeText(getActivity(), "No se pudo seleccionar establecimiento\nError en el Servidor",
                                 Toast.LENGTH_LONG).show();
@@ -326,7 +326,7 @@ public class Fm_Establecimiento extends Fragment {
                     if(!error_servidor) {
                         progress.setProgress(0);
                         Calendar cal = Calendar.getInstance();
-                        abd.insertLog(cal.getTime().toString() + " Se intento seleccionar el establecimiento " + farmdesc + " pero éste no tiene pivots", sp.getString("username",""),json_sq);
+                        abd.insertLog(cal.getTime().toString() + " ERROR -- Se intento seleccionar el establecimiento " + farmdesc + " pero éste no tiene pivots", sp.getString("username",""),json_sq);
                         dta_base.close();
                         //mostrarMsg("Seleccione otro", "Establecimiento sin pivots");
                         Toast.makeText(getActivity(), "Establecimiento sin pivots",
@@ -340,7 +340,7 @@ public class Fm_Establecimiento extends Fragment {
             else{
                 progress.setProgress(0);
                 Calendar cal = Calendar.getInstance();
-                abd.insertLog(cal.getTime().toString() + "No se pudo seleccionar un establecimiento por problemas en el servidor o la conexión a internet", sp.getString("username",""), json_sq);
+                abd.insertLog(cal.getTime().toString() + " ERROR -- No se pudo seleccionar un establecimiento por problemas en el servidor o la conexión a internet", sp.getString("username",""), json_sq);
                 dta_base.close();
                 Toast.makeText(getActivity(), "No tiene conexión a internet\no hay problemas con el servidor",
                         Toast.LENGTH_LONG).show();

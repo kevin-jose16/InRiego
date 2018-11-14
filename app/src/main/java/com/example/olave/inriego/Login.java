@@ -1,15 +1,19 @@
 package com.example.olave.inriego;
 
+import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -56,6 +60,8 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
+
+        solicitarpermisos();
         boton = (Button) findViewById(R.id.button);
         pass = (EditText) findViewById(R.id.password);
         user = (EditText) findViewById(R.id.usuario);
@@ -204,7 +210,7 @@ public class Login extends AppCompatActivity {
                         SharedPreferences sp = Login.this.getSharedPreferences("sesion", Context.MODE_PRIVATE);
                         if(!sp.getBoolean("mail_fallido",false)){
                             Calendar cal = Calendar.getInstance();
-                            abd.insertLog(cal.getTime().toString() + " -- El usuario " + username + " no existente, intento ingresar al sistema", username, json_sq);
+                            abd.insertLog(cal.getTime().toString() + " ERROR -- El usuario " + username + " intento ingresar al sistema, usuario o contraseña incorrectos", username, json_sq);
                             dta_base.close();
                         }
                         progress.setProgress(0);
@@ -467,5 +473,53 @@ public class Login extends AppCompatActivity {
 
     }
 
+    public void solicitarpermisos(){
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.GET_ACCOUNTS)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.GET_ACCOUNTS)) {
+
+                // Show an expanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.GET_ACCOUNTS},
+                        16);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 16: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
 
 }

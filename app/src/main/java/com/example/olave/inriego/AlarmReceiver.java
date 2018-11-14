@@ -90,12 +90,12 @@ public class AlarmReceiver extends BroadcastReceiver {
 
             else{
                 //Codigo comentado para la entrega del módulo 2
-                /*Calendar ca = Calendar.getInstance();
+                Calendar ca = Calendar.getInstance();
                 ca.setTimeInMillis(ca.getTimeInMillis() + 900000); //Le agrego a la hora actual 15 minutos (en milisegundos)
                 AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
                 Intent alarmIntent = new Intent(context, AlarmReceiver.class);
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 2, alarmIntent, 0);
-                manager.setExact(AlarmManager.RTC_WAKEUP, ca.getTimeInMillis(), pendingIntent);*/
+                manager.setExact(AlarmManager.RTC_WAKEUP, ca.getTimeInMillis(), pendingIntent);
 
                 mBuilder.setContentTitle("Informacion sin Sincronizar");
                 mBuilder.setContentText("Tienes datos sin sincronizar, recuerde tener conexión");

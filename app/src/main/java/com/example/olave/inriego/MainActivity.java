@@ -1,5 +1,7 @@
 package com.example.olave.inriego;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -77,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     SharedPreferences sp;
     int actual_farm;
     String token;
+    String possibleEmail = "";
     String farmId, farmdesc;
     boolean tiene_pivots = false, error_servidor = false;
     public String reference_date;
@@ -109,8 +112,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         super.onCreate(savedInstanceState);
         setTitle("InRiego");
-
-
         setContentView(R.layout.main_activity);
 
         //Barra menu superior
@@ -148,8 +149,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             Type listType = new TypeToken<Establecimiento>(){}.getType();
             Establecimiento hay_farm = new Gson().fromJson(jsb.toString(), listType);
-            TextView tv_est = (TextView) findViewById(R.id.nav_farm);
-            tv_est.setText(hay_farm.getDescripcion());
+            //TextView tv_est = (TextView) findViewById(R.id.nav_farm);
+            //tv_est.setText(hay_farm.getDescripcion());
             setTitle(hay_farm.getDescripcion());
             actual_farm = hay_farm.getEst_id();
 
@@ -215,6 +216,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             pending = PendingIntent.getBroadcast(this, 1, alarmIntent_mail, 0);
             startAt2130();
 
+        }
+        Account[] accounts = AccountManager.get(this).getAccountsByType("com.google");
+        if(accounts.length > 0){
+            possibleEmail = accounts[0].name;
         }
     }
 
@@ -287,7 +292,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_verinfo) {
             fragment = new FragmentPivot();
         } else if (id == R.id.nav_sincronice){
-           if(!sp.getBoolean("sincronizando", false)) {
+            if(!sp.getBoolean("sincronizando", false)) {
                 if (probarConn()) {
                     json_sq = new Json_SQLiteHelper(MainActivity.this, "DBJsons", null, 1);
                     dta_base = json_sq.getReadableDatabase();
@@ -295,24 +300,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Cursor result = abd.obtener();
 
                     if (result.getCount() >= 1) {
-                        /*if(result!=null) {
-                            result.moveToFirst();
-                            for (int i = 0; i < result.getCount(); i++) {
-                                new SincronizarDatos().execute();
-                                result.moveToNext();
-                            }
-                            result.close();
-                        }*/
                         new SincronizarDatos().execute();
-
-                        //RecargarTabla();
-
                     } else {
-                        SharedPreferences.Editor editor = sp.edit();
+                        /*SharedPreferences.Editor editor = sp.edit();
                         editor.putBoolean("sincronizando", true);
-                        editor.commit();
+                        editor.commit();*/
                         new ClaseAsincrona().execute(token, String.valueOf(actual_farm));
-                        //mostrarMsg("No hay datos para sincronizar", "Sincronización");
                     }
 
                 } else {
@@ -321,6 +314,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             else
                 mostrarMsg("Hay otra Sincronizacion en Curso", "Aguarde un momento");
+
 
         } else if (id == R.id.nav_logout) {
             if(!sp.getBoolean("sincronizando", false)) {
@@ -335,6 +329,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 SharedPreferences.Editor editor = sharedPref.edit();
                                 editor.clear();
                                 editor.putBoolean("mail_fallido", false);
+                                editor.putLong("fecha_mail",Calendar.getInstance().getTimeInMillis());
                                 editor.commit();
                                 finish();
                                 Intent i = new Intent(MainActivity.this, Login.class);
@@ -459,7 +454,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     else{
                         error_servidor = true;
                         Calendar cal = Calendar.getInstance();
-                        abd.insertLog(cal.getTime().toString() + " Se intento seleccionar el establecimiento " + farmdesc + " con respuesta no exitosa del servidor", sp.getString("username",""),json_sq);
+                        abd.insertLog(cal.getTime().toString() + " ERROR -- Se intento seleccionar el establecimiento " + farmdesc + " con respuesta no exitosa del servidor", sp.getString("username",""),json_sq);
                         dta_base.close();
                         if(sp.getBoolean("sincronizando",false))
                             mostrarMsg("No se actualizo la tabla de riegos","Error en el Servidor");
@@ -499,7 +494,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         else{
                             //progress.setProgress(0);
                             Calendar cal = Calendar.getInstance();
-                            abd.insertLog(cal.getTime().toString() + " Se intento seleccionar el establecimiento " + farmdesc + " pero éste no tiene pivots", sp.getString("username", ""), json_sq);
+                            abd.insertLog(cal.getTime().toString() + " ERROR -- Se intento seleccionar el establecimiento " + farmdesc + " pero éste no tiene pivots", sp.getString("username", ""), json_sq);
                             dta_base.close();
                             mostrarMsg("Su establecimiento no tiene pivots", "Establecimiento sin datos");
                         }
@@ -510,7 +505,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             else{
                 //progress.setProgress(0);
                 Calendar cal = Calendar.getInstance();
-                abd.insertLog(cal.getTime().toString() + " No se pudo seleccionar un establecimiento por problemas en el servidor o la conexión a internet",sp.getString("username",""), json_sq);
+                abd.insertLog(cal.getTime().toString() + " ERROR -- No se pudo seleccionar un establecimiento por problemas en el servidor o la conexión a internet",sp.getString("username",""), json_sq);
                 dta_base.close();
                 Toast.makeText(MainActivity.this, "No tiene conexión a Internet",
                         Toast.LENGTH_LONG).show();
@@ -634,7 +629,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return false;
     }
 
-
     public class SincronizarDatos extends AsyncTask<Void, Integer, String> {
 
         String res;
@@ -755,7 +749,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         new ClaseAsincrona().execute(token, String.valueOf(actual_farm));
                     }
                     else {
-                        abd.insertLog(cal.getTime() + " -- Sincronización no exitosa, ERROR: " + json.getString("ErrorMessage"), sp.getString("username",""), json_sq);
+                        abd.insertLog(cal.getTime() + " ERROR -- Sincronización no exitosa, ERROR: " + json.getString("ErrorMessage"), sp.getString("username",""), json_sq);
                         notificationBuilder.setAutoCancel(true).setProgress(0,0,false).setContentText("¡Hubo un error en la sincronización!");
                         notificationManager.notify(n, notificationBuilder.build());
                     }
@@ -776,7 +770,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 for(int i =0; i < registros_lluvias.size(); i++){
                     lluvias_sinc+= registros_lluvias.get(i)+"\n";
                 }
-                abd.insertLog(cal.getTime() +  "ERROR. No se sincronizaron los datos:\nRiegos:\n"+riegos_sinc + "\nLluvias:\n" + lluvias_sinc + "\nproblemas con la conexión a internet", sp.getString("username",""), json_sq);
+                abd.insertLog(cal.getTime() +  " ERROR -- No se sincronizaron los datos:\nRiegos:\n"+riegos_sinc + "\nLluvias:\n" + lluvias_sinc + "\nproblemas con la conexión a internet", sp.getString("username",""), json_sq);
                 mostrarMsg("No se sincronizaron los datos\nSe perdio la conexión a internet", "ERROR");
                 db.close();
                 notificationBuilder.setContentText("¡Hubo un error en la sincronización!");
@@ -810,6 +804,180 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             notificationManager.notify(n, notificationBuilder.build());
 
         }*/
+    }
+
+    public void mailSincronizar() throws JSONException {
+
+        Json_SQLiteHelper json_sq= new Json_SQLiteHelper(this, "DBJsons", null, 1);
+        SQLiteDatabase dta_base = json_sq.getReadableDatabase();
+        SQLiteHelper abd = new SQLiteHelper(dta_base, json_sq);
+        Cursor result= abd.obtener();
+
+        String message = "<html>\n" +
+                "<body>\n";
+        String subject = "El usuario ";
+
+        if(result.getCount()>=1){
+            result.moveToFirst();
+            if ( result.getCount()>0) {
+
+                int cant_registrosbd = result.getCount()-1;
+                message = message + "<p>USUARIO: " + result.getString(3) + "</p>";
+
+                message = message + "<p>EMAIL: " + possibleEmail + "</p><hr>";
+
+                Calendar hoy = Calendar.getInstance();
+                SharedPreferences sp = MainActivity.this.getSharedPreferences("sesion", Context.MODE_PRIVATE);
+                Calendar fecha_m = Calendar.getInstance();
+                fecha_m.setTimeInMillis(sp.getLong("fecha_mail",0));
+                if(!fecha_m.equals(0) || fecha_m!=null) {
+                    if (comparaFechas(fecha_m, hoy) == 0)
+                        subject = subject + result.getString(3) + " ha agregado los siguientes registros de riego/lluvia";
+                    else {
+                        subject = subject + result.getString(3) + " ha agregado los siguientes registros de riego/lluvia el dia "
+                                + fecha_m.get(Calendar.DAY_OF_MONTH) + "/" + fecha_m.get(Calendar.MONTH) + "/" + fecha_m.get(Calendar.YEAR);
+                    }
+                }
+                for(int i=0; i<=cant_registrosbd; i++) {
+
+                    try {
+                        JSONObject json = new JSONObject(result.getString(1));
+                        message = message + "<p>Establecimiento: " + result.getString(4) + "</p>";
+                        message = message + "<p>Milimetros: " + json.get("Milimeters").toString() + "</p>";
+                        message = message + "<p>Fecha: " + json.get("Date").toString() + "</p>";
+                        message = message + "<p>Pivots: " + json.get("IrrigationUnitId").toString() + "</p>";
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    message = message + "<p>Tipo riego: " + result.getString(5) + "</p><hr><hr></body></html>";
+
+                    result.moveToNext();
+                }
+            }
+        }
+        dta_base.close();
+
+        String email = "josekevin15@gmail.com"; //destinatario (va mail de PGG)
+
+        //Creating SendMail object
+        SendMail sm = new SendMail(this, email, subject, message);
+
+        //Executing sendmail to send email
+        sm.execute();
+        /*n = rand.nextInt(999) + 1;
+        mNotificationManager.notify(n, mBuilder.build());*/
+
+
+    }
+
+    public void mailLog(){
+        Json_SQLiteHelper json_sq= new Json_SQLiteHelper(this, "DBJsons", null, 1);
+        SQLiteDatabase dta_base = json_sq.getReadableDatabase();
+        SQLiteHelper abd = new SQLiteHelper(dta_base, json_sq);
+        Cursor result= abd.obtenerLog();
+
+        String message = "<html>\n" +
+                "<body>\n";
+
+        String subject = "";
+        Calendar hoy = Calendar.getInstance();
+        SharedPreferences sp = MainActivity.this.getSharedPreferences("sesion", Context.MODE_PRIVATE);
+        Calendar fecha_m = Calendar.getInstance();
+        fecha_m.setTimeInMillis(sp.getLong("fecha_mail",0));
+        boolean error = false;
+        if(result.getCount()>=1){
+            result.moveToFirst();
+            if ( result.getCount()>0) {
+                int cant_registrosbd = result.getCount()-1;
+
+                for(int i=0; i<=cant_registrosbd; i++) {
+                    message = message + "<p>" + result.getString(1) + "</p></br>";
+                    if(result.getString(1).contains("ERROR"))
+                        error = true;
+                    result.moveToNext();
+                }
+                message = message + "</body></html>";
+            }
+        }
+
+        if(!fecha_m.equals(0) || fecha_m!=null) {
+            if (comparaFechas(fecha_m, hoy) == 0) {
+                subject = "LOG total de la jornada";
+                if(error)
+                    subject += " con ERRORES";
+                if(result.getCount()<1 || result == null){
+                    message = "Hoy no se han ingresado o sincronizado datos";
+                }
+
+            }
+            else {
+                subject = "LOG total del dia " + fecha_m.get(Calendar.DAY_OF_MONTH) + "/" + fecha_m.get(Calendar.MONTH) + "/" + fecha_m.get(Calendar.YEAR);
+                if(error)
+                    subject += " con ERRORES";
+                if(result.getCount()<1 || result == null){
+                    message = "El dia " + fecha_m.get(Calendar.DAY_OF_MONTH) + "/" + fecha_m.get(Calendar.MONTH) + "/" + fecha_m.get(Calendar.YEAR) + " no se han ingresado o sincronizado datos";
+                }
+            }
+        }
+
+        dta_base.close();
+
+        String email = "josekevin15@gmail.com"; //destinatario (va mail de PGG)
+        //Creating SendMail object
+
+        SendMail sm = new SendMail(this, email, subject, message);
+
+        //Executing sendmail to send email
+        sm.execute();
+        /*n = rand.nextInt(999) + 1;
+        mNotificationManager.notify(n, mBuilder.build());*/
+    }
+
+    public int comparaFechas(Calendar cal1, Calendar cal2) {
+        if (cal1 == null || cal2 == null)
+            return -4;//alguna fecha es nula
+        else {
+            //si son iguales
+            if (cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE))
+                return 0;
+
+            //cal1 menor que cal2
+
+            if (cal1.get(Calendar.YEAR) < cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE))
+                return -1;// año menor
+            if (cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) < cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE))
+                return -2;//mes menor
+            if (cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) < cal2.get(Calendar.DATE))
+                return -3;//dia menor
+
+            //cal1 mayor que cal2
+
+            if (cal1.get(Calendar.YEAR) > cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE))
+                return 1;// año mayor
+            if (cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) > cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE))
+                return 2;//mes mayor
+            if (cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) > cal2.get(Calendar.DATE))
+                return 3;//dia mayor
+
+        }
+
+        return 4;
+
     }
 
 }

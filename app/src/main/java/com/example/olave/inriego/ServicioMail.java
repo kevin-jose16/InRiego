@@ -149,20 +149,6 @@ public class ServicioMail extends Service {
             }
         }
 
-        /*if (cm != null) {
-            NetworkInfo[] info = cm.getAllNetworkInfo();
-            if (info != null) {
-                for (int i = 0; i < info.length; i++) {
-                    if (info[i].getState() == NetworkInfo.State.CONNECTED) {
-                        if (!isConnected) {
-                            isConnected = true;
-                        }
-                        return true;
-                    }
-                }
-            }
-        }
-        isConnected = false;*/
         return false;
     }
     public void envio_mails(){
@@ -291,7 +277,7 @@ public class ServicioMail extends Service {
                     result.moveToNext();
                 }
             }
-            String email = "josekevin15@gmail.com"; //destinatario (va mail de PGG)
+            String email = "iadvisortest@googlegroups.com"; //destinatario (va mail de PGG)
 
             //Creating SendMail object
 
@@ -319,7 +305,11 @@ public class ServicioMail extends Service {
         String message = "<html>\n" +
                 "<body>\n";
         String subject = "LOG total de la jornada";
-
+        Calendar hoy = Calendar.getInstance();
+        SharedPreferences sp = getApplicationContext().getSharedPreferences("sesion", Context.MODE_PRIVATE);
+        Calendar fecha_m = Calendar.getInstance();
+        fecha_m.setTimeInMillis(sp.getLong("fecha_mail",0));
+        boolean error = false;
         if(result.getCount()>=1){
             result.moveToFirst();
             if ( result.getCount()>0) {
@@ -327,18 +317,40 @@ public class ServicioMail extends Service {
 
                 for(int i=0; i<=cant_registrosbd; i++) {
                     message = message + "<p>" + result.getString(1) + "</p></br>";
+                    if(result.getString(1).contains("ERROR"))
+                        error = true;
 
                     result.moveToNext();
                 }
                 message = message + "</body></html>";
             }
+            if(error)
+                subject += " con ERRORES";
         }
-        else
-            message = "Hoy no se han ingresado o sincronizado datos";
+
+        if(!fecha_m.equals(0) || fecha_m!=null) {
+            if (comparaFechas(fecha_m, hoy) == 0) {
+                subject = "LOG total de la jornada";
+                if(error)
+                    subject += " con ERRORES";
+                if(result.getCount()<1 || result == null){
+                    message = "Hoy no se han ingresado o sincronizado datos";
+                }
+
+            }
+            else {
+                subject = "LOG total del dia " + fecha_m.get(Calendar.DAY_OF_MONTH) + "/" + fecha_m.get(Calendar.MONTH) + "/" + fecha_m.get(Calendar.YEAR);
+                if(error)
+                    subject += " con ERRORES";
+                if(result.getCount()<1 || result == null){
+                    message = "El dia " + fecha_m.get(Calendar.DAY_OF_MONTH) + "/" + fecha_m.get(Calendar.MONTH) + "/" + fecha_m.get(Calendar.YEAR) + " no se han ingresado o sincronizado datos";
+                }
+            }
+        }
 
         dta_base.close();
 
-        String email = "josekevin15@gmail.com"; //destinatario (va mail de PGG)
+        String email = "iadvisortest@googlegroups.com"; //destinatario (va mail de PGG)
         //Creating SendMail object
 
         SendMail sm = new SendMail(contexto, email, subject, message);
@@ -352,127 +364,50 @@ public class ServicioMail extends Service {
         n = rand.nextInt(999) + 1;
         mNotificationManager.notify(n, mBuilder.build());
     }
-    /*
-    public class Mail_sincronizacion extends AsyncTask<Void, Integer, Cursor>{
-        Json_SQLiteHelper json_sq;
-        SQLiteDatabase dta_base;
-        SQLiteHelper abd;
-        @Override
-        protected Cursor doInBackground(Void... voids) {
-            Looper.prepare();
-            json_sq= new Json_SQLiteHelper(contexto, "DBJsons", null, 1);
-            dta_base = json_sq.getReadableDatabase();
-            abd = new SQLiteHelper(dta_base, json_sq);
-            Cursor result= abd.obtener();
-            return result;
-        }
 
-        @Override
-        protected void onPostExecute(Cursor result) {
-            if(result.getCount()>=1){
-                String message = "<html>\n" +
-                        "<body>\n";
-                String subject = "El usuario ";
-                result.moveToFirst();
-                if ( result.getCount()>0) {
-                    int cant_registrosbd = result.getCount()-1;
+    public int comparaFechas(Calendar cal1, Calendar cal2) {
+        if (cal1 == null || cal2 == null)
+            return -4;//alguna fecha es nula
+        else {
+            //si son iguales
+            if (cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE))
+                return 0;
 
-                    message = message + "<p>USUARIO: " + result.getString(3) + "</p>";
-                    subject = subject + result.getString(3) + " ha agregado los siguientes registros de riego/lluvia";
-                    message = message + "<p>EMAIL: " + possibleEmail + "</p><hr>";
+            //cal1 menor que cal2
 
-                    for(int i=0; i<=cant_registrosbd; i++) {
+            if (cal1.get(Calendar.YEAR) < cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE))
+                return -1;// año menor
+            if (cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) < cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE))
+                return -2;//mes menor
+            if (cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) < cal2.get(Calendar.DATE))
+                return -3;//dia menor
 
-                        try {
-                            JSONObject json = new JSONObject(result.getString(1));
-                            message = message + "<p>Establecimiento: " + result.getString(4) + "</p>";
-                            message = message + "<p>Milimetros: " + json.get("Milimeters").toString() + "</p>";
-                            message = message + "<p>Fecha: " + json.get("Date").toString() + "</p>";
-                            message = message + "<p>Pivots: " + json.get("IrrigationUnitId").toString() + "</p>";
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+            //cal1 mayor que cal2
 
-                        message = message + "<p>Tipo riego: " + result.getString(5) + "</p><hr><hr></body></html>";
-
-                        result.moveToNext();
-                    }
-                }
-                dta_base.close();
-
-                String email = "josekevin15@gmail.com"; //destinatario (va mail de PGG)
-
-                //Creating SendMail object
-
-                SendMail sm = new SendMail(getApplicationContext(), email, subject, message);
-
-                //Executing sendmail to send email
-                sm.execute();
-
-                mBuilder.setContentTitle("Mail con registros de Riego/Lluvia no sincronizados")
-                        .setContentText("Se envió un mail con estos datos");
-                n = rand.nextInt(999) + 1;
-                mNotificationManager.notify(n, mBuilder.build());
-            }
+            if (cal1.get(Calendar.YEAR) > cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE))
+                return 1;// año mayor
+            if (cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) > cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE))
+                return 2;//mes mayor
+            if (cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) > cal2.get(Calendar.DATE))
+                return 3;//dia mayor
 
         }
-    }
 
-    public class Mail_logs extends AsyncTask<Void, Integer, Cursor>{
-        Json_SQLiteHelper json_sq;
-        SQLiteDatabase dta_base;
-        SQLiteHelper abd;
-        @Override
-        protected Cursor doInBackground(Void... voids) {
-            Looper.prepare();
-            json_sq= new Json_SQLiteHelper(contexto, "DBJsons", null, 1);
-            dta_base = json_sq.getReadableDatabase();
-            abd = new SQLiteHelper(dta_base, json_sq);
-            Cursor result= abd.obtenerLog();
-            return result;
-        }
-        @Override
-        protected void onPostExecute(Cursor result) {
-            String message = "<html>\n" +
-
-                    "<body>\n";
-
-            String subject = "LOG total de la jornada";
-
-            if(result.getCount()>=1){
-                result.moveToFirst();
-                if ( result.getCount()>0) {
-                    int cant_registrosbd = result.getCount()-1;
-
-                    for(int i=0; i<=cant_registrosbd; i++) {
-                        message = message + "<p>" + result.getString(1) + "</p></br>";
-
-                        result.moveToNext();
-                    }
-                    message = message + "</body></html>";
-                }
-            }
-            else
-                message = "Hoy no se han ingresado o sincronizado datos";
-
-            dta_base.close();
-
-            String email = "josekevin15@gmail.com"; //destinatario (va mail de PGG)
-            //Creating SendMail object
-
-            SendMail sm = new SendMail(getApplicationContext(), email, subject, message);
-
-            //Executing sendmail to send email
-            sm.execute();
-            //Toast.makeText(contexto, "Hay conexion", Toast.LENGTH_LONG).show();
-            mBuilder.setContentTitle("Mail de Logs")
-                    .setContentText("Se envió un mail con los Logs de la jornada.");
-
-            n = rand.nextInt(999) + 1;
-            mNotificationManager.notify(n, mBuilder.build());
-        }
+        return 4;
 
     }
-
-    */
 }
