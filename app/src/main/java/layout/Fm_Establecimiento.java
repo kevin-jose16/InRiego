@@ -275,7 +275,7 @@ public class Fm_Establecimiento extends Fragment {
                             tiene_pivots=true;
                             for (int i = 0; i <= farm_pivots.length() - 1; i++) {
                                 JSONObject pv = farm_pivots.getJSONObject(i);
-                                Pivot p = new Pivot(Integer.parseInt(pv.get("IrrigationUnitId").toString()), pv.get("Name").toString(), pv.get("Crop").toString(), pv.get("HarvestDate").toString(), pv.get("Phenology").toString());
+                                Pivot p = new Pivot(Integer.parseInt(pv.get("IrrigationUnitId").toString()), pv.get("Name").toString(), pv.get("Crop").toString(), pv.get("SowingDate").toString(), pv.get("Phenology").toString());
                                 JSONArray pv_riegos = pv.getJSONArray("Advices");
                                 for (int r = 0; r <= pv_riegos.length() - 1; r++) {
                                     JSONObject riego = pv_riegos.getJSONObject(r);
@@ -288,8 +288,8 @@ public class Fm_Establecimiento extends Fragment {
                             }
                             Establecimiento est = new Establecimiento(Integer.parseInt(farmId), farmdesc, ref_date);
                             est.setPivots(estab_pivots);
-                            ArrayList<Establecimiento> es = new ArrayList<>();
-                            es.add(est);
+                            //ArrayList<Establecimiento> es = new ArrayList<>();
+                            //es.add(est);
                             String jsonObjetos = new Gson().toJson(est);
                             editor.putString("actual_farm", jsonObjetos);
                             editor.putBoolean("hay_farm", true);

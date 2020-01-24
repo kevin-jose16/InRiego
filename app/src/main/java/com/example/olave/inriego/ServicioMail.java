@@ -19,6 +19,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.util.Patterns;
 
 import org.json.JSONException;
@@ -85,6 +86,7 @@ public class ServicioMail extends Service {
         cal.setTimeInMillis(sp.getLong("hora_mail",calendar.getTimeInMillis()));
         //repetitivo = sp.getBoolean("repetitivo",false);
         long delay = cal.getTimeInMillis()-hora_actual.getTimeInMillis();
+        //Log.d("Hora-mail", "hora: " + cal.getTime());
        /* Uri uri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         int color = getApplicationContext().getResources().getColor(R.color.colornotif);
         Intent resultIntent = new Intent(getApplicationContext(), getApplicationContext().getClass());
@@ -108,13 +110,20 @@ public class ServicioMail extends Service {
         //if(repetitivo){
             //Toast.makeText(getApplicationContext(), "Se enviaran los mails", Toast.LENGTH_LONG).show();
             Timer tm = new Timer();
-            tm.schedule(new TimerTask() {
+            /*tm.schedule(new TimerTask() {
                             @Override
                             public void run() {
                                 envio_mails();
                             }
                         }
-                    , delay, 86400000);
+                    , delay, 86400000);*/
+        tm.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            envio_mails();
+                        }
+                    }
+                , cal.getTime());
         /*}
         else{
             //Toast.makeText(getApplicationContext(), "Envio de mails", Toast.LENGTH_LONG).show();

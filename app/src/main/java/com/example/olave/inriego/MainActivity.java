@@ -329,8 +329,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 SharedPreferences.Editor editor = sharedPref.edit();
                                 editor.clear();
                                 editor.putBoolean("mail_fallido", false);
+                                long fc = Calendar.getInstance().getTimeInMillis();
                                 editor.putLong("fecha_mail",Calendar.getInstance().getTimeInMillis());
+
                                 editor.commit();
+                                long l = sp.getLong("fecha_mail", 0);
                                 finish();
                                 Intent i = new Intent(MainActivity.this, Login.class);
                                 startActivity(i);
@@ -427,7 +430,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             tiene_pivots = true;
                             for (int i = 0; i <= farm_pivots.length() - 1; i++) {
                                 JSONObject pv = farm_pivots.getJSONObject(i);
-                                Pivot p = new Pivot(Integer.parseInt(pv.get("IrrigationUnitId").toString()), pv.get("Name").toString(), pv.get("Crop").toString(), pv.get("HarvestDate").toString(), pv.get("Phenology").toString());
+                                Pivot p = new Pivot(Integer.parseInt(pv.get("IrrigationUnitId").toString()), pv.get("Name").toString(), pv.get("Crop").toString(), pv.get("SowingDate").toString(), pv.get("Phenology").toString());
                                 JSONArray pv_riegos = pv.getJSONArray("Advices");
 
                                 for (int r = 0; r <= pv_riegos.length() - 1; r++) {
@@ -582,11 +585,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void startAt2130() {
-        //manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         /* Set the alarm to start at 21:30 hs */
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 21);
-        calendar.set(Calendar.MINUTE, 28);
+        calendar.set(Calendar.MINUTE, 30);
         calendar.set(Calendar.SECOND, 0);
         Calendar cal = Calendar.getInstance();
         if(calendar.compareTo(cal) <=0)

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,9 +37,12 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import Clases.Establecimiento;
 import Clases.Pivot;
+import Clases.Riego;
 import Persistencia.Json_SQLiteHelper;
 import Persistencia.SQLiteHelper;
 
@@ -63,6 +67,8 @@ public class Fm_AgregarRiego extends Fragment {
     SharedPreferences sp;
     static final int DATE_DIALOG_ID = 0;
     ListView lv;
+    int farmid= 0;
+    String farmdesc= "";
     EditText cant_ed;
     Button bt_fecha;
     Button bt_aceptar;
@@ -143,6 +149,8 @@ public class Fm_AgregarRiego extends Fragment {
         }
         Type listType = new TypeToken<Establecimiento>(){}.getType();
         Establecimiento farm = new Gson().fromJson(jsb.toString(), listType);
+        farmid = farm.getEst_id();
+        farmdesc = farm.getDescripcion();
 
         bt_aceptar = (Button) rootview.findViewById(R.id.btn_agregar_r);
         bt_fecha = (Button) rootview.findViewById(R.id.btn_fecha_riego);
@@ -150,7 +158,7 @@ public class Fm_AgregarRiego extends Fragment {
         lv = (ListView) rootview.findViewById(R.id.lst_riego);
         lv.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
 
-        ArrayList<Pivot> arrpv = farm.getPivots();
+        final ArrayList<Pivot> arrpv = farm.getPivots();
         reference_date = farm.getRef_date();
         adppivots = new AdapterPivots(getActivity(), arrpv);
         lv.setAdapter(adppivots);
@@ -180,7 +188,7 @@ public class Fm_AgregarRiego extends Fragment {
                 builder.create();
                 builder.show();
             } else {
-                if (Integer.parseInt(cant_ed.getText().toString()) > 50 || Integer.parseInt(cant_ed.getText().toString()) == 0) {
+                if (cant_ed.getText().toString().length() >2 || Integer.parseInt(cant_ed.getText().toString()) > 50 || Integer.parseInt(cant_ed.getText().toString()) == 0 ) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     builder.setMessage("La cantidad(mm) debe ser mayor que 0 y menor o igual a 50")
                             .setTitle("Cantidad(mm) Incorrecta");
@@ -200,7 +208,7 @@ public class Fm_AgregarRiego extends Fragment {
                         month = Integer.parseInt(fechas[1]);
 
                     if (fechas[0].length() == 1) {
-                        day_f = "0" + fechas[1];
+                        day_f = "0" + fechas[0];
                         day = Integer.parseInt(day_f);
                     } else
                         day = Integer.parseInt(fechas[0]);
@@ -210,6 +218,45 @@ public class Fm_AgregarRiego extends Fragment {
                     for (int i = 0; i < ma.pivots.size(); i++) {
                         String[] ids = ma.pivots.get(i).split(" ");
                         int pivotid = Integer.parseInt(ids[0]);
+                        for(int a = 0; a < arrpv.size(); a++){
+                            if(arrpv.get(a).getId() == pivotid){
+                                boolean notpresent = true;
+                                for(int rg = 0; rg < arrpv.get(a).getRiegos().size(); rg ++){
+                                    if(comparaFechas(CrearFecha(arrpv.get(a).getRiegos().get(rg).getFecha()), CrearFecha(fecha)) ==0){
+                                        //Log.d("PV-Ingresado", "pivot " + pivotid);
+                                        notpresent=false;
+                                        arrpv.get(a).getRiegos().get(rg).setMilimetros(Integer.parseInt(cant_ed.getText().toString()));
+                                        arrpv.get(a).getRiegos().get(rg).setTipo("Irrigation");
+                                    }
+                                    /*else{
+                                        Log.d("Fecha", "fecha:  " + arrpv.get(a).getRiegos().get(rg).getFecha());
+                                    }*/
+                                }
+                                if(notpresent){
+
+                                    Riego newriego = new Riego();
+                                    newriego.setTipo("Irrigation");
+                                    newriego.setFecha(fecha);
+                                    newriego.setMilimetros(Integer.parseInt(cant_ed.getText().toString()));
+                                    arrpv.get(a).getRiegos().add(newriego);
+                                    Establecimiento newfarm = new Establecimiento(farmid, farmdesc, reference_date);
+                                    newfarm.setPivots(arrpv);
+                                    SharedPreferences.Editor editor = sp.edit();
+                                    String jsonObjetos = new Gson().toJson(newfarm);
+                                    editor.putString("actual_farm", jsonObjetos);
+                                    editor.commit();
+                                }
+                                else{
+                                    Establecimiento newfarm = new Establecimiento(farmid, farmdesc, reference_date);
+                                    newfarm.setPivots(arrpv);
+                                    SharedPreferences.Editor editor = sp.edit();
+                                    String jsonObjetos = new Gson().toJson(newfarm);
+                                    editor.putString("actual_farm", jsonObjetos);
+                                    editor.commit();
+                                }
+
+                            }
+                        }
                         pivotsIds.add(pivotid);
                     }
                     JSONObject irrigation = new JSONObject();
@@ -312,6 +359,95 @@ public class Fm_AgregarRiego extends Fragment {
         builder.setPositiveButton("OK",null);
         builder.create();
         builder.show();
+    }
+
+    public Calendar CrearFecha(String fecha) {
+        Calendar cal = Calendar.getInstance();
+        int year=0,month=0 ,day=0;
+        Date fecha_r = new Date();
+        year = Integer.parseInt("" + fecha.charAt(0) + fecha.charAt(1) + fecha.charAt(2) + fecha.charAt(3));
+
+        if ("0".equals(fecha.charAt(5)))
+            month = Integer.parseInt("" + fecha.charAt(6));
+
+        else{
+            if ('-'==fecha.charAt(6))
+                month = Integer.parseInt("" + fecha.charAt(5));
+            else
+            if ('-'!=fecha.charAt(6))
+                month = Integer.parseInt("" + fecha.charAt(5) + fecha.charAt(6));
+        }
+
+
+
+        if ('-'==fecha.charAt(6)){
+            if ("0".equals(fecha.charAt(7)))
+                day = Integer.parseInt("" + fecha.charAt(8));
+            else
+                day = Integer.parseInt("" + fecha.charAt(7));
+        }
+        else {
+            if ('-'==fecha.charAt(7)) {
+                if ("0".equals(fecha.charAt(8)))
+                    day = Integer.parseInt("" + fecha.charAt(9));
+                else
+                    day = Integer.parseInt("" + fecha.charAt(8) + fecha.charAt(9));
+            }
+        }
+
+        month=month-1;
+        cal.set(year,month,day);
+        //int anio= cal.get(Calendar.YEAR);
+
+
+        return cal;
+    }
+
+    public int comparaFechas(Calendar cal1, Calendar cal2) {
+        if (cal1 == null || cal2 == null)
+            return -4;//alguna fecha es nula
+        else {
+            //si son iguales
+            if (cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE))
+                return 0;
+
+            //cal1 menor que cal2
+
+            if (cal1.get(Calendar.YEAR) < cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE))
+                return -1;// año menor
+            if (cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) < cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE))
+                return -2;//mes menor
+            if (cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) < cal2.get(Calendar.DATE))
+                return -3;//dia menor
+
+            //cal1 mayor que cal2
+
+            if (cal1.get(Calendar.YEAR) > cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE))
+                return 1;// año mayor
+            if (cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) > cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE))
+                return 2;//mes mayor
+            if (cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                    && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.DATE) > cal2.get(Calendar.DATE))
+                return 3;//dia mayor
+
+        }
+
+
+        return 4;
+
     }
 
 }

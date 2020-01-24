@@ -79,11 +79,15 @@ public class Login extends AppCompatActivity {
         boton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!sp.getBoolean("sincronizando", false))
-                    new ClaseAsincrona().execute(user.getText().toString(),pass.getText().toString());
-                else
-                    mostrarMsg("Sincronizacion en Curso", "Aguarde un momento");
-
+            if (!sp.getBoolean("sincronizando", false)) {
+                if(user.getText().toString().isEmpty() || pass.getText().toString().isEmpty()){
+                    mostrarMsg("Usuario o contraseña no ingresados", "Autenticación incorrecta");
+                }
+                else {
+                    new ClaseAsincrona().execute(user.getText().toString(), pass.getText().toString());
+                }
+            }else
+                mostrarMsg("Sincronizacion en Curso", "Aguarde un momento");
             }
         });
 
@@ -131,7 +135,7 @@ public class Login extends AppCompatActivity {
                 username = params[0];
                 password = params[1];
 
-                URL url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/Auth/userName/"+username +"/password/" + password);
+                URL url = new URL("http://iradvisor.pgwwater.com.uy:9080/api/Auth/userName/" + username + "/password/" + password);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 int responseCode = conn.getResponseCode();
@@ -145,12 +149,11 @@ public class Login extends AppCompatActivity {
                     response.append(inputLine);
                 }
                 in.close();
-                res=response.toString();
+                res = response.toString();
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             return res;
         }
 
@@ -230,6 +233,7 @@ public class Login extends AppCompatActivity {
                 abd.insertLog(cal.getTime().toString() + " -- El usuario " + username + " no pudo ingresar al sistema por problemas en el servidor o la conexión a internet",username, json_sq);
                 dta_base.close();
                 Toast.makeText(Login.this, "Problema con servidor o conexión a internet", Toast.LENGTH_LONG).show();
+
                 progress.setProgress(0);
             }
             progress.dismiss();
@@ -304,7 +308,7 @@ public class Login extends AppCompatActivity {
         }
         dta_base.close();
 
-        String email = "josekevin15@gmail.com"; //destinatario (va mail de PGG)
+        String email = "iadvisortest@googlegroups.com"; //destinatario (va mail de PGG)
 
         //Creating SendMail object
         SendMail sm = new SendMail(this, email, subject, message);
@@ -352,10 +356,10 @@ public class Login extends AppCompatActivity {
                 if(result.getCount()<1 || result == null){
                     message = "Hoy no se han ingresado o sincronizado datos";
                 }
-
             }
             else {
-                subject = "LOG total del dia " + fecha_m.get(Calendar.DAY_OF_MONTH) + "/" + fecha_m.get(Calendar.MONTH) + "/" + fecha_m.get(Calendar.YEAR);
+                int mes = fecha_m.get(Calendar.MONTH) + 1;
+                subject = "LOG total del dia " + fecha_m.get(Calendar.DAY_OF_MONTH) + "/" + mes + "/" + fecha_m.get(Calendar.YEAR);
                 if(result.getCount()<1 || result == null){
                     message = "El dia " + fecha_m.get(Calendar.DAY_OF_MONTH) + "/" + fecha_m.get(Calendar.MONTH) + "/" + fecha_m.get(Calendar.YEAR) + " no se han ingresado o sincronizado datos";
                 }
@@ -366,7 +370,7 @@ public class Login extends AppCompatActivity {
 
         dta_base.close();
 
-        String email = "josekevin15@gmail.com"; //destinatario (va mail de PGG)
+        String email = "iadvisortest@googlegroups.com"; //destinatario (va mail de PGG)
         //Creating SendMail object
 
         SendMail sm = new SendMail(this, email, subject, message);

@@ -36,12 +36,13 @@
         <receiver android:name=".AlarmReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.ALARM" />
             </intent-filter>
         </receiver>
         <receiver android:name=".AlarmReceiverMail">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
-
+                <action android:name="android.intent.action.ALARM" />
             </intent-filter>
         </receiver>
 
